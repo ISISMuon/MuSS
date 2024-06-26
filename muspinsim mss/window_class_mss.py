@@ -62,8 +62,8 @@ from enum import Enum, auto
 #       Homemade scripts
 # -------------------------------------
 from input_class import Create_Input
-import tkinter_muspinsim01backend as bck
-import sockets_tk as sck
+import backend_mss as bck
+import socket_comunication_mss as sck
 
 # from sockets_tk import variables
 

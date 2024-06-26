@@ -11,8 +11,8 @@ before the windows being called (thats the only difference).
 #       Homemade scripts
 # -------------------------------------
 
-from tkinter_muspinsim_class import windows
-import sockets_tk as sck
+from window_class_mss import windows
+import socket_comunication_mss as sck
 
 
 if __name__ == "__main__":
