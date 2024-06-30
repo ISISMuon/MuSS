@@ -78,15 +78,23 @@ class windows(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+        # self.iconbitmap("mss3.ico")
+        # p1 = self.PhotoImage(file='info.png')
+        # print('banana')
+        # path = r'C:\Users\BNW71814\Desktop\stfc-muspinsim\muspinsim mss\msss.png'
+        # icon = tk.PhotoImage(file=path)
+        # print('banana1')
+        # self.iconphoto(True, icon)
 
-        # -------------------------------------------------------------------------------------------------------
-        #                           Geometry of the window
-        # -------------------------------------------------------------------------------------------------------
+        # self.iconphoto(False, icon)
 
         # -------------------------------------------------------------------------------------------------------
         #                           Geometry of the window
         # -------------------------------------------------------------------------------------------------------
         self.title("Muspinsim")
+        # try and exception
+        self.iconbitmap(
+            r'C:\Users\BNW71814\Desktop\stfc-muspinsim\muspinsim mss\mss3.ico')
         self.geometry("1000x740")
         self.minsize(200, 200)
         # ------------------------------------------------------------------------------------------------------
