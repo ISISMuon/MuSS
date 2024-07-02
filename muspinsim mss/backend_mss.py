@@ -230,13 +230,13 @@ def graph_update(object_of_class):
 
 
 def openn():
-    '''
-    '''
     top = tk.Toplevel()
     top.title('Cif File')
     cif_read = io.read(r'c:\Users\BNW71814\Desktop\EntryWithCollCode60559.cif')
     visualize.view(cif_read)
     table(top, cif_data())
+    print('banana')
+    pass
 
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     Update data

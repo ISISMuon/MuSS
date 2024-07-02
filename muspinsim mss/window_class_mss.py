@@ -25,38 +25,16 @@ code structure:
 
 import tkinter as tk
 from tkinter.ttk import Label, LabelFrame, Progressbar, Style
-from tkinter import filedialog, messagebox
 import customtkinter
-
-
-import pandas as pd
-import numpy as np
-import os
-import argparse
-import argparse
+from muspinsim.input.keyword import *
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
-from matplotlib import style
-from matplotlib.animation import FuncAnimation
-import matplotlib.pyplot as plt
 
-from muspinsim import MuSpinInput, ExperimentRunner
-from muspinsim.input.keyword import *
+import os
+
 
 from threading import Thread
-from queue import Queue
-from enum import Enum, auto
-
-from threading import Thread
-from queue import Queue
-from enum import Enum, auto
-
-# from server01 import data_processing , send
-
-# --------------------------------------
-#       Homemade scripts
-# -------------------------------------
 
 # --------------------------------------
 #       Homemade scripts
@@ -64,13 +42,6 @@ from enum import Enum, auto
 from input_class import Create_Input
 import backend_mss as bck
 import socket_comunication_mss as sck
-
-# from sockets_tk import variables
-
-
-class TicketPurpose(Enum):
-    # auto gives us anything
-    update_results = auto()
 
 
 class windows(tk.Tk):
@@ -85,7 +56,6 @@ class windows(tk.Tk):
         # icon = tk.PhotoImage(file=path)
         # print('banana1')
         # self.iconphoto(True, icon)
-
         # self.iconphoto(False, icon)
 
         # -------------------------------------------------------------------------------------------------------
@@ -95,6 +65,7 @@ class windows(tk.Tk):
         # try and exception
         self.iconbitmap(
             r'C:\Users\BNW71814\Desktop\stfc-muspinsim\muspinsim mss\mss3.ico')
+
         self.geometry("1000x740")
         self.minsize(200, 200)
         # ------------------------------------------------------------------------------------------------------
@@ -134,7 +105,7 @@ class windows(tk.Tk):
         # ------------------------------------------------------------------------------------------------------
         #                           Queing (in case is necessary)
         # ------------------------------------------------------------------------------------------------------
-        self.queue_results = Queue()
+        # self.queue_results = Queue()
         # self.bind("<<CheckQueue>>", self.check_queue)
 
         # ------------------------------------------------------------------------------------------------------
@@ -150,22 +121,6 @@ class windows(tk.Tk):
         self.username = os.path.expanduser('~')
 
         self.Input_path.set(self.username+'\Documents')
-
-        inn = Create_Input(
-            r"C:\Users\BNW71814\Desktop\GUI for InputMuspinSim\examples.txt", "oooooo", "mu", cif=True,)
-
-        path = bck.get_path(self)
-        self.inn = Create_Input(
-            path, "name", "mu")
-
-        # ----------------------------------------------------------------------------------------------------------
-        #                                   Calling the Frames
-        # ----------------------------------------------------------------------------------------------------------
-        # self.frame_data()
-
-        # self.frame_Axis()
-        inn = Create_Input(
-            r"C:\Users\BNW71814\Desktop\GUI for InputMuspinSim\examples.txt", "oooooo", "mu", cif=True,)
 
         path = bck.get_path(self)
         self.inn = Create_Input(
@@ -200,8 +155,6 @@ class windows(tk.Tk):
 
         self.name_label = customtkinter.CTkLabel(
             self.frame_essentials, text="Name")
-        self.name_label = customtkinter.CTkLabel(
-            self.frame_essentials, text="Name")
         self.name_label.grid(row=0, column=0, padx=5, pady=5)
         self.name_text = tk.StringVar()
         self.name_text.set('muspinsim01')
@@ -209,14 +162,10 @@ class windows(tk.Tk):
             self.frame_essentials, textvariable=self.name_text)
 
         self.name_entry.grid(row=0, column=1)
-        #
 
         self.spins_label = customtkinter.CTkLabel(
             self.frame_essentials, text="spins")
-        self.spins_label = customtkinter.CTkLabel(
-            self.frame_essentials, text="spins")
         self.spins_label.grid(row=1, column=0, padx=5, pady=5)
-        self.spins_entry = customtkinter.CTkEntry(self.frame_essentials)
         self.spins_entry = customtkinter.CTkEntry(self.frame_essentials)
         self.spins_entry.insert('end', 'mu e')
         self.spins_entry.grid(row=1, column=1, padx=5, pady=5)
@@ -227,7 +176,6 @@ class windows(tk.Tk):
             self.frame_essentials, text="Time")
         self.time_label.grid(row=2, column=0, padx=3, pady=3)
 
-        self.time_entry_frame = LabelFrame(self.frame_essentials, text="---")
         self.time_entry_frame = LabelFrame(self.frame_essentials, text="---")
         self.time_entry_frame.grid(row=2, column=1, padx=5, pady=5)
 
@@ -246,7 +194,6 @@ class windows(tk.Tk):
         self.time_entry3.grid(row=0, column=2, padx=5, pady=5)
         self.time_entry3.insert('end', 100)
 
-        self.cif_frame = LabelFrame(self.frame_essentials)
         self.cif_frame = LabelFrame(self.frame_essentials)
         self.cif_frame.grid(row=3, column=1, padx=5, pady=5)
         self.cif_check = customtkinter.CTkCheckBox(
@@ -342,18 +289,6 @@ class windows(tk.Tk):
         self.celio_value = tk.Text(self.field_frame, width=15, height=3, bd=0,)
         self.celio_value.grid(row=6, column=2, padx=5, pady=5)
 
-    def field_check(self):
-
-        pass
-
-    def frame_socketa(self):
-        self.socketa = LabelFrame(self, text="Socket")
-        self.socketa.place(x=780, y=520)
-
-    def field_check(self):
-
-        pass
-
     def frame_socketa(self):
         self.socketa = LabelFrame(self, text="Socket")
         self.socketa.place(x=780, y=520)
@@ -363,37 +298,19 @@ class windows(tk.Tk):
         self.host_entry = customtkinter.CTkEntry(self.socketa, width=100)
         self.host_entry.insert('end', '130.246.58.40')
         self.host_entry.grid(row=1, column=1, padx=5, pady=5)
-        self.host_label = customtkinter.CTkLabel(self.socketa, text="Host")
-        self.host_label.grid(row=1, column=0, padx=5, pady=5)
-        self.host_entry = customtkinter.CTkEntry(self.socketa, width=100)
-        self.host_entry.insert('end', '130.246.58.40')
-        self.host_entry.grid(row=1, column=1, padx=5, pady=5)
 
         self.port_label = customtkinter.CTkLabel(self.socketa, text="Port")
         self.port_label.grid(row=2, column=0, padx=5, pady=5)
-
-        self.statess = 'normal'
-        self.port_entry = customtkinter.CTkEntry(self.socketa, width=100)
-        self.port_entry.insert('end', '9092')
-        self.port_entry.grid(row=2, column=1, padx=5, pady=5)
-        self.port_label = customtkinter.CTkLabel(self.socketa, text="Port")
-        self.port_label.grid(row=2, column=0, padx=5, pady=5)
-
-        self.statess = 'normal'
         self.port_entry = customtkinter.CTkEntry(self.socketa, width=100)
         self.port_entry.insert('end', '9092')
         self.port_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        self.connect_btn = customtkinter.CTkButton(
-            self.socketa, text="Connect", state=self.statess, command=lambda: sck.server_connection_tread(self), width=50)
-        self.connect_btn.grid(row=3, column=1, padx=5, pady=5)
+        self.statess = 'normal'
+        #
         self.connect_btn = customtkinter.CTkButton(
             self.socketa, text="Connect", state=self.statess, command=lambda: sck.server_connection_tread(self), width=50)
         self.connect_btn.grid(row=3, column=1, padx=5, pady=5)
 
-        self.disconnect_btn = customtkinter.CTkButton(
-            self.socketa, text="Disconnect", command=sck.disconnect_socket, width=50)
-        self.disconnect_btn.grid(row=4, column=1, padx=5, pady=5)
         self.disconnect_btn = customtkinter.CTkButton(
             self.socketa, text="Disconnect", command=sck.disconnect_socket, width=50)
         self.disconnect_btn.grid(row=4, column=1, padx=5, pady=5)
@@ -435,55 +352,12 @@ class windows(tk.Tk):
     def frame_Axis(self):
         self.axis = LabelFrame(self, text="Axis")
         self.axis.place(x=780, y=330)
-        self.read = customtkinter.CTkButton(
-            self.socketa, text="Read", command=lambda: sck.receiver(), width=50)
-        self.read.grid(row=3, column=0, padx=5, pady=5)
-
-    def menus(self):
-        self.mainmenu = tk.Menu(self)
-        self.file_menu = tk.Menu(self.mainmenu, tearoff=0)
-        self.mainmenu.add_cascade(label="File", menu=self.file_menu)
-        self.file_menu.add_command(
-            label="Save", command=lambda: bck.create(self))
-        self.file_menu.add_command(
-            label="Save As", command=lambda: bck.save_as(self))
-        self.file_menu.add_command(
-            label="Load", command=lambda: bck.load_file(self))
-        # self.mainmenu.add_command(
-        #    label="Fitting Data", command=lambda: self.frame_data())
-        self.more_menu = tk.Menu(self.mainmenu, tearoff=0)
-        self.mainmenu.add_cascade(label="More", menu=self.more_menu)
-        self.more_menu.add_command(
-            label="Fitting Data", command=lambda: self.frame_data())
-
-        self.more_menu.add_command(
-            label="Show axis", command=lambda: self.frame_Axis())
-
-        self.more_menu.add_command(
-            label="Others", command=lambda: self.frame_Others())
-        self.mainmenu.add_command(label="Exit", command=self.destroy)
-
-        self.config(menu=self.mainmenu)
-
-    def frame_Axis(self):
-        self.axis = LabelFrame(self, text="Axis")
-        self.axis.place(x=780, y=330)
 
         self.x_axis = customtkinter.CTkLabel(self.axis, text="a_axis")
         self.x_axis.grid(sticky="W", row=0, column=0, padx=5, pady=5,)
         self.x_axis = customtkinter.CTkLabel(self.axis, text="a_axis")
         self.x_axis.grid(sticky="W", row=0, column=0, padx=5, pady=5,)
 
-        self.x_axis_value = customtkinter.CTkEntry(self.axis)
-        self.x_axis_value.grid(row=1, column=0, padx=5, pady=5)
-
-        self.y_axis = customtkinter.CTkLabel(self.axis, text="y_axis")
-        self.y_axis.grid(sticky="W", row=2, column=0, padx=5, pady=5)
-
-        self.y_axis_value = customtkinter.CTkEntry(self.axis)
-        self.y_axis_value.grid(row=3, column=0, padx=5, pady=5)
-
-    def frame_Others(self):
         self.x_axis_value = customtkinter.CTkEntry(self.axis)
         self.x_axis_value.grid(row=1, column=0, padx=5, pady=5)
 
@@ -529,10 +403,6 @@ class windows(tk.Tk):
         self.experiments = customtkinter.CTkOptionMenu(
             self.Other, values=["None", "alc", "zero_field"])
         self.experiments.grid(row=7, column=0, padx=5, pady=5)
-
-    def frame_data01(self, _):
-        self.fitting_frame = LabelFrame(self, text="Fitting data")
-        self.fitting_frame.place(x=250, y=20)
 
     def frame_data01(self, _):
         self.fitting_frame = LabelFrame(self, text="Fitting data")
@@ -671,10 +541,6 @@ class windows(tk.Tk):
         print('inside stopping thread',)
         self.bar.destroy()
 
-    def generate_data_fit(self):
-
-        pass
-
     def loading_bar(self):
         self.bar = Progressbar(self,
                                orient='horizontal', mode='indeterminate', length=300)
@@ -712,11 +578,6 @@ class windows(tk.Tk):
 
         bck.run_simulation(self)
         # print(self.pvar_hist)
-
-    def variables_to_fit(self):
-        '''Here we pass the variables that are being fitted'''
-
-        pass
 
 
 # -------------------------------------------------
