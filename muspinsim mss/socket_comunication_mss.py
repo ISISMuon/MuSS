@@ -4,14 +4,13 @@ Author: Paula Franco
 Date: February 2024
 
 Summary:
-    Sockets are created and listens until the program is closes, here ports are descibed. 
+    Sockets are created and listens until the program is closes, here ports are descibed.
     The sockets recieve and send informtaion here.
 """
 import threading
 import socket
 import time
-import re
-import numpy as np
+
 
 # -------------------------------------------------------------------------------------------------------
 #                                           Connect
@@ -109,6 +108,9 @@ def receive(object_of_class):  # do we need the (,_)
                 object_of_class.fit_state = True
                 object_of_class.event_generate('<<CalculateSend>>')
                 print('do and send calculations')
+        elif message == 'Fit Completed':
+            object_of_class.fit_state = False
+            object_of_class.event_generate('<<ThreadFinished>>')
 
         if 'TimeFrom' and 'TimeTo' in message:
             object_of_class.wimda_time = message
@@ -127,13 +129,10 @@ def send_tread(data):
     thread3.start()
 
 # -------------------------------------------------------------------------------------------------------
-#                                           Process data
-# -------------------------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------------------------
 #                                                   Drafts
 # -------------------------------------------------------------------------------------------------------
+
+
 def receiver():
     threadd = threading.Thread(target=receive)
     threadd.start()

@@ -8,13 +8,14 @@ tkinter is used to create a Gui where the cif file is explored including
 the changes done to
 """
 
+import io
 import tkinter as tk
-from tkinter.ttk import Label, LabelFrame
 import pandas as pd
-from muspinsim import MuSpinInput, ExperimentRunner
-from muspinsim.input.keyword import *
-from ase import io, Atoms, Atom
-
+import numpy as np
+from ase import Atoms, Atom
+from ase.gui.images import Images
+from ase.gui.gui import GUI
+import ase.visualize
 
 muon = Atom('X', [0, 0, 0], charge=1)
 
@@ -36,7 +37,7 @@ def table(root, lst):
             entry.insert('end', lst[i][j])
 
 
-cif_red = io.read(r'c:\Users\BNW71814\Desktop\EntryWithCollCode60559.cif')
+cif_red = ase.io.read(r'c:\Users\BNW71814\Desktop\EntryWithCollCode60559.cif')
 cif_red.get_positions()
 
 
@@ -51,13 +52,6 @@ def cif_data():
         lst.append(lst_tuple)
 
     return lst
-
-    frame = LabelFrame(new)
-    frame.grid(row=0, column=0, padx=5, pady=5)
-    tk.Label(frame, text="FRAME 1").grid()
-
-    btn = tk.Button(frame, command=lambda: table(
-        frame, cif_data()), text='botton').grid()
 
 
 # Position stuff
@@ -118,3 +112,51 @@ material = {'Chemical symbols': cif_red.get_chemical_symbols(), 'x_position': ci
 
 
 df = pd.DataFrame(material)
+
+
+# Your existing function modified to use Tkinter
+
+def get_muon_pos_nn_visually(atoms: Atoms):
+    """
+    Get the muon position by selecting two atoms to be the nearest neighbors (nn).
+    :param atoms: ASE atoms of the structure
+    :return: (muon position ndarray, list of the index of the atoms the muon is in between)
+    """
+
+    def on_close():
+        # When the GUI is closed, retrieve the selected atoms and calculate the muon position
+        selected = []
+        for i_images_selected_atom in range(0, len(images.selected)):
+            if images.selected[i_images_selected_atom]:
+                selected.append(i_images_selected_atom)
+        if len(selected) != 2:
+            print("Please select exactly two atoms.")
+            return
+
+        pos1 = atoms[selected[0]].position
+        pos2 = atoms[selected[1]].position
+        muon_pos = (pos1 + pos2) / 2
+
+        result_label.config(
+            text=f"Muon location: ({muon_pos[0]:.2f}, {muon_pos[1]:.2f}, {muon_pos[2]:.2f})")
+
+    # Initialize the top level window
+    window = tk.Toplevel()
+    window.title("Muon Position Selector")
+
+    # Create an Images and GUI instance from ASE
+    images = Images()
+    images.initialize([atoms])
+    GUI(images)
+
+    # Add a button to calculate the muon position
+    calculate_button = tk.Button(
+        window, text="Calculate Muon Position", command=on_close)
+    calculate_button.pack(pady=10)
+
+    # Label to display the result
+    result_label = tk.Label(
+        window, text="Select two atoms and click the button.")
+    result_label.pack(pady=10)
+
+######################################################################################## DRAFT            ##########################

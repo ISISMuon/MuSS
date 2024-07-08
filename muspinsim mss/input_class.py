@@ -9,8 +9,6 @@ this is important because we are associating variables with an object in this cl
 
 '''
 from ase import io
-from ase import visualize
-import numpy as np
 
 
 class Create_Input:
@@ -48,7 +46,7 @@ class Create_Input:
         '''when the object of the class has been created it can be call
         when is called if cif=True the path of the cif file must be passed'''
         with open(self.input, 'w') as f:
-            #f.write('name \n    {0} \nspins\n   {1} '.format(self.name,self.spins))
+            # f.write('name \n    {0} \nspins\n   {1} '.format(self.name,self.spins))
             if self.cif == True:
                 if path == None:
                     raise Exception(
@@ -126,7 +124,7 @@ class Create_Input:
             reltv_position.append(i)
 
         with open(self.input, 'a+') as f:
-            #f.write(' {0} \n spins \n    {1} '.format(self.name))
+            # f.write(' {0} \n spins \n    {1} '.format(self.name))
             for j in read_doc.get_chemical_symbols():
                 f.write(' {0} '.format(j))
             number = 0
@@ -146,10 +144,6 @@ class Create_Input:
 inn = Create_Input(
     r'C:\Users\BNW71814\Desktop\GUI for InputMuspinSim\examplessss.txt', 'oooooo', 'mu', cif=False)
 
-# print(inn.input_cif())
-# inn(r'c:\Users\BNW71814\Desktop\EntryWithCollCode16262.cif',[99,0,8])
-# inn.cif_file(r'c:\Users\BNW71814\Desktop\EntryWithCollCode16262.cif',[2,3,4])
+
 inn.name = 'francezinha'
 inn()
-
-# sys.path.insert(0,'..\\..\\')

@@ -32,13 +32,12 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 
 import os
-
-
 from threading import Thread
 
-# --------------------------------------
+# -------------------------------------
 #       Homemade scripts
 # -------------------------------------
+
 from input_class import Create_Input
 import backend_mss as bck
 import socket_comunication_mss as sck
@@ -92,21 +91,6 @@ class windows(tk.Tk):
         self.fit_state = None
         # This is the array with wimda time to do  the interpolation in muspinsim
         self.wimda_time = None
-
-        # ------------------------------------------------------------------------------------------------------
-        #                                   Esentials
-        # ------------------------------------------------------------------------------------------------------
-        self.file = ' '
-        self.parameters = None
-
-        self.first_param = 17.3
-        self.frame_essential()
-
-        # ------------------------------------------------------------------------------------------------------
-        #                           Queing (in case is necessary)
-        # ------------------------------------------------------------------------------------------------------
-        # self.queue_results = Queue()
-        # self.bind("<<CheckQueue>>", self.check_queue)
 
         # ------------------------------------------------------------------------------------------------------
         #                                   Esentials
@@ -196,13 +180,13 @@ class windows(tk.Tk):
 
         self.cif_frame = LabelFrame(self.frame_essentials)
         self.cif_frame.grid(row=3, column=1, padx=5, pady=5)
-        self.cif_check = customtkinter.CTkCheckBox(
+        # self.cif_check = customtkinter.CTkCheckBox(
+        self.cif_check = customtkinter.CTkLabel(
             self.cif_frame, text="Cif File")
-        self.cif_check.pack()
-        self.cif_radio = customtkinter.CTkRadioButton(self.cif_frame)
+        self.cif_check.grid(row=0, column=1, padx=5, pady=5)
         self.cif_btn = customtkinter.CTkButton(
-            self.cif_frame, text="Load Cif", command=bck.openn, width=40)
-        self.cif_btn.pack()
+            self.cif_frame, text="Load", command=bck.openn, width=40)
+        self.cif_btn.grid(row=0, column=2, padx=5, pady=5)
 
     def frame_plot(self):
         self.frame_plot = LabelFrame(self, text="Plot", width=900, height=900)
@@ -538,8 +522,9 @@ class windows(tk.Tk):
             sck.send_function(bck.data_processing_xy(self))
         else:
             bck.graph_update(self)
-        print('inside stopping thread',)
+        print('inside stopping thread')
         self.bar.destroy()
+        print('process bar shoulfd have stopped')
 
     def loading_bar(self):
         self.bar = Progressbar(self,
@@ -566,7 +551,6 @@ class windows(tk.Tk):
 
     def interpolation(self, _):  # draft
         bck.process_time_wimda(self)  # this should give us an array of times
-
         pass
     # ---------------------------------------------------------------------------------------------------------------------
     #                                       Drafts
@@ -583,6 +567,7 @@ class windows(tk.Tk):
 # -------------------------------------------------
 #           Run te tkinter window
 # ------------------------------------------------
+
 '''
 if __name__ == "__main__":
     App=windows()

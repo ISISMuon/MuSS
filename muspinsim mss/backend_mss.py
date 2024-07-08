@@ -10,25 +10,20 @@ import numpy as np
 from tkinter import filedialog
 import tkinter as tk
 from muspinsim import MuSpinInput, ExperimentRunner
-from input_class import Create_Input
 from muspinsim.input.keyword import *
+from tkinter.ttk import Label, LabelFrame
 
-from ase import io, Atoms, Atom
-from ase import visualize
-from muspinsim.input.keyword import *
+import customtkinter
 
-
-from muspinsim.input.keyword import *
-
-
+from ase import io, Atoms, Atom, visualize
 # from soprano.collection import AtomsCollection
 import soprano.properties.atomsproperty
 
 # --------------------------------------
 #       Homemade scripts
 # -------------------------------------
-from ase_gui import table, listinha, alphabet, cif_data
-
+from ase_gui import get_muon_pos_nn_visually
+from input_class import Create_Input
 
 # -------------------------------------------------------------------------------------------------------
 #                                           DATA PROCESSING
@@ -228,15 +223,60 @@ def graph_update(object_of_class):
     # object_of_class.x = np.linspace(timefrom, timeto, timedivision)
     object_of_class.x = object_of_class.parameters.evaluate()['time'].value
 
+# --------------------------------------------------------------------------------------------------------------------
+#                                                     CIF FILE
+# --------------------------------------------------------------------------------------------------------------------
+
 
 def openn():
+    file = filedialog.askopenfilename()
     top = tk.Toplevel()
+    frame = LabelFrame(top, text="Table of  positions")
+    frame.place(x=20, y=100)
+
     top.title('Cif File')
-    cif_read = io.read(r'c:\Users\BNW71814\Desktop\EntryWithCollCode60559.cif')
-    visualize.view(cif_read)
-    table(top, cif_data())
-    print('banana')
-    pass
+    # print(file)
+    # cif_read = io.read(r'c:\Users\BNW71814\Desktop\EntryWithCollCode60559.cif')
+    cif_read = io.read(file)
+    print(cif_read)
+    # visualize.view(cif_read)
+    table(frame, cif_data(cif_read))
+    frame_vary = LabelFrame(top, text="Frame for bottons")
+    frame_vary.place(x=0, y=20)
+    btn1 = customtkinter.CTkButton(
+        top, text="More", command=lambda: get_muon_pos_nn_visually(cif_read))
+    btn1.place(x=20, y=20)
+    lb1 = customtkinter.CTkLabel(
+        frame_vary, text="More")
+    lb1.place(x=20, y=20)
+
+
+def cif_data(cif_read_io):
+    cif_read_io.get_positions()
+    cif_read_io.get_chemical_symbols()
+
+    lst = []
+    for i in range(cif_read_io.get_global_number_of_atoms()):
+        lst_tuple = (cif_read_io.get_chemical_symbols()[
+                     i], cif_read_io.get_positions()[i])
+        lst.append(lst_tuple)
+
+    return lst
+
+
+def table(root, lst):
+    listinha = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+
+    dicc = {}
+    total_rows = len(lst)
+    total_columns = len(lst[0])
+    for i in range(total_rows):
+        for j in range(total_columns):
+            dicc[listinha[j]] = tk.Entry(root, width=40)
+            entry = tk.Entry(root, width=40)
+            entry.grid(row=i, column=j)
+            entry.insert('end', lst[i][j])
 
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     Update data
