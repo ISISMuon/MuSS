@@ -12,18 +12,23 @@ import tkinter as tk
 from muspinsim import MuSpinInput, ExperimentRunner
 from muspinsim.input.keyword import *
 from tkinter.ttk import Label, LabelFrame
+from ase.gui.images import Images
+from ase.gui.gui import GUI
 
 import customtkinter
-
-from ase import io, Atoms, Atom, visualize
+import ase
+from ase import atom, atoms, visualize, build
 # from soprano.collection import AtomsCollection
 import soprano.properties.atomsproperty
-
+import copy
+import ase
+from ase.visualize import view
 # --------------------------------------
 #       Homemade scripts
 # -------------------------------------
-from ase_gui import get_muon_pos_nn_visually
+
 from input_class import Create_Input
+from enviroment_muon_johnny_code import add_muon_to_aseatoms
 
 # -------------------------------------------------------------------------------------------------------
 #                                           DATA PROCESSING
@@ -228,27 +233,72 @@ def graph_update(object_of_class):
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def openn():
-    file = filedialog.askopenfilename()
-    top = tk.Toplevel()
-    frame = LabelFrame(top, text="Table of  positions")
-    frame.place(x=20, y=100)
+muon_positio = np.zeros((3,))
 
-    top.title('Cif File')
-    # print(file)
-    # cif_read = io.read(r'c:\Users\BNW71814\Desktop\EntryWithCollCode60559.cif')
-    cif_read = io.read(file)
-    print(cif_read)
-    # visualize.view(cif_read)
-    table(frame, cif_data(cif_read))
-    frame_vary = LabelFrame(top, text="Frame for bottons")
-    frame_vary.place(x=0, y=20)
-    btn1 = customtkinter.CTkButton(
-        top, text="More", command=lambda: get_muon_pos_nn_visually(cif_read))
-    btn1.place(x=20, y=20)
-    lb1 = customtkinter.CTkLabel(
-        frame_vary, text="More")
-    lb1.place(x=20, y=20)
+
+def openn(object_of_class):
+    # Select the cif file
+    file = filedialog.askopenfilename()
+    # read the file and make it into a atoms object
+    object_of_class.cif_read = ase.io.read(file)
+
+    top = customtkinter.CTkToplevel(object_of_class)
+    top.title("Custom TopLevel Window")
+    top.geometry("400x300")
+    frame_structure = LabelFrame(top, text="Structure", width=200)
+    frame_structure.place(x=5, y=5)
+
+    calculate_button = customtkinter.CTkButton(frame_structure, text="Calculate Muon Position",
+                                               command=lambda: selecting__nn_indices(object_of_class))
+    calculate_button.grid(row=0, column=0, padx=5, pady=5)
+
+    frame_angle = LabelFrame(frame_structure, text='__')
+    frame_angle.grid(row=1, column=0, padx=5, pady=5)
+
+    struc_phi_label = customtkinter.CTkLabel(
+        master=frame_angle, text="Phi", width=40)
+    struc_phi_label.grid(row=1, column=0, padx=5, pady=5)
+
+    struc_phi_entry = customtkinter.CTkEntry(
+        frame_angle, width=40)
+    struc_phi_entry.grid(row=1, column=1)
+
+    struc_theta_label = customtkinter.CTkLabel(
+        master=frame_angle, text="Theta")
+    struc_theta_label.grid(row=1, column=2, padx=5, pady=5)
+
+    struc_phi_entry = customtkinter.CTkEntry(
+        frame_angle, width=40)
+    struc_phi_entry.grid(row=1, column=3)
+
+    calculate_button = customtkinter.CTkButton(frame_structure, text="Generate Supercell",
+                                               command=lambda: make_supercell(object_of_class.cif_read))
+    calculate_button.grid(row=2, column=0, padx=5, pady=5)
+    print('DEBUG: this is the cif file read', object_of_class.cif_read)
+    # table(top, cif_data(object_of_class.cif_read))
+
+    object_of_class.images = Images()
+    object_of_class.images.initialize([object_of_class.cif_read])
+    object_of_class.gui = GUI(object_of_class.images)
+    object_of_class.gui.run()
+    print('babababab')
+
+
+def selecting__nn_indices(object_of_class):
+
+    selected = []
+    for i_images_selected_atom in range(0, len(object_of_class.images.selected)):
+        if object_of_class.images.selected[i_images_selected_atom]:
+            selected.append(i_images_selected_atom)
+    print(selected)
+    view(add_muon_to_aseatoms(object_of_class.cif_read, nn_indices=selected))
+
+    object_of_class.gui.exit()
+
+    if selected == []:
+        object_of_class.nn_indices = None
+    else:
+        object_of_class.nn_indices = selected
 
 
 def cif_data(cif_read_io):
@@ -277,6 +327,87 @@ def table(root, lst):
             entry = tk.Entry(root, width=40)
             entry.grid(row=i, column=j)
             entry.insert('end', lst[i][j])
+
+
+def make_supercell(atoms_mu: atoms, unperturbed_atoms: atoms = None, unperturbed_supercell=1,
+                   small_output=False):
+    """
+    make a supercell with atoms_mu in the centre, and surrounded by unperturbed_supercell unperturbed_atoms
+    :param atoms_mu: ASE atoms, maybe with distortions, including muon
+    :param unperturbed_atoms: ASE atoms of unperturbed structure
+    :param unperturbed_supercell: number of instances of unperturbed_atoms to bolt on to the end of atoms_mu
+    :return: supercell of atoms_mu+unperturbed_supercell*unperturbed_atoms. If small_output==False, return ASE atoms,
+             otherwise returns a list of [atom type, position]
+    """
+
+    # make the supercell structure
+    # the changes are not stressing the orginal atom
+    atoms_mu = copy.deepcopy(atoms_mu)
+    view(atoms_mu)
+    print('this is the atom we out in and deep copy', atoms_mu)
+    if unperturbed_atoms is None:
+        unperturbed_atoms = copy.deepcopy(atoms_mu[:-1])
+        print(atoms_mu[:-1])
+        view(atoms_mu)
+    else:
+        unperturbed_atoms = copy.deepcopy(unperturbed_atoms)
+    # if atoms_mu is already a supercell, then make unperturbed_atoms a supercell of the same size
+
+    unperturbed_atoms = build.make_supercell(unperturbed_atoms, np.diag([1, 1, 1]) *
+                                             atoms_mu.cell.lengths()[0] /
+                                             unperturbed_atoms.cell.lengths()[0], wrap=False)
+    muon = copy.deepcopy(atoms_mu[-1])
+    # view(muon)
+    print(muon)
+    output_list = []
+    if small_output:
+        output_list = [[this_atom.symbol, this_atom.position]
+                       for this_atom in atoms_mu]
+
+    del atoms_mu[-1]
+
+    # we do the geometry of the supercell
+    for x_sign in range(-unperturbed_supercell, unperturbed_supercell + 1):
+        for y_sign in range(-unperturbed_supercell, unperturbed_supercell + 1):
+            for z_sign in range(-unperturbed_supercell, unperturbed_supercell + 1):
+                if x_sign == y_sign == z_sign == 0:
+                    continue
+                translation_vector = np.sign(x_sign) * (abs(x_sign) - 1) * unperturbed_atoms.cell[0] + \
+                    np.sign(x_sign) * atoms_mu.cell[0]
+                translation_vector += np.sign(y_sign) * (abs(y_sign) - 1) * unperturbed_atoms.cell[1] + \
+                    np.sign(y_sign) * atoms_mu.cell[1]
+                translation_vector += np.sign(z_sign) * (abs(z_sign) - 1) * unperturbed_atoms.cell[2] + \
+                    np.sign(z_sign) * atoms_mu.cell[2]
+                unperturbed_atoms.translate(translation_vector)
+                for this_atom in unperturbed_atoms:
+                    if small_output:
+                        output_list.append(
+                            [this_atom.symbol, copy.deepcopy(this_atom.position)])
+                    else:
+                        atoms_mu.append(this_atom)
+                unperturbed_atoms.translate(-1 * translation_vector)
+
+    atoms_mu.append(muon)
+
+    if small_output:
+        return output_list
+    else:
+        old_cell = atoms_mu.get_cell()
+        atoms_mu.set_cell(
+            old_cell*(2*unperturbed_supercell + 1), scale_atoms=False)
+        atoms_mu.translate(unperturbed_supercell * old_cell[0])
+        atoms_mu.translate(unperturbed_supercell * old_cell[1])
+        atoms_mu.translate(unperturbed_supercell * old_cell[2])
+        print('final atoms', atoms_mu)
+        view(atoms_mu)
+        return atoms_mu
+
+    """
+    Get the muon position by selecting two atoms to be the nearest neighbors (nn).
+    :param atoms: ASE atoms of the structure
+    :return: (muon position ndarray, list of the index of the atoms the muon is in between)
+    """
+
 
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     Update data

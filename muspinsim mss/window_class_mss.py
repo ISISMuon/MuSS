@@ -77,6 +77,8 @@ class windows(tk.Tk):
         # ------------------------------------------------------------------------------------------------------
         #                                           Variables Initiated
         # ------------------------------------------------------------------------------------------------------
+        #
+        #
         # represents all of te variables changes resgiteres by the muspinsim starting [0]=initials values
         # the history of varibles on each run stored and ready to be sent
         # the history of time and resultd on each run stored and ready to be sent
@@ -91,6 +93,8 @@ class windows(tk.Tk):
         self.fit_state = None
         # This is the array with wimda time to do  the interpolation in muspinsim
         self.wimda_time = None
+
+        #
 
         # ------------------------------------------------------------------------------------------------------
         #                                   Esentials
@@ -185,7 +189,7 @@ class windows(tk.Tk):
             self.cif_frame, text="Cif File")
         self.cif_check.grid(row=0, column=1, padx=5, pady=5)
         self.cif_btn = customtkinter.CTkButton(
-            self.cif_frame, text="Load", command=bck.openn, width=40)
+            self.cif_frame, text="Load", command=lambda: bck.openn(self), width=40)
         self.cif_btn.grid(row=0, column=2, padx=5, pady=5)
 
     def frame_plot(self):

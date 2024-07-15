@@ -16,6 +16,8 @@ from ase import Atoms, Atom
 from ase.gui.images import Images
 from ase.gui.gui import GUI
 import ase.visualize
+from tkinter import filedialog
+from tkinter.ttk import Label, LabelFrame
 
 muon = Atom('X', [0, 0, 0], charge=1)
 
@@ -136,7 +138,7 @@ def get_muon_pos_nn_visually(atoms: Atoms):
         pos1 = atoms[selected[0]].position
         pos2 = atoms[selected[1]].position
         muon_pos = (pos1 + pos2) / 2
-
+        print(muon_pos)
         result_label.config(
             text=f"Muon location: ({muon_pos[0]:.2f}, {muon_pos[1]:.2f}, {muon_pos[2]:.2f})")
 
@@ -160,3 +162,56 @@ def get_muon_pos_nn_visually(atoms: Atoms):
     result_label.pack(pady=10)
 
 ######################################################################################## DRAFT            ##########################
+
+
+def openn():
+    # Select the cif file
+    file = filedialog.askopenfilename()
+    # read the file and make it into a atoms object
+    cif_read = ase.io.read(file)
+    # create the top level tkinter window
+    top = tk.Toplevel()
+    top.title('Muon and Structure')
+
+    frame = LabelFrame(top, text="Table of  positions")
+    frame.place(x=20, y=100)
+
+    print('DEBUG: this is the cif file read', cif_read)
+
+    images = Images()
+    images.initialize([cif_read])
+    GUI(images)
+    # gui.run()
+
+    def on_close():
+        # When the GUI is closed, retrieve the selected atoms and calculate the muon position
+        selected = []
+        for i_images_selected_atom in range(0, len(images.selected)):
+            if images.selected[i_images_selected_atom]:
+                selected.append(i_images_selected_atom)
+        if len(selected) != 2:
+            print("Please select exactly two atoms.")
+            # return
+
+        pos1 = cif_read[selected[0]].position
+        pos2 = cif_read[selected[1]].position
+        muon_positio = (pos1 + pos2) / 2
+        print(muon_positio)
+        result_label.config(
+            text=f"Muon location: ({muon_positio[0]:.2f}, {muon_positio[1]:.2f}, {muon_positio[2]:.2f})")
+        # atoms_now = add_muon_to_aseatoms(cif_read, muon_position=muon_positio)
+
+    calculate_button = tk.Button(
+        top, text="Calculate Muon Position", command=on_close)
+    calculate_button.pack(pady=10)
+
+    result_label = tk.Label(
+        top, text="Select two atoms and click the button.")
+    result_label.pack(pady=10)
+    # add_muon_to_aseatoms(cif_read, muon_position=muon_positio)
+
+
+root = tk.Tk()
+root.ti
+
+openn()
