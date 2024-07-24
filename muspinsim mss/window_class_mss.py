@@ -26,6 +26,7 @@ code structure:
 import tkinter as tk
 from tkinter.ttk import Label, LabelFrame, Progressbar, Style
 import customtkinter
+from tkinter import filedialog
 from muspinsim.input.keyword import *
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
@@ -33,7 +34,9 @@ from matplotlib.figure import Figure
 
 import os
 from threading import Thread
-
+import ase
+from ase.gui.images import Images
+from ase.gui.gui import GUI
 # -------------------------------------
 #       Homemade scripts
 # -------------------------------------
@@ -189,7 +192,7 @@ class windows(tk.Tk):
             self.cif_frame, text="Cif File")
         self.cif_check.grid(row=0, column=1, padx=5, pady=5)
         self.cif_btn = customtkinter.CTkButton(
-            self.cif_frame, text="Load", command=lambda: bck.openn(self), width=40)
+            self.cif_frame, text="Load", command=lambda: self.frame_structure(), width=40)
         self.cif_btn.grid(row=0, column=2, padx=5, pady=5)
 
     def frame_plot(self):
@@ -310,6 +313,60 @@ class windows(tk.Tk):
         self.read = customtkinter.CTkButton(
             self.socketa, text="Read", command=lambda: sck.receiver(), width=50)
         self.read.grid(row=3, column=0, padx=5, pady=5)
+
+    def frame_structure(self):
+
+        file = filedialog.askopenfilename()
+        # read the file and make it into a atoms object
+        self.cif_read = ase.io.read(file)
+
+        frame_structure = LabelFrame(self, text="Structure", width=200)
+        frame_structure.place(x=250, y=20)
+
+        calculate_button = customtkinter.CTkButton(frame_structure, text="Calculate Muon Position",
+                                                   command=lambda: bck.selecting__nn_indices(self))
+        calculate_button.grid(row=0, column=0, padx=5, pady=5)
+
+        frame_angle = LabelFrame(frame_structure, text='__')
+        frame_angle.grid(row=1, column=0, padx=5, pady=5)
+
+        struc_phi_label = customtkinter.CTkLabel(
+            master=frame_angle, text="Phi", width=40)
+        struc_phi_label.grid(row=1, column=0, padx=5, pady=5)
+
+        struc_phi_entry = customtkinter.CTkEntry(
+            frame_angle, width=40)
+        struc_phi_entry.grid(row=1, column=1)
+
+        struc_theta_label = customtkinter.CTkLabel(
+            master=frame_angle, text="Theta")
+        struc_theta_label.grid(row=1, column=2, padx=5, pady=5)
+
+        struc_phi_entry = customtkinter.CTkEntry(
+            frame_angle, width=40)
+        struc_phi_entry.grid(row=1, column=3)
+
+        calculate_button = customtkinter.CTkButton(frame_structure, text="Generate Supercell",
+                                                   command=lambda: bck.make_supercell(self))
+        calculate_button.grid(row=0, column=1, padx=5, pady=5)
+
+        frame_options = LabelFrame(frame_structure, text='__')
+        frame_options.grid(row=1, column=1, padx=5, pady=5)
+
+        radios_symmetry_label = customtkinter.CTkLabel(
+            master=frame_options, text="Radius")
+        radios_symmetry_label.grid(row=3, column=0, padx=5, pady=5)
+
+        self.radius_entry = customtkinter.CTkEntry(
+            frame_options, width=40)
+        self.radius_entry.grid(row=3, column=1)
+        print('DEBUG: this is the cif file read', self.cif_read)
+        # table(top, cif_data(object_of_class.cif_read))
+
+        self.images = Images()
+        self.images.initialize([self.cif_read])
+        self.gui = GUI(self.images)
+        self.gui.run()
 
     def menus(self):
         self.mainmenu = tk.Menu(self)
