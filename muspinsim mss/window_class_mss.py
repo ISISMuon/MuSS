@@ -68,7 +68,7 @@ class windows(tk.Tk):
         self.iconbitmap(
             r'C:\Users\BNW71814\Desktop\stfc-muspinsim\muspinsim mss\mss3.ico')
 
-        self.geometry("1000x740")
+        self.geometry("1000x800")
         self.minsize(200, 200)
         # ------------------------------------------------------------------------------------------------------
         #                           Queing (in case is necessary)
@@ -185,15 +185,12 @@ class windows(tk.Tk):
         self.time_entry3.grid(row=0, column=2, padx=5, pady=5)
         self.time_entry3.insert('end', 100)
 
-        self.cif_frame = LabelFrame(self.frame_essentials)
-        self.cif_frame.grid(row=3, column=1, padx=5, pady=5)
-        # self.cif_check = customtkinter.CTkCheckBox(
         self.cif_check = customtkinter.CTkLabel(
-            self.cif_frame, text="Cif File")
-        self.cif_check.grid(row=0, column=1, padx=5, pady=5)
+            self.frame_essentials, text="Cif File")
+        self.cif_check.grid(row=3, column=0, padx=5, pady=5)
         self.cif_btn = customtkinter.CTkButton(
-            self.cif_frame, text="Load", command=lambda: self.frame_structure(), width=40)
-        self.cif_btn.grid(row=0, column=2, padx=5, pady=5)
+            self.frame_essentials, text="Load", command=lambda: self.frame_structure(), width=40)
+        self.cif_btn.grid(row=3, column=1, padx=5, pady=5)
 
     def frame_plot(self):
         self.frame_plot = LabelFrame(self, text="Plot", width=900, height=900)
@@ -232,13 +229,38 @@ class windows(tk.Tk):
             self.field_frame, width=15, height=3, bd=0,)
         self.zeeman_value.grid(row=0, column=2, padx=5, pady=5)
 
-        self.dipolar_label = customtkinter.CTkLabel(
-            self.field_frame, text="dipolar")
-        self.dipolar_label.grid(row=1, column=0, padx=5, pady=5)
+        def my_hopes(a):
+            dipolar_frame = LabelFrame(a, text="dipolar")
+            dipolar_frame.grid(row=6, column=0, sticky="nsew", columnspan=3)
 
-        self.dipolar_value = tk.Text(
-            self.field_frame, width=15, height=3, bd=0,)
-        self.dipolar_value.grid(row=1, column=2, padx=5, pady=5)
+            canvas = tk.Canvas(dipolar_frame, width=100, height=80)
+            canvas.grid(row=0, column=0, sticky="nsew")
+
+            # Create a vertical scrollbar linked to the canvas
+            scrollbar = tk.Scrollbar(
+                dipolar_frame, orient="vertical", command=canvas.yview)
+            scrollbar.grid(row=0, column=1, sticky="ns")
+
+            def on_frame_configure(event):
+                canvas.configure(scrollregion=canvas.bbox("all"))
+
+            # Create a frame to hold the entries and add it to the canvas
+            framess = tk.Frame(canvas)
+            canvas.create_window((0, 0), window=framess, anchor="nw")
+            framess.bind("<Configure>", on_frame_configure)
+
+            # Configure scrollbar and canvas to work together
+            canvas.configure(yscrollcommand=scrollbar.set)
+
+            # Make the container expand with window resize, but keep canvas size fixed
+            a.grid_rowconfigure(0, weight=1)
+            a.grid_columnconfigure(0, weight=1)
+            dipolar_frame.grid_rowconfigure(0, weight=1)
+            dipolar_frame.grid_columnconfigure(0, weight=1)
+
+            return framess
+
+        self.framess = my_hopes(self.field_frame)
 
         self.field_label = customtkinter.CTkLabel(
             self.field_frame, text="field")
@@ -246,8 +268,6 @@ class windows(tk.Tk):
 
         self.field_value = tk.Text(self.field_frame, width=15, height=3, bd=0,)
         self.field_value.grid(row=4, column=2, padx=5, pady=5)
-        # self.field_value.get
-        # self.field_value.get
 
         self.hyperfine_label = customtkinter.CTkLabel(
             self.field_frame, text="hyperfine")
@@ -275,10 +295,10 @@ class windows(tk.Tk):
 
         self.celio_label = customtkinter.CTkLabel(
             self.field_frame, text="celio")
-        self.celio_label.grid(row=6, column=0, padx=5, pady=5)
+        self.celio_label.grid(row=1, column=0, padx=5, pady=5)
 
         self.celio_value = tk.Text(self.field_frame, width=15, height=3, bd=0,)
-        self.celio_value.grid(row=6, column=2, padx=5, pady=5)
+        self.celio_value.grid(row=1, column=2, padx=5, pady=5)
 
     def frame_socketa(self):
         self.socketa = LabelFrame(self, text="Socket")
@@ -538,7 +558,7 @@ class windows(tk.Tk):
     def frame_fit_selection(self):
         self.fit_selection_frame = LabelFrame(
             self, text="Fit Selection", width=900, height=100)
-        self.fit_selection_frame.place(x=20, y=720)
+        self.fit_selection_frame.place(x=250, y=720)
 
         self.field_check = customtkinter.CTkCheckBox(
             self.fit_selection_frame, text="Field")
@@ -551,7 +571,7 @@ class windows(tk.Tk):
         self.intrisic_check = customtkinter.CTkCheckBox(
             self.fit_selection_frame, text="Intrinsic")
         self.intrisic_check.grid(row=0, column=2, padx=5, pady=5)
-        pass
+
     # ---------------------------------------------------------------------------------------------------------------------
     #                                       Other Functions
     # --------------------------------------------------------------------------------------------------------------------
@@ -613,6 +633,7 @@ class windows(tk.Tk):
     def interpolation(self, _):  # draft
         bck.process_time_wimda(self)  # this should give us an array of times
         pass
+
     # ---------------------------------------------------------------------------------------------------------------------
     #                                       Drafts
     # --------------------------------------------------------------------------------------------------------------------
@@ -625,9 +646,44 @@ class windows(tk.Tk):
         # print(self.pvar_hist)
 
 
+def create_scrollable_frame(root):
+    # Create a canvas widget
+    canvas = tk.Canvas(root)
+
+    # Create a frame widget inside the canvas
+    frame = tk.Frame(canvas)
+
+    # Create vertical and horizontal scrollbars
+    vsb = tk.Scrollbar(root, orient="vertical", command=canvas.yview)
+    hsb = tk.Scrollbar(root, orient="horizontal", command=canvas.xview)
+
+    # Configure the canvas to use the scrollbars
+    canvas.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+
+    # Pack the scrollbars and the canvas
+    vsb.pack(side="right", fill="y")
+    hsb.pack(side="bottom", fill="x")
+    canvas.pack(side="left", fill="both", expand=True)
+
+    # Create a window in the canvas to hold the frame
+    canvas_frame = canvas.create_window((0, 0), window=frame, anchor="nw")
+
+    # Update the scroll region whenever the frame size changes
+    def on_frame_configure(event):
+        canvas.configure(scrollregion=canvas.bbox("all"))
+
+    # Update the frame width to match the canvas width
+    def on_canvas_configure(event):
+        canvas.itemconfig(canvas_frame, width=event.width)
+
+    frame.bind("<Configure>", on_frame_configure)
+    canvas.bind("<Configure>", on_canvas_configure)
+
+    return frame
 # -------------------------------------------------
 #           Run te tkinter window
 # ------------------------------------------------
+
 
 '''
 if __name__ == "__main__":

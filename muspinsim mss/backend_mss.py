@@ -20,8 +20,7 @@ import customtkinter
 from tkinter import ttk
 import ase
 from ase import atom, atoms, visualize, build
-# from soprano.collection import AtomsCollection
-import soprano.properties.atomsproperty
+
 import copy
 import ase
 import ase.data
@@ -62,16 +61,15 @@ def data_processing_xy(object_of_class, terminator='Hello'):
     if object_of_class.fitting_variables == ' ':
         dt_processing_extract_var(object_of_class)
 
-    # print(object_of_class.fitting_variables)
     data_str_terminator = ' ' + xy + ' value ' + \
         object_of_class.fitting_variables + terminator
-    # print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-    # print(type(object_of_class.first_param))
+
     object_of_class.hist.append(data_str_terminator)
-    # object_of_class.result_dic[dt_processing_extract_var(object_of_class)] = xy
+
     object_of_class.result_dic[object_of_class.fitting_variables] = xy
     print('***********************result dic when we are in the send processing',
-          object_of_class.result_dic.keys())  # debug
+          object_of_class.result_dic.keys())
+    # debug
     return data_str_terminator
 
 
@@ -240,7 +238,7 @@ muon_positio = np.zeros((3,))
 
 
 def selecting__nn_indices(object_of_class):
-
+    ''' '''
     selected = []
     for i_images_selected_atom in range(0, len(object_of_class.images.selected)):
         if object_of_class.images.selected[i_images_selected_atom]:
@@ -329,7 +327,7 @@ def add_muon_to_aseatoms(object_of_class, theta: float = 180, phi: float = 0, nn
         print(object_of_class.muon_position)
     finally:
         print('Could not find muon position')
-    print(muon)
+
     ase_atoms.append(muon)
     object_of_class.cif_read = ase_atoms
     return ase_atoms
@@ -350,9 +348,9 @@ def make_supercell(object_of_class, unperturbed_atoms: atoms = None, unperturbed
     # the changes are not stressing the orginal atom
     # atoms_mu = copy.deepcopy(atoms_mu)
     atoms_mu = object_of_class.cif_read
-    print(atoms_mu)
+    # print(atoms_mu)
 
-    print('this is the atom we out in and deep copy', atoms_mu)
+    # print('this is the atom we out in and deep copy', atoms_mu)
     if unperturbed_atoms is None:
         # we need to confirm that atom[-1] is the muon by convetion it is but...
         unperturbed_atoms = copy.deepcopy(atoms_mu[:-1])
@@ -367,7 +365,7 @@ def make_supercell(object_of_class, unperturbed_atoms: atoms = None, unperturbed
                                              unperturbed_atoms.cell.lengths()[0], wrap=False)
 
     muon = copy.deepcopy(atoms_mu[-1])
-    print('just the muon', muon)
+    # print('just the muon', muon)
     output_list = []
     if small_output:
         output_list = [[this_atom.symbol, this_atom.position]
@@ -398,36 +396,25 @@ def make_supercell(object_of_class, unperturbed_atoms: atoms = None, unperturbed
                 unperturbed_atoms.translate(-1 * translation_vector)
 
     atoms_mu.append(muon)
-    maria = atoms_mu
-    print('just before', atoms_mu)
     if small_output:
         return output_list
-        print(atoms_mu, 'inside if')
     else:
         # what exactly is happeining here
-        print('inside else')
+        # print('inside else')
         old_cell = atoms_mu.get_cell()
         atoms_mu.set_cell(
             old_cell*(2*unperturbed_supercell + 1), scale_atoms=False)
         atoms_mu.translate(unperturbed_supercell * old_cell[0])
-        print('a', atoms_mu)
         atoms_mu.translate(unperturbed_supercell * old_cell[1])
-        print('b', atoms_mu)
         atoms_mu.translate(unperturbed_supercell * old_cell[2])
-        print('c', atoms_mu)
-        print('final atoms', atoms_mu)
         view(atoms_mu)
-        rebeca = atoms_mu
-
-        if rebeca != maria:
-            print('not equal')
         object_of_class.cif_read = atoms_mu
         print(object_of_class.cif_read[-1])
         print(object_of_class.cif_read)
         object_of_class.cif_read = masking(
             atoms_mu, object_of_class.radius_entry.get())
         selected_table(object_of_class)
-        return atoms_mu
+        # return atoms_mu??
 
     """
     Get the muon position by selecting two atoms to be the nearest neighbors (nn).
@@ -445,23 +432,6 @@ def masking(atoms_mu: atoms, radius: float):
     print(i_atoms)
     view(i_atoms)
     return i_atoms
-
-
-def strength(muon_position, element, iso=None):
-    # interaction with muon
-    # here
-    # ideally this is done in muspinsim
-    if element == 'x':
-        element = 'mu'
-    magnetic_moment = gyromagnetic_ratio(element, iso)*spin(element, iso)
-    # object_of_class.muon_position
-    magnetic_m = magnetic_moment(element)
-    relative_position = muon_position
-
-    results = 'x'
-    print((np.linalg.norm(relative_position))**2)
-
-    return results
 
 
 def create_table(object_of_class, iso=None):
@@ -504,12 +474,12 @@ def selected_table(object_of_class):
         selected_item = tree.selection()[0]
         item_details = tree.item(selected_item)
         item_values = item_details['values']
-        # strv = str(item_values[2])
-        item_values[2] = item_values[2].replace(']', '')
-        item_values[2] = item_values[2].replace('[', '')
-        ' '.join(item_values[2].split())
-        print(item_values[2])
-        object_of_class.dipolar_value.insert('end', item_values[2])
+
+        item_values[2] = item_values[2].replace(
+            ']', '').replace('[', '').replace(
+            '    ', ' ').replace('   ', ' ').replace('  ', ' ')
+
+        add_entry(object_of_class.framess, item_values[2])
         print(f"Selected ...... Item: {item_values}")
 
     tree.bind('<<TreeviewSelect>>', on_item_selected)
@@ -517,21 +487,24 @@ def selected_table(object_of_class):
     tree.pack(fill='both', expand=True)
 
 
+def add_entry(root, text):
+    str_1 = tk.StringVar()
+    str_1.set(text)
+    add_button = tk.Entry(root, textvariable=str_1)
+    add_button.pack(pady=5)
+
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     Update data
 # --------------------------------------------------------------------------------------------------------------------
 
 
 def update_parameters(object_of_class):
-    # value = object_of_class.field_value.get(1.0, "end-1c")
     object_of_class.first_param = object_of_class.field_value.get(
         1.0, "end-1c")
-    # print('here is the value', value)
-    # if value != '':
+
     if object_of_class.first_param != '':
         object_of_class.parameters._keywords["field"] = KWField(
             object_of_class.first_param)
-        # print(type(object_of_class.first_param))
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -702,6 +675,14 @@ def read_variables(object_of_class):
     # we only make the rest appear if they are different from default
     # average_axes
 
+    # -----------------------------------
+    #               Couplings              #
+    # ------------------------------------
+
+    # -----------------------------------
+    #                   Dipolar          #
+    # Recognize how manny couplings we ha
+
 
 def data_processing_xy_terminator(object_of_class, terminator='Hello'):
     # scientific notation is removed
@@ -773,3 +754,20 @@ def transform_reading(object_of_class):
     params._keywords["spin"] = KWSpins[object_of_class.spins_entry.get()]
     params._keywords["Time"] = KWTime(
         f"range({object_of_class.time_entry1.get()},{object_of_class.time_entry2.get()},{object_of_class.time_entry3.get()})")
+
+
+def strength(muon_position, element, iso=None):
+    # interaction with muon
+    # here
+    # ideally this is done in muspinsim
+    if element == 'x':
+        element = 'mu'
+    magnetic_moment = gyromagnetic_ratio(element, iso)*spin(element, iso)
+    # object_of_class.muon_position
+    magnetic_m = magnetic_moment(element)
+    relative_position = muon_position
+
+    results = 'x'
+    print((np.linalg.norm(relative_position))**2)
+
+    return results
