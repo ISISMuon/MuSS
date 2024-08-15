@@ -13,7 +13,7 @@ code structure:
     *In the init function the tkinter window geometry is described and the functions that defined the essential frames are called.
 
     Additional Scripts:
-        + muspinsim: 
+        + muspinsim:
             as this GUI is made for MSS it is all based in MSS code and its only a chanel to make the usage easier
         + tkinter_muspinsim01backend as bck:
             which is where other functions are defined describing the calculations, data processing, file reading, interpretation of data
@@ -41,9 +41,10 @@ from ase.gui.gui import GUI
 #       Homemade scripts
 # -------------------------------------
 
-from input_class import Create_Input
+# from input_class import Create_Input
 import backend_mss as bck
 import socket_comunication_mss as sck
+import read_entries as r_e
 
 
 class windows(tk.Tk):
@@ -65,8 +66,8 @@ class windows(tk.Tk):
         # -------------------------------------------------------------------------------------------------------
         self.title("Muspinsim")
         # try and exception
-        self.iconbitmap(
-            r'C:\Users\BNW71814\Desktop\stfc-muspinsim\muspinsim mss\mss3.ico')
+        # self.iconbitmap(
+        #    r'C:\Users\BNW71814\Desktop\stfc-muspinsim\muspinsim mss\mss3.ico')
 
         self.geometry("1000x800")
         self.minsize(200, 200)
@@ -80,8 +81,13 @@ class windows(tk.Tk):
         # ------------------------------------------------------------------------------------------------------
         #                                           Variables Initiated
         # ------------------------------------------------------------------------------------------------------
-        #
-        #
+        self.dic_tkEntries_atomisticParam = []
+        self.kEntries = [None]*22  # Reffering to all tkentries created
+        self.labelstring = ['name', 'spins', 'time', 'field', 'intrinsic_field', 'polarization', 'average_axis', 'orientation', 'temperature',
+                            'zeeman', 'dipolar', 'quadrupolar', 'hyperfine', 'x_axis', 'y_axis', 'celio', 'dissipation', 'fitting_variales',
+                            'fitting_data', 'fitting_method', 'fitting_tolerance', 'experiments']
+        self.inter = {0: 'name'}  # ??????????
+
         # represents all of te variables changes resgiteres by the muspinsim starting [0]=initials values
         # the history of varibles on each run stored and ready to be sent
         # the history of time and resultd on each run stored and ready to be sent
@@ -96,7 +102,7 @@ class windows(tk.Tk):
         self.fit_state = None
         # This is the array with wimda time to do  the interpolation in muspinsim
         self.wimda_time = None
-
+        # .count_clicks = 0
         #
 
         # ------------------------------------------------------------------------------------------------------
@@ -114,8 +120,8 @@ class windows(tk.Tk):
         self.Input_path.set(self.username+'\Documents')
 
         path = bck.get_path(self)
-        self.inn = Create_Input(
-            path, "name", "mu")
+        # self.inn = Create_Input(
+        #    path, "name", "mu")
 
         # ----------------------------------------------------------------------------------------------------------
         #                                   Calling the Frames
@@ -143,7 +149,10 @@ class windows(tk.Tk):
     def frame_essential(self):
         self.frame_essentials = LabelFrame(self, text="Essential", width=100)
         self.frame_essentials.place(x=20, y=20)
-
+        # -contain errors
+        self.buffer_entry = customtkinter.CTkEntry(
+            self.frame_essentials)
+        #
         self.name_label = customtkinter.CTkLabel(
             self.frame_essentials, text="Name")
         self.name_label.grid(row=0, column=0, padx=5, pady=5)
@@ -153,6 +162,7 @@ class windows(tk.Tk):
             self.frame_essentials, textvariable=self.name_text)
 
         self.name_entry.grid(row=0, column=1)
+        self.kEntries[0] = self.name_entry
 
         self.spins_label = customtkinter.CTkLabel(
             self.frame_essentials, text="spins")
@@ -160,6 +170,7 @@ class windows(tk.Tk):
         self.spins_entry = customtkinter.CTkEntry(self.frame_essentials)
         self.spins_entry.insert('end', 'mu e')
         self.spins_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.kEntries[1] = self.spins_entry
 
         self.time_label = customtkinter.CTkLabel(
             self.frame_essentials, text="Time")
@@ -184,6 +195,8 @@ class windows(tk.Tk):
             self.time_entry_frame, width=40)
         self.time_entry3.grid(row=0, column=2, padx=5, pady=5)
         self.time_entry3.insert('end', 100)
+        self.kEntries[2] = [self.time_entry1,
+                            self.time_entry2, self.time_entry3]
 
         self.cif_check = customtkinter.CTkLabel(
             self.frame_essentials, text="Cif File")
@@ -197,7 +210,8 @@ class windows(tk.Tk):
         self.frame_plot.place(x=250, y=150)
 
         self.runBtn = customtkinter.CTkButton(
-            self, text='Run', command=self.run_thread_btn, width=64, height=30)
+            self, text='Run', command=self.read_run, width=64, height=30)
+        # self, text='Run', command=self.run_thread_btn, width=64, height=30)
         self.runBtn.place(x=670, y=175)
 
         self.selecBtn = customtkinter.CTkButton(
@@ -228,8 +242,9 @@ class windows(tk.Tk):
         self.zeeman_value = tk.Text(
             self.field_frame, width=15, height=3, bd=0,)
         self.zeeman_value.grid(row=0, column=2, padx=5, pady=5)
+        self.kEntries[9] = self.zeeman_value
 
-        def my_hopes(a):
+        def dipolar_frame(a):
             dipolar_frame = LabelFrame(a, text="dipolar")
             dipolar_frame.grid(row=6, column=0, sticky="nsew", columnspan=3)
 
@@ -260,7 +275,7 @@ class windows(tk.Tk):
 
             return framess
 
-        self.framess = my_hopes(self.field_frame)
+        self.framess = dipolar_frame(self.field_frame)
 
         self.field_label = customtkinter.CTkLabel(
             self.field_frame, text="field")
@@ -268,6 +283,7 @@ class windows(tk.Tk):
 
         self.field_value = tk.Text(self.field_frame, width=15, height=3, bd=0,)
         self.field_value.grid(row=4, column=2, padx=5, pady=5)
+        self.kEntries[3] = self.field_value
 
         self.hyperfine_label = customtkinter.CTkLabel(
             self.field_frame, text="hyperfine")
@@ -276,6 +292,7 @@ class windows(tk.Tk):
         self.hyperfine_value = tk.Text(
             self.field_frame, width=15, height=3, bd=0,)
         self.hyperfine_value.grid(row=2, column=2, padx=5, pady=5)
+        self.kEntries[12] = self.hyperfine_value
 
         self.quadrupolar_label = customtkinter.CTkLabel(
             self.field_frame, text="quadrupolar")
@@ -307,7 +324,7 @@ class windows(tk.Tk):
         self.host_label = customtkinter.CTkLabel(self.socketa, text="Host")
         self.host_label.grid(row=1, column=0, padx=5, pady=5)
         self.host_entry = customtkinter.CTkEntry(self.socketa, width=100)
-        self.host_entry.insert('end', '130.246.58.40')
+        self.host_entry.insert('end', 'localhost')
         self.host_entry.grid(row=1, column=1, padx=5, pady=5)
 
         self.port_label = customtkinter.CTkLabel(self.socketa, text="Port")
@@ -398,6 +415,9 @@ class windows(tk.Tk):
             label="Save As", command=lambda: bck.save_as(self))
         self.file_menu.add_command(
             label="Load", command=lambda: bck.load_file(self))
+
+        self.file_menu.add_command(
+            label="Load and Run", command=lambda: self.load_run())
         # self.mainmenu.add_command(
         #    label="Fitting Data", command=lambda: self.frame_data())
         self.more_menu = tk.Menu(self.mainmenu, tearoff=0)
@@ -589,6 +609,20 @@ class windows(tk.Tk):
                          args=(self,), daemon=True)
         thread2.start()
 
+    def load_run(self):
+        self.loading_bar()
+        bck.load_file(self)
+        thread2 = Thread(target=self.run_btn,
+                         args=(self,), daemon=True)
+        thread2.start()
+
+    def read_run(self):
+        r_e.iniciate_params01(self)
+        thread2 = Thread(target=self.run_btn,
+                         args=(self,), daemon=True)
+        thread2.start()
+        pass
+
     def run_btn(self, _):
         '''
         Where the calculations happen
@@ -604,7 +638,7 @@ class windows(tk.Tk):
         else:
             bck.graph_update(self)
         print('inside stopping thread')
-        self.bar.destroy()
+        # self.bar.destroy()
         print('process bar shoulfd have stopped')
 
     def loading_bar(self):
@@ -634,6 +668,31 @@ class windows(tk.Tk):
         bck.process_time_wimda(self)  # this should give us an array of times
         pass
 
+    def store_tkentries(self):
+        self.kEntries[0] = self.name_entry
+        self.kEntries[1] = self.spins_entry
+        self.kEntries[2] = [self.time_entry1,
+                            self.time_entry2, self.time_entry3]
+        self.kEntries[3] = self.field_value
+        self.kEntries[4] = self.intrisic_field_value
+        self.kEntries[5] = self.polarization_value
+        self.kEntries[6] = self.buffer_entry
+        self.kEntries[7] = self.orientation_value
+        self.kEntries[8] = self.buffer_entry
+        self.kEntries[9] = self.zeeman_value
+        self.kEntries[10] = self.buffer_entry
+        self.kEntries[11] = self.quadrupolar_value
+        self.kEntries[12] = self.hyperfine_value
+        self.kEntries[13] = self.x_axis_value
+        self.kEntries[14] = self.y_axis_value
+        self.kEntries[15] = self.celio_value
+        self.kEntries[16] = self.buffer_entry
+        self.kEntries[17] = self.fitting_variables_values
+        self.kEntries[18] = self.buffer_entry
+        self.kEntries[19] = self.fitting_method
+        self.kEntries[20] = self.fitting_tolerance_value
+        self.kEntries[21] = self.experiments
+        self.labels = ['name', 'spins', 'time', '']
     # ---------------------------------------------------------------------------------------------------------------------
     #                                       Drafts
     # --------------------------------------------------------------------------------------------------------------------

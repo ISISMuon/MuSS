@@ -146,4 +146,3 @@ inn = Create_Input(
 
 
 inn.name = 'francezinha'
-inn()

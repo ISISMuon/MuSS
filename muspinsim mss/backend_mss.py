@@ -229,6 +229,20 @@ def graph_update(object_of_class):
     # object_of_class.x = np.linspace(timefrom, timeto, timedivision)
     object_of_class.x = object_of_class.parameters.evaluate()['time'].value
 
+
+def parameters_initialize(object_of_class):
+    object_of_class.parameters = MuSpinInput()
+
+    # call the
+    pass
+
+
+def read_gui_vaiables(input_object):
+    # ___________ Essential frame
+    if type(input_object) == MuSpinInput:
+        print('banana')
+        # here everything is read and transformed t
+    pass
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     CIF FILE
 # --------------------------------------------------------------------------------------------------------------------
@@ -449,10 +463,13 @@ def create_table(object_of_class, iso=None):
 
         magnetic_moment = gyromagnetic_ratio(
             element, iso)*spin(element, iso)
+
         if np.linalg.norm(relative_postision) == 0:
             strength = 0
-        strength = magnetic_moment/np.linalg.norm(relative_postision)**3
-        info = (atom.symbol, strength, relative_postision)
+        strength = abs(magnetic_moment/np.linalg.norm(relative_postision)**3)
+        distance = abs(np.linalg.norm(relative_postision))
+        info = (atom.symbol, strength, relative_postision,
+                spin(element, iso), distance)
         object_of_class.structure_data.append(info)
 
 
@@ -460,37 +477,78 @@ def selected_table(object_of_class):
     create_table(object_of_class, iso=None)
     top = customtkinter.CTkToplevel(object_of_class)
     top.title("Custom TopLevel Window")
-    columns = ("#1", "#2", "#3")
+    columns = ("#1", "#2", "#3", "#4", '#5')
     tree = ttk.Treeview(top, columns=columns, show='headings')
     # object_of_class.tree=ttk.Treeview(root,columns)
     tree.heading("#1", text="Symmbols")
     tree.heading("#2", text="Strentgh")
     tree.heading("#3", text="Position")
+    tree.heading("#4", text="Spin")
+    tree.heading("#5", text="Distance")
 
     for item in object_of_class.structure_data:
         tree.insert('', 'end', values=item)
 
+    object_of_class.count_clicks = 0
+    object_of_class.selec_inter_elements = []
+    dipolar_list = []
+    # mudamos o spin pra zero
+
     def on_item_selected(event):
         selected_item = tree.selection()[0]
         item_details = tree.item(selected_item)
+        # print('item details', item_details)
         item_values = item_details['values']
+        # print('item values', item_values)
+        print('___________________', type(object_of_class.structure_data),
+              object_of_class.structure_data[0], type(object_of_class.structure_data[0]), type(object_of_class.structure_data[0][2]))
 
         item_values[2] = item_values[2].replace(
             ']', '').replace('[', '').replace(
             '    ', ' ').replace('   ', ' ').replace('  ', ' ')
 
-        add_entry(object_of_class.framess, item_values[2])
+        for i in range(len(object_of_class.structure_data)):
+            maria = str(object_of_class.structure_data[i][2])
+            maria = maria.replace(
+                ']', '').replace('[', '').replace(
+                '    ', ' ').replace('   ', ' ').replace('  ', ' ')
+            if item_values[2] == maria:
+                # object_of_class.selec_inter_elements.append(i)
+                dipolar_list.append(i)
+
+        add_entry(object_of_class,
+                  item_values[2], object_of_class.count_clicks, dipolar_list)
+
         print(f"Selected ...... Item: {item_values}")
+        object_of_class.count_clicks += 1
 
     tree.bind('<<TreeviewSelect>>', on_item_selected)
     # Pack the Treeview widget
     tree.pack(fill='both', expand=True)
 
 
-def add_entry(root, text):
+def add_entry(object_of_class, text, count_clicks, dipolar_list):
+    # def add_entry(object_of_class):
+    # the dipolar case is created
+    # count_clicks = object_of_class.selec_inter_elements
+    if count_clicks == 0:
+        object_of_class.spins_entry.delete(0, 'end')
+        object_of_class.spins_entry.insert(0, 'mu ')
+
+    # index = object_of_class.selec_inter_elements[-1]
+    index = dipolar_list[-1]
+    element_symbol = object_of_class.structure_data[index][0]
+    object_of_class.spins_entry.insert('end', element_symbol+' ')
+    spin_entry_position = 2+count_clicks
+    label = 'dipolar_1_'+str(spin_entry_position)
+
+    # keep tarct on how many has been clicked
     str_1 = tk.StringVar()
     str_1.set(text)
-    add_button = tk.Entry(root, textvariable=str_1)
+    add_label = tk.Label(object_of_class.framess, text=label)
+    add_label.pack()
+
+    add_button = tk.Entry(object_of_class.framess, textvariable=str_1)
     add_button.pack(pady=5)
 
 # --------------------------------------------------------------------------------------------------------------------
