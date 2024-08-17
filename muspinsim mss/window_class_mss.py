@@ -64,10 +64,17 @@ class windows(tk.Tk):
         # -------------------------------------------------------------------------------------------------------
         #                           Geometry of the window
         # -------------------------------------------------------------------------------------------------------
-        self.title("Muspinsim")
+        self.title("MuSS")
         # try and exception
         # self.iconbitmap(
         #    r'C:\Users\BNW71814\Desktop\stfc-muspinsim\muspinsim mss\mss3.ico')
+
+        '''dir = os.path.dirname(__file__)
+        print(dir)
+
+        filename = dir+'\logo_mss.ico'
+        print(filename)
+        self.iconbitmap(filename)'''
 
         self.geometry("1000x800")
         self.minsize(200, 200)
@@ -87,7 +94,7 @@ class windows(tk.Tk):
                             'zeeman', 'dipolar', 'quadrupolar', 'hyperfine', 'x_axis', 'y_axis', 'celio', 'dissipation', 'fitting_variales',
                             'fitting_data', 'fitting_method', 'fitting_tolerance', 'experiments']
         self.inter = {0: 'name'}  # ??????????
-
+        self.dipolar_dic = {}
         # represents all of te variables changes resgiteres by the muspinsim starting [0]=initials values
         # the history of varibles on each run stored and ready to be sent
         # the history of time and resultd on each run stored and ready to be sent
@@ -396,6 +403,7 @@ class windows(tk.Tk):
 
         self.radius_entry = customtkinter.CTkEntry(
             frame_options, width=40)
+        self.radius_entry.insert('end', '5')
         self.radius_entry.grid(row=3, column=1)
         print('DEBUG: this is the cif file read', self.cif_read)
         # table(top, cif_data(object_of_class.cif_read))

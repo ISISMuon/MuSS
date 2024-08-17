@@ -25,6 +25,7 @@ import copy
 import ase
 import ase.data
 from ase.visualize import view
+import os
 # --------------------------------------
 #       Homemade scripts
 # -------------------------------------
@@ -134,6 +135,13 @@ def dt_processing_extract_var(object_of_class):
     object_of_class.fitting_variables = fit_var
 
     # return fit_var
+
+
+def clean_whitespace_and_brackets(string: str) -> str:
+    result_string = string.replace(
+        ']', '').replace('[', '').replace(
+        '    ', ' ').replace('   ', ' ').replace('  ', ' ')
+    return result_string
 
 # -------------------------------------------------------------------------------------------------------
 #                                           File Reading
@@ -248,24 +256,24 @@ def read_gui_vaiables(input_object):
 # --------------------------------------------------------------------------------------------------------------------
 
 
-muon_positio = np.zeros((3,))
-
-
 def selecting__nn_indices(object_of_class):
-    ''' '''
+    ''' Recognize the elemets selected in the ase viewer'''
+
+    # create the list where the selected atoms are stored
     selected = []
     for i_images_selected_atom in range(0, len(object_of_class.images.selected)):
         if object_of_class.images.selected[i_images_selected_atom]:
             selected.append(i_images_selected_atom)
-    print(selected)
-    view(add_muon_to_aseatoms(object_of_class, nn_indices=selected))
 
+    # exict the initial view
     object_of_class.gui.exit()
 
-    if selected == []:
-        object_of_class.nn_indices = None
-    else:
-        object_of_class.nn_indices = selected
+    object_of_class.images_with_muon = Images()
+    object_of_class.images_with_muon.initialize(
+        [add_muon_to_aseatoms(object_of_class, nn_indices=selected)])
+    object_of_class.gui_with_muon = GUI(object_of_class.images_with_muon)
+    object_of_class.gui_with_muon.run()
+    # view(add_muon_to_aseatoms(object_of_class, nn_indices=selected))
 
 
 def add_muon_to_aseatoms(object_of_class, theta: float = 180, phi: float = 0, nn_indices: list = None,
@@ -289,10 +297,9 @@ def add_muon_to_aseatoms(object_of_class, theta: float = 180, phi: float = 0, nn
     :return: ase_atoms with the muon
     """
 
-    # check either muon_position xor nn_indices is None
+    # check either muon_position nor nn_indices is None
     assert (muon_position is None) != (nn_indices is None)
 
-    # ase_atoms = copy.deepcopy(ase_atoms)
     ase_atoms = copy.deepcopy(object_of_class.cif_read)
     # three possibilities:
     # 1) >2 nn_indices -> just find average, ignore angles
@@ -325,23 +332,18 @@ def add_muon_to_aseatoms(object_of_class, theta: float = 180, phi: float = 0, nn
             if plane_atom_position is None:
                 plane_atom_position = ase_atoms[plane_atom_index].position
             # plane_atom_position_c = coord(plane_atom_position[0], plane_atom_position[1], plane_atom_position[2])
-
             # muon_position = get_bent_muon_position(nn_position_1=nn_position_1, nn_position_2=nn_position_2,plane_position=plane_atom_position_c, theta=theta, phi=phi,midpoint=midpoint)
-            # print()
+
             muon_position = muon_position.tonumpyarray()
-            print(object_of_class.muon_position)
+
         else:
             print('Error with the muon position parameters.')
             assert False
-    # object_of_class.muon_position = muon_position.tonumpyarray()
-    # now add the muon to the ASE atoms
-    muon = atom.Atom('X', position=muon_position)
-    try:
-        object_of_class.muon_position = muon_position
-        print(object_of_class.muon_position)
-    finally:
-        print('Could not find muon position')
 
+    # add the muon to the ASE atoms
+    muon = atom.Atom('X', position=muon_position)
+
+    # add the muon to the ASE atoms
     ase_atoms.append(muon)
     object_of_class.cif_read = ase_atoms
     return ase_atoms
@@ -358,28 +360,21 @@ def make_supercell(object_of_class, unperturbed_atoms: atoms = None, unperturbed
              otherwise returns a list of [atom type, position]
     """
 
-    # make the supercell structure
-    # the changes are not stressing the orginal atom
-    # atoms_mu = copy.deepcopy(atoms_mu)
     atoms_mu = object_of_class.cif_read
-    # print(atoms_mu)
 
-    # print('this is the atom we out in and deep copy', atoms_mu)
     if unperturbed_atoms is None:
         # we need to confirm that atom[-1] is the muon by convetion it is but...
         unperturbed_atoms = copy.deepcopy(atoms_mu[:-1])
-        print('the item minus1', atoms_mu[:-1])
-        # view(atoms_mu)
     else:
         unperturbed_atoms = copy.deepcopy(unperturbed_atoms)
-    # if atoms_mu is already a supercell, then make unperturbed_atoms a supercell of the same size
 
+    # if atoms_mu is already a supercell, then make unperturbed_atoms a supercell of the same size
     unperturbed_atoms = build.make_supercell(unperturbed_atoms, np.diag([1, 1, 1]) *
                                              atoms_mu.cell.lengths()[0] /
                                              unperturbed_atoms.cell.lengths()[0], wrap=False)
 
     muon = copy.deepcopy(atoms_mu[-1])
-    # print('just the muon', muon)
+
     output_list = []
     if small_output:
         output_list = [[this_atom.symbol, this_atom.position]
@@ -413,34 +408,30 @@ def make_supercell(object_of_class, unperturbed_atoms: atoms = None, unperturbed
     if small_output:
         return output_list
     else:
-        # what exactly is happeining here
-        # print('inside else')
+
         old_cell = atoms_mu.get_cell()
         atoms_mu.set_cell(
             old_cell*(2*unperturbed_supercell + 1), scale_atoms=False)
         atoms_mu.translate(unperturbed_supercell * old_cell[0])
         atoms_mu.translate(unperturbed_supercell * old_cell[1])
         atoms_mu.translate(unperturbed_supercell * old_cell[2])
-        view(atoms_mu)
+
+        object_of_class.gui_with_muon.exit()
+
         object_of_class.cif_read = atoms_mu
-        print(object_of_class.cif_read[-1])
-        print(object_of_class.cif_read)
         object_of_class.cif_read = masking(
             atoms_mu, object_of_class.radius_entry.get())
-        selected_table(object_of_class)
-        # return atoms_mu??
+        generate_cell_components_window(object_of_class)
 
-    """
-    Get the muon position by selecting two atoms to be the nearest neighbors (nn).
-    :param atoms: ASE atoms of the structure
-    :return: (muon position ndarray, list of the index of the atoms the muon is in between)
-    """
+        object_of_class.images_supercell = Images()
+        object_of_class.images_supercell.initialize([atoms_mu])
+        object_of_class.gui_supercell = GUI(object_of_class.images_supercell)
+        object_of_class.gui_supercell.run()
 
 
 def masking(atoms_mu: atoms, radius: float):
     center = atoms_mu[-1].position
-    if radius == '':
-        radius = 0.5
+
     mask = np.linalg.norm(atoms_mu.positions - center, axis=1) < int(radius)
     i_atoms = atoms_mu[mask]
     print(i_atoms)
@@ -448,7 +439,7 @@ def masking(atoms_mu: atoms, radius: float):
     return i_atoms
 
 
-def create_table(object_of_class, iso=None):
+def update_strcuture_data(object_of_class, iso=None):
     object_of_class.structure_data = []
     mu_position = object_of_class.cif_read[-1].position
     print('muon positon', mu_position)
@@ -473,83 +464,106 @@ def create_table(object_of_class, iso=None):
         object_of_class.structure_data.append(info)
 
 
-def selected_table(object_of_class):
-    create_table(object_of_class, iso=None)
+def generate_cell_components_window(object_of_class):
+    ''' Inserts the structure_data to the table
+    '''
+    update_strcuture_data(object_of_class, iso=None)
+
+    # create a window to contain the table
     top = customtkinter.CTkToplevel(object_of_class)
-    top.title("Custom TopLevel Window")
+    dir = os.path.dirname(__file__)
+    filename = dir+'\logo_mm.ico'
+    # top.iconbitmap(filename)
+    top.after(200, lambda: top.iconbitmap(filename))
+    top.title("Characterization of muon stopping site")
+
+    # define elements of the table
     columns = ("#1", "#2", "#3", "#4", '#5')
     tree = ttk.Treeview(top, columns=columns, show='headings')
-    # object_of_class.tree=ttk.Treeview(root,columns)
+
+    # define headings
     tree.heading("#1", text="Symmbols")
     tree.heading("#2", text="Strentgh")
     tree.heading("#3", text="Position")
     tree.heading("#4", text="Spin")
     tree.heading("#5", text="Distance")
 
+    # insert elemets in the structure_data to the table
     for item in object_of_class.structure_data:
         tree.insert('', 'end', values=item)
 
-    object_of_class.count_clicks = 0
-    object_of_class.selec_inter_elements = []
-    dipolar_list = []
-    # mudamos o spin pra zero
+    # Define variables
+    object_of_class.count_dinteractions = 0
+    index_in_structure_data_selected_components = []
 
-    def on_item_selected(event):
-        selected_item = tree.selection()[0]
-        item_details = tree.item(selected_item)
-        # print('item details', item_details)
+    def handle_item_selection(event):
+        ''' Binded to the Treeview
+            Acts when an element of the table of 'Characterization of muon stopping site'
+            is selected and transfer the information to dipolar interactions frame
+        '''
+
+        # obtain the selected item
+        item_details = tree.item(tree.selection()[0])
         item_values = item_details['values']
-        # print('item values', item_values)
-        print('___________________', type(object_of_class.structure_data),
-              object_of_class.structure_data[0], type(object_of_class.structure_data[0]), type(object_of_class.structure_data[0][2]))
+        dipolar_interaction_string = clean_whitespace_and_brackets(
+            item_values[2])
 
-        item_values[2] = item_values[2].replace(
-            ']', '').replace('[', '').replace(
-            '    ', ' ').replace('   ', ' ').replace('  ', ' ')
-
+        # retrieve and store the index of the selected components
         for i in range(len(object_of_class.structure_data)):
-            maria = str(object_of_class.structure_data[i][2])
-            maria = maria.replace(
-                ']', '').replace('[', '').replace(
-                '    ', ' ').replace('   ', ' ').replace('  ', ' ')
-            if item_values[2] == maria:
-                # object_of_class.selec_inter_elements.append(i)
-                dipolar_list.append(i)
+            maria = clean_whitespace_and_brackets(
+                str(object_of_class.structure_data[i][2]))
+            if dipolar_interaction_string == maria:
+                if i not in index_in_structure_data_selected_components:
+                    index_in_structure_data_selected_components.append(i)
 
-        add_entry(object_of_class,
-                  item_values[2], object_of_class.count_clicks, dipolar_list)
+                    # add the item selected to dipolar frame
+                    update_spin_dipolar_interaction(object_of_class,
+                                                    dipolar_interaction_string, object_of_class.count_dinteractions,
+                                                    index_in_structure_data_selected_components)
 
-        print(f"Selected ...... Item: {item_values}")
-        object_of_class.count_clicks += 1
+        object_of_class.count_dinteractions = len(
+            index_in_structure_data_selected_components)
 
-    tree.bind('<<TreeviewSelect>>', on_item_selected)
+    # bind the clicking of the item in table to adding entry in dipolar frame
+    tree.bind('<<TreeviewSelect>>', handle_item_selection)
+
     # Pack the Treeview widget
     tree.pack(fill='both', expand=True)
 
 
-def add_entry(object_of_class, text, count_clicks, dipolar_list):
-    # def add_entry(object_of_class):
-    # the dipolar case is created
-    # count_clicks = object_of_class.selec_inter_elements
-    if count_clicks == 0:
+def update_spin_dipolar_interaction(object_of_class, str_dipolar_value, indexx, index_in_structure_data_selected_components):
+    ''' add the spin and dipolar interactions into the dipolar frame
+        update object_of_class.dipolar_dic[
+    '''
+    # clean spin entry and assert the first element to be muon
+    if indexx == 0:
         object_of_class.spins_entry.delete(0, 'end')
         object_of_class.spins_entry.insert(0, 'mu ')
-
-    # index = object_of_class.selec_inter_elements[-1]
-    index = dipolar_list[-1]
+        try:
+            object_of_class.gui_supercell.exit()
+        finally:
+            pass
+    # retrieve symbol of selected element
+    index = index_in_structure_data_selected_components[-1]
     element_symbol = object_of_class.structure_data[index][0]
     object_of_class.spins_entry.insert('end', element_symbol+' ')
-    spin_entry_position = 2+count_clicks
+
+    # create label
+    spin_entry_position = 2+indexx
     label = 'dipolar_1_'+str(spin_entry_position)
 
-    # keep tarct on how many has been clicked
+    # Add the label
     str_1 = tk.StringVar()
-    str_1.set(text)
+    str_1.set(str_dipolar_value)
     add_label = tk.Label(object_of_class.framess, text=label)
     add_label.pack()
 
-    add_button = tk.Entry(object_of_class.framess, textvariable=str_1)
-    add_button.pack(pady=5)
+    # add dipolar interaction as entry
+    add_entry = tk.Entry(object_of_class.framess, textvariable=str_1)
+    add_entry.pack(pady=5)
+
+    # store the dipolar interactions selected
+    object_of_class.dipolar_dic[spin_entry_position] = str_dipolar_value
 
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     Update data
@@ -821,7 +835,6 @@ def strength(muon_position, element, iso=None):
     if element == 'x':
         element = 'mu'
     magnetic_moment = gyromagnetic_ratio(element, iso)*spin(element, iso)
-    # object_of_class.muon_position
     magnetic_m = magnetic_moment(element)
     relative_position = muon_position
 

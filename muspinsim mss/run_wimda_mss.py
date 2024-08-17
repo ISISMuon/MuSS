@@ -13,9 +13,19 @@ before the windows being called (thats the only difference).
 
 from window_class_mss import windows
 import socket_comunication_mss as sck
+import os
+import ctypes
 
+myappid = 'mycompany.myproduct.subproduct.version'  # arbitrary string
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 if __name__ == "__main__":
     App = windows()
     sck.server_connection_tread(App)
+    dir = os.path.dirname(__file__)
+    print(dir)
+
+    filename = dir+'\logo_muss_32.ico'
+    App.iconbitmap(filename)
+    # App.deiconify()
     App.mainloop()
