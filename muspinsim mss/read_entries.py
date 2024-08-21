@@ -7,24 +7,13 @@ Summary:
 
 """
 import numpy as np
-from tkinter import filedialog
 import tkinter as tk
 from muspinsim import MuSpinInput, ExperimentRunner
 from muspinsim.input.keyword import *
-from muspinsim.constants import gyromagnetic_ratio, spin
 from tkinter.ttk import Label, LabelFrame
-from ase.gui.images import Images
-from ase.gui.gui import GUI
 
-import customtkinter
-from tkinter import ttk
-import ase
-from ase import atom, atoms, visualize, build
 
-import copy
-import ase
-import ase.data
-from ase.visualize import view
+
 
 
 def iniciate_params(object_of_class):
@@ -80,12 +69,10 @@ def iniciate_params01(object_of_class):
     a muspinInput object is created
     the essential object as name, spin and time are created are created
     '''
-
     object_of_class.parameters = MuSpinInput()
 
     name_entry = KWName(object_of_class.name_entry.get())
     spins_entry = KWSpins(object_of_class.spins_entry.get())
-    # print(f'range({object_of_class.time_entry1.get()}, {object_of_class.time_entry2.get()}, {object_of_class.time_entry3.get()})')
     time_entry = KWTime(
         f'range({object_of_class.time_entry1.get()}, {object_of_class.time_entry2.get()}, {object_of_class.time_entry3.get()})')
 
@@ -95,9 +82,7 @@ def iniciate_params01(object_of_class):
     object_of_class.parameters._keywords['spins'] = spins_entry
     object_of_class.parameters._keywords['time'] = time_entry
 
-    print('here is the thing', object_of_class.field_value.get(1.0, tk.END),
-          type(object_of_class.field_value.get(1.0, tk.END)), len(object_of_class.field_value.get(1.0, tk.END)))
-
+    
     if object_of_class.field_value.get(1.0, tk.END) != '\n':
         print('entered')
         object_of_class.parameters._keywords['field'] = KWField(
@@ -116,9 +101,7 @@ def iniciate_params01(object_of_class):
             object_of_class.orientation_value.get("1.0", "end-1c"))'''
     # object_of_class.parameters._keywords['temperature'] = KWTemperature(
     #    object_of_class.polarization.get())
-    '''if object_of_class.zeeman_value.get("1.0", "end-1c") != '\n':
-        object_of_class.parameters._keywords['zeman'] = KWZeeman(
-            object_of_class.zeeman_value.get("1.0", "end-1c"))'''
+    
 
     '''if object_of_class.quadrupolar_value.get("1.0", "end-1c") != '\n':
         object_of_class.parameters._keywords['quadrupolar'] = KWQuadrupolar(
@@ -128,32 +111,21 @@ def iniciate_params01(object_of_class):
         object_of_class.parameters._keywords['hyperfine'] = KWHyperfine(
             object_of_class.hyperfine_value.get("1.0", "end-1c"))'''
 
-    if object_of_class.zeeman_value.get(1.0, tk.END) != '\n':
-        print('entered the zeeman')
-        # dipolar_entry = KWDipolar(block=['0 0 8'], args=(1, 2))
-        # object_of_class.parameters._keywords['dipolar'] = {
-        #    '': dipolar_entry}
 
     if object_of_class.zeeman_value.get(1.0, tk.END) != '\n':
-        a = object_of_class.zeeman_value.get("1.0", "end-1c")
-        # get_lines(object_of_class.zeeman_value)
-        # zeeman = KWZeeman(block=['0 0 20.0/muon_gyr'], args=[1])
         b = get_lines(object_of_class.zeeman_value)
-        '''for i in range(1, len(b)):
-            # if len(b)
-
-            object_of_class.parameters._keywords['zeeman'][f"zeeman {i}"]._store_values(
-                [[get_lines[i]]])
-            zeeman = KWZeeman(block=[b[i]], args=[i])
-            # zeeman = KWZeeman(block=[a], args=[1])'''
-       # object_of_class.parameters._keywords['zeeman'] = {
-        #   f'zeeman {i}': KWZeeman(block=[b[i]], args=[i]) for i in range(len(b))}
         ana = {f'zeeman_{i+1}': KWZeeman(
             block=[b[i]], args=[i+1]) for i in range(0, len(b))}
         print(ana)
         object_of_class.parameters._keywords['zeeman'] = ana
-    '''dipolar_entry = KWDipolar(block=['0 0 8'], args=(1, i))
-    object_of_class.parameters._keywords['dipolar'] = {'': dipolar_entry}'''
+    
+    if object_of_class.dipolar_dic!={}:  
+        bb=list(object_of_class.dipolar_dic.values())
+        ana = {f'dipolar_{i+2}': KWDipolar(
+            block=[bb[i]], args=(1,i+2)) for i in range(0, len(bb))}
+        object_of_class.parameters._keywords['dipolar'] =ana
+
+
     # object_of_class.parameters._keywords['x_axis']
     # object_of_class.parameters._keywords['y_axis']
     # object_of_class.parameters._keywords['celio']
@@ -163,9 +135,6 @@ def iniciate_params01(object_of_class):
     # object_of_class.parameters._keywords['fiting_method']
     # object_of_class.parameters._keywords['fitting_tollerance']
     # object_of_class.parameters._keywords['experiment']
-    '''for i in range(5):
-        dipolar_entry = KWDipolar(block=['0 0 8'], args=(1, i))
-        object_of_class.parameters._keywords['dipolar'] = {'': dipolar_entry}'''
     aa = object_of_class.parameters.evaluate()
     print(aa['couplings'])
 

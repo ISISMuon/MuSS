@@ -40,151 +40,119 @@ from ase.gui.gui import GUI
 # -------------------------------------
 #       Homemade scripts
 # -------------------------------------
-
-# from input_class import Create_Input
 import backend_mss as bck
 import socket_comunication_mss as sck
 import read_entries as r_e
 
 
-class windows(tk.Tk):
+class MuSS_window(tk.Tk):
     ''' '''
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        # self.iconbitmap("mss3.ico")
-        # p1 = self.PhotoImage(file='info.png')
-        # print('banana')
-        # path = r'C:\Users\BNW71814\Desktop\stfc-muspinsim\muspinsim mss\msss.png'
-        # icon = tk.PhotoImage(file=path)
-        # print('banana1')
-        # self.iconphoto(True, icon)
-        # self.iconphoto(False, icon)
-
+        
         # -------------------------------------------------------------------------------------------------------
         #                           Geometry of the window
         # -------------------------------------------------------------------------------------------------------
         self.title("MuSS")
-        # try and exception
-        # self.iconbitmap(
-        #    r'C:\Users\BNW71814\Desktop\stfc-muspinsim\muspinsim mss\mss3.ico')
-
-        '''dir = os.path.dirname(__file__)
-        print(dir)
-
-        filename = dir+'\logo_mss.ico'
-        print(filename)
-        self.iconbitmap(filename)'''
-
         self.geometry("1000x800")
         self.minsize(200, 200)
         # ------------------------------------------------------------------------------------------------------
-        #                           Queing (in case is necessary)
+        #                           Bind Functions
         # ------------------------------------------------------------------------------------------------------
-        self.bind("<<ThreadFinished>> ", self.thread_stopped)
-        self.bind("<<UpdateParameters>> ", self.updat_fit)
-        self.bind("<<SendResultStored>>", self.send_result_tored)
+        self.bind("<<ThreadFinished>> ", self.handle_simulation_thread_completion)
+        self.bind("<<SendResultStored>>", self.send_stored_simulation_result)
         self.bind("<<CalculateSend>>", self.run_send)
         # ------------------------------------------------------------------------------------------------------
         #                                           Variables Initiated
         # ------------------------------------------------------------------------------------------------------
-        self.dic_tkEntries_atomisticParam = []
-        self.kEntries = [None]*22  # Reffering to all tkentries created
+        self.kEntries = [None]*22  # Refering to all tkentries possible in muspinsim (collectively store the entries by index)
+        # label of te muspinsim possible entries in order
         self.labelstring = ['name', 'spins', 'time', 'field', 'intrinsic_field', 'polarization', 'average_axis', 'orientation', 'temperature',
                             'zeeman', 'dipolar', 'quadrupolar', 'hyperfine', 'x_axis', 'y_axis', 'celio', 'dissipation', 'fitting_variales',
                             'fitting_data', 'fitting_method', 'fitting_tolerance', 'experiments']
-        self.inter = {0: 'name'}  # ??????????
-        self.dipolar_dic = {}
-        # represents all of te variables changes resgiteres by the muspinsim starting [0]=initials values
-        # the history of varibles on each run stored and ready to be sent
-        # the history of time and resultd on each run stored and ready to be sent
-        self.hist = []  # ?????????????????
-        # using a dictionary to store  the variables and time and results
-        # the key of the dictionary is the list of variables each unic and the the key is the t and y results  ready to be sent
-        self.result_dic = {}
-        self.fitting_variables = ' '
-        # fit state is varaible used  as None in the first run, True when it is needed to do some
-        # calculations and be send to wimda and a number (which corresponds to the index of the time and result to be sent to wimda)
-        # in the case the value already exists
-        self.fit_state = None
-        # This is the array with wimda time to do  the interpolation in muspinsim
-        self.wimda_time = None
-        # .count_clicks = 0
-        #
-
+        
+        self.dipolar_dic = {} #stored the dipolar interaction distances with the key as the number of interaction
+        #(why not combine fitting history with result_dic)
+        
+        # store the simulated data, indices are number of the fitting loop [0]=initials values
+        self.fitting_history = []  #
+         # store  the variables and time and results, key of the dictionary is the list of parameters
+        self.result_dic = {}   
+        #change the name to fitting_param
+        self.fitting_variables = ' '        
+        # checks if the fitting is occuring (None in the first run, True when fitting)
+        self.fit_state = None               
+        # array with wimda times (x-values) to do the interpolation in muspinsim
+        self.wimda_time = None             
+        
         # ------------------------------------------------------------------------------------------------------
         #                                   Esentials
         # ------------------------------------------------------------------------------------------------------
-        self.file = ' '
-        self.doing = None  # ?
+        self.input_txt_file = ' '
         self.parameters = None
-        self.first_param = 17.3
-        self.frame_essential()
+        self.first_param = 17.3 #To be erased
+        
 
-        self.Input_path = tk.StringVar()
+        #this allows to save and open files in user´s documents 
+        self.save_path = tk.StringVar() 
         self.username = os.path.expanduser('~')
-
-        self.Input_path.set(self.username+'\Documents')
-
-        path = bck.get_path(self)
-        # self.inn = Create_Input(
-        #    path, "name", "mu")
-
+        self.save_path.set(self.username+'\Documents')
         # ----------------------------------------------------------------------------------------------------------
         #                                   Calling the Frames
         # ----------------------------------------------------------------------------------------------------------
-        # self.frame_data()
-
-        # self.frame_Axis()
-
-        # self.frame_Others()
 
         self.menus()
-
+        self.frame_essential()
         self.frame_socketa()
-
         self.frame_field()
-
         self.frame_plot()
-
         self.frame_fit_selection()
 
+        #retrives the path and gives the name of the file
+        path = bck.get_path(self)
     # --------------------------------------------------------------------------------------------------------------------
     #                                   Defining frames
     # --------------------------------------------------------------------------------------------------------------------
 
     def frame_essential(self):
+        """ 
+        Creates the Essntial frame in the UI containing name, spins, time range 
+        and the capability to load a cif file
+        """
+        # Create the frame that will contain thw widgets defined here
         self.frame_essentials = LabelFrame(self, text="Essential", width=100)
         self.frame_essentials.place(x=20, y=20)
-        # -contain errors
+
+        # Placeholder for buffer entry, necessary for kEntries (Temporary)
         self.buffer_entry = customtkinter.CTkEntry(
             self.frame_essentials)
-        #
+        
+        # param: name entry, label and default  
         self.name_label = customtkinter.CTkLabel(
             self.frame_essentials, text="Name")
         self.name_label.grid(row=0, column=0, padx=5, pady=5)
-        self.name_text = tk.StringVar()
-        self.name_text.set('muspinsim01')
-        self.name_entry = customtkinter.CTkEntry(
-            self.frame_essentials, textvariable=self.name_text)
-
+        self.name_entry = customtkinter.CTkEntry(self.frame_essentials)
+        # Insert default text 'simulation_1' in the name entry field
+        self.name_entry.insert('end', 'simulation_1')
         self.name_entry.grid(row=0, column=1)
-        self.kEntries[0] = self.name_entry
-
+        
+        # Create a label and entry field for 'spins'
         self.spins_label = customtkinter.CTkLabel(
             self.frame_essentials, text="spins")
         self.spins_label.grid(row=1, column=0, padx=5, pady=5)
         self.spins_entry = customtkinter.CTkEntry(self.frame_essentials)
+        # Insert default text 'mu e' in the spins entry field
         self.spins_entry.insert('end', 'mu e')
         self.spins_entry.grid(row=1, column=1, padx=5, pady=5)
-        self.kEntries[1] = self.spins_entry
 
+        # Create a label for 'Time'
         self.time_label = customtkinter.CTkLabel(
             self.frame_essentials, text="Time")
         self.time_label = customtkinter.CTkLabel(
             self.frame_essentials, text="Time")
         self.time_label.grid(row=2, column=0, padx=3, pady=3)
-
+        # Create a nested frame for time entry fields
         self.time_entry_frame = LabelFrame(self.frame_essentials, text="---")
         self.time_entry_frame.grid(row=2, column=1, padx=5, pady=5)
 
@@ -198,38 +166,44 @@ class windows(tk.Tk):
             self.time_entry_frame, width=40)
         self.time_entry2.insert('end', 32)
         self.time_entry2.grid(row=0, column=1, padx=5, pady=5)
+
         self.time_entry3 = customtkinter.CTkEntry(
             self.time_entry_frame, width=40)
         self.time_entry3.grid(row=0, column=2, padx=5, pady=5)
         self.time_entry3.insert('end', 100)
-        self.kEntries[2] = [self.time_entry1,
-                            self.time_entry2, self.time_entry3]
-
+       
+        # Create a label for CIF file loading functionality
         self.cif_check = customtkinter.CTkLabel(
             self.frame_essentials, text="Cif File")
         self.cif_check.grid(row=3, column=0, padx=5, pady=5)
+        # Create a button to load CIF files, triggering the frame_structure method when clicked
         self.cif_btn = customtkinter.CTkButton(
             self.frame_essentials, text="Load", command=lambda: self.frame_structure(), width=40)
         self.cif_btn.grid(row=3, column=1, padx=5, pady=5)
 
     def frame_plot(self):
+        """
+        Sets up the 'Plot' frame for displaying graphs and providing user interaction 
+        buttons Run.
+        """
+        # Frame titled 'Plot'containing the graphs
         self.frame_plot = LabelFrame(self, text="Plot", width=900, height=900)
         self.frame_plot.place(x=250, y=150)
 
+        # Create a 'Run' button that runs simulation in a thread
         self.runBtn = customtkinter.CTkButton(
-            self, text='Run', command=self.read_run, width=64, height=30)
-        # self, text='Run', command=self.run_thread_btn, width=64, height=30)
+            self, text='Run', command=self.read_UI_entries_and_run, width=64, height=30)
         self.runBtn.place(x=670, y=175)
 
-        self.selecBtn = customtkinter.CTkButton(
-            self, text='Fit Select', command=self.run_thread_btn, width=64, height=30)
-        self.selecBtn.place(x=590, y=175)
+        # Initialize a Matplotlib figure object with a 5x5 inch size and a DPI (resolution) of 100
+        self.figure = Figure(figsize=(5, 5), dpi=100)
+        figure = self.figure
+        
+        # Add a subplot (axes) to the figure (111 means a single plot, occupying the entire figure space)
+        self.a = figure.add_subplot(111) # neeeded
 
-        self.f = Figure(figsize=(5, 5), dpi=100)
-        f = self.f
-        self.a = f.add_subplot(111)
 
-        self.canvas = FigureCanvasTkAgg(f, self.frame_plot)
+        self.canvas = FigureCanvasTkAgg(figure, self.frame_plot)
         self.canvas.draw()
 
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame_plot)
@@ -325,55 +299,75 @@ class windows(tk.Tk):
         self.celio_value.grid(row=1, column=2, padx=5, pady=5)
 
     def frame_socketa(self):
+        """
+        creates a labeled "Socket" frame in the UI, allowing the user to input a host and port, and providing 
+        buttons to connect, disconnect, send data, and read data from a socket connection.
+        """
+        # Create a labeled frame named 'Socket' within the parent window
         self.socketa = LabelFrame(self, text="Socket")
         self.socketa.place(x=780, y=520)
 
+        # Create entry and label for the HOST value
         self.host_label = customtkinter.CTkLabel(self.socketa, text="Host")
         self.host_label.grid(row=1, column=0, padx=5, pady=5)
         self.host_entry = customtkinter.CTkEntry(self.socketa, width=100)
         self.host_entry.insert('end', 'localhost')
         self.host_entry.grid(row=1, column=1, padx=5, pady=5)
 
+        # Create an entry box for the user to input the port
         self.port_label = customtkinter.CTkLabel(self.socketa, text="Port")
         self.port_label.grid(row=2, column=0, padx=5, pady=5)
         self.port_entry = customtkinter.CTkEntry(self.socketa, width=100)
         self.port_entry.insert('end', '9092')
         self.port_entry.grid(row=2, column=1, padx=5, pady=5)
 
+        # Set the initial state of the connect button to 'normal'
         self.statess = 'normal'
-        #
+
+        # Create Connect that initiate the connection (if desable means server is operating)
         self.connect_btn = customtkinter.CTkButton(
             self.socketa, text="Connect", state=self.statess, command=lambda: sck.server_connection_tread(self), width=50)
         self.connect_btn.grid(row=3, column=1, padx=5, pady=5)
 
+        # Create send button to send strings to the client (wimda)
         self.disconnect_btn = customtkinter.CTkButton(
             self.socketa, text="Disconnect", command=sck.disconnect_socket, width=50)
         self.disconnect_btn.grid(row=4, column=1, padx=5, pady=5)
 
+        # Create a 'Disconnect' button to stop the socket connection
         self.send_btn = customtkinter.CTkButton(
             self.socketa, text="Send", command=lambda: sck.send_function(bck.data_processing_xy(self)), width=50)
         self.send_btn.grid(row=4, column=0, padx=5, pady=5)
 
+        # Create read button to interpret the data recieved in the socket
         self.read = customtkinter.CTkButton(
             self.socketa, text="Read", command=lambda: sck.receiver(), width=50)
         self.read.grid(row=3, column=0, padx=5, pady=5)
 
     def frame_structure(self):
-
+        """
+        Load a CIF file, display structure-related controls in a labeled frame (frame_structure), 
+        and provides options to calculate the muon position, generate a supercell, and select the radius for masking
+        Display views of the atoms (structure) in ase withh possibility of interaction (the first view), 
+        Display a table with elements the radius at last
+        """
+        # Open a file dialog for the user to select a file and read it as an 'atoms' object
         file = filedialog.askopenfilename()
-        # read the file and make it into a atoms object
         self.cif_read = ase.io.read(file)
 
+        # Create a labeled Structure frame and send to frontend
         frame_structure = LabelFrame(self, text="Structure", width=200)
         frame_structure.place(x=250, y=20)
 
+        # Create a button to calculate the muon position
         calculate_button = customtkinter.CTkButton(frame_structure, text="Calculate Muon Position",
                                                    command=lambda: bck.selecting__nn_indices(self))
         calculate_button.grid(row=0, column=0, padx=5, pady=5)
 
+        # Create a nested labeled frame within frame_structure, used for angle-related widgets
         frame_angle = LabelFrame(frame_structure, text='__')
         frame_angle.grid(row=1, column=0, padx=5, pady=5)
-
+            # Create a label and entry widget for 'Phi' angle
         struc_phi_label = customtkinter.CTkLabel(
             master=frame_angle, text="Phi", width=40)
         struc_phi_label.grid(row=1, column=0, padx=5, pady=5)
@@ -382,6 +376,7 @@ class windows(tk.Tk):
             frame_angle, width=40)
         struc_phi_entry.grid(row=1, column=1)
 
+            # Create a label and entry widget for 'Theta' angle 
         struc_theta_label = customtkinter.CTkLabel(
             master=frame_angle, text="Theta")
         struc_theta_label.grid(row=1, column=2, padx=5, pady=5)
@@ -390,13 +385,16 @@ class windows(tk.Tk):
             frame_angle, width=40)
         struc_phi_entry.grid(row=1, column=3)
 
+        # Create a button to generate a supercell, calling 'make_supercell' when clicked
         calculate_button = customtkinter.CTkButton(frame_structure, text="Generate Supercell",
                                                    command=lambda: bck.make_supercell(self))
         calculate_button.grid(row=0, column=1, padx=5, pady=5)
 
+        # Frameto contain the radius label and entry
         frame_options = LabelFrame(frame_structure, text='__')
         frame_options.grid(row=1, column=1, padx=5, pady=5)
 
+        # Radius (distance to muon) on the elements to be considered
         radios_symmetry_label = customtkinter.CTkLabel(
             master=frame_options, text="Radius")
         radios_symmetry_label.grid(row=3, column=0, padx=5, pady=5)
@@ -405,17 +403,25 @@ class windows(tk.Tk):
             frame_options, width=40)
         self.radius_entry.insert('end', '5')
         self.radius_entry.grid(row=3, column=1)
-        print('DEBUG: this is the cif file read', self.cif_read)
-        # table(top, cif_data(object_of_class.cif_read))
 
+        # Generate the initial view of atoms in ase
         self.images = Images()
         self.images.initialize([self.cif_read])
         self.gui = GUI(self.images)
         self.gui.run()
 
     def menus(self):
-        self.mainmenu = tk.Menu(self)
+        """
+        Create the menu and the define te content:
+        - File which contains save, save as, load, load and run
+        - More where the hidden frames can be selected for display (Others, Axis,fitting)
+        - Exit     
+        """
+        self.mainmenu = tk.Menu(self) # Create a main menu bar for the application
+
+        # Create a 'File' menu and add it to the main menu bar
         self.file_menu = tk.Menu(self.mainmenu, tearoff=0)
+            # To the file optio, save, save as,load and load and run are added
         self.mainmenu.add_cascade(label="File", menu=self.file_menu)
         self.file_menu.add_command(
             label="Save", command=lambda: bck.create(self))
@@ -423,37 +429,41 @@ class windows(tk.Tk):
             label="Save As", command=lambda: bck.save_as(self))
         self.file_menu.add_command(
             label="Load", command=lambda: bck.load_file(self))
-
         self.file_menu.add_command(
-            label="Load and Run", command=lambda: self.load_run())
-        # self.mainmenu.add_command(
-        #    label="Fitting Data", command=lambda: self.frame_data())
+            label="Load and Run", command=lambda: self.load_and_run())
+        
+        # Create a 'More' menu and add it to the main menu bar
         self.more_menu = tk.Menu(self.mainmenu, tearoff=0)
         self.mainmenu.add_cascade(label="More", menu=self.more_menu)
+            # To the more option hidden frames can be added
         self.more_menu.add_command(
             label="Fitting Data", command=lambda: self.frame_data())
-
         self.more_menu.add_command(
             label="Show axis", command=lambda: self.frame_Axis())
-
         self.more_menu.add_command(
             label="Others", command=lambda: self.frame_Others())
-        self.mainmenu.add_command(label="Exit", command=self.destroy)
-
+        
+        self.mainmenu.add_command(label="Exit", command=self.destroy) #Exit the program
+        
+        # Configure the main window to display the created menu bar
         self.config(menu=self.mainmenu)
 
     def frame_Axis(self):
+        """
+        Axis frame created for input file for x-axis and y-axis
+        """
+        #Create a display the axis frame
         self.axis = LabelFrame(self, text="Axis")
         self.axis.place(x=780, y=330)
 
-        self.x_axis = customtkinter.CTkLabel(self.axis, text="a_axis")
-        self.x_axis.grid(sticky="W", row=0, column=0, padx=5, pady=5,)
+        #label and entry for x-axis
         self.x_axis = customtkinter.CTkLabel(self.axis, text="a_axis")
         self.x_axis.grid(sticky="W", row=0, column=0, padx=5, pady=5,)
 
         self.x_axis_value = customtkinter.CTkEntry(self.axis)
         self.x_axis_value.grid(row=1, column=0, padx=5, pady=5)
-
+        
+        # label and entry for y-axis
         self.y_axis = customtkinter.CTkLabel(self.axis, text="y_axis")
         self.y_axis.grid(sticky="W", row=2, column=0, padx=5, pady=5)
 
@@ -461,21 +471,31 @@ class windows(tk.Tk):
         self.y_axis_value.grid(row=3, column=0, padx=5, pady=5)
 
     def frame_Others(self):
+        """
+        Frame contains the remaining of the 22 muspinsim entries
+        orientation, polarization 
+        """
+
+        # Create the other frame 
         self.Other = LabelFrame(self, text="Other")
         self.Other.place(x=780, y=20)
 
+        # Create a label for 'Orientation' 
         self.orientation_label = customtkinter.CTkLabel(
             self.Other, text="Orientation")
         self.orientation_label.grid(
             sticky="W", row=0, column=0, padx=10, pady=2)
 
-        ss = customtkinter.CTkLabel(self.Other, text="  ", height=2)
-        ss.grid(row=2, column=0, padx=10, pady=2)
-
+        # create space label as a form to add space 
+        sspace_1 = customtkinter.CTkLabel(self.Other, text="  ", height=2)
+        sspace_1.grid(row=2, column=0, padx=10, pady=2)
+        
+        # Create entry for 'Orientation' 
         self.orientation_value = customtkinter.CTkTextbox(
             self.Other, width=100, height=50)
         self.orientation_value.grid(row=1, column=0, padx=10, pady=2)
 
+        # polarization entry and label
         self.polarization_label = customtkinter.CTkLabel(
             self.Other, text="Polarization")
         self.polarization_label.grid(
@@ -485,14 +505,16 @@ class windows(tk.Tk):
             self.Other, width=100, height=50)
         self.polarization_value.grid(row=4, column=0, padx=10, pady=2)
 
-        sss = customtkinter.CTkLabel(self.Other, text="  ", height=2)
-        sss.grid(row=5, column=0, padx=10, pady=2)
+        # create space label as a form to add space
+        sspace_2 = customtkinter.CTkLabel(self.Other, text="  ", height=2)
+        sspace_2.grid(row=5, column=0, padx=10, pady=2)
 
+        #label and form to select different types of experiments
         self.experiments_label = customtkinter.CTkLabel(
             self.Other, text="experimemt")
         self.experiments_label.grid(
             sticky="W", row=6, column=0, padx=5, pady=2)
-
+        
         self.experiments = customtkinter.CTkOptionMenu(
             self.Other, values=["None", "alc", "zero_field"])
         self.experiments.grid(row=7, column=0, padx=5, pady=5)
@@ -601,82 +623,128 @@ class windows(tk.Tk):
         self.intrisic_check.grid(row=0, column=2, padx=5, pady=5)
 
     # ---------------------------------------------------------------------------------------------------------------------
-    #                                       Other Functions
+    #                                       Auxiliary Functions
     # --------------------------------------------------------------------------------------------------------------------
 
-    def run_thread_btn(self):
+    def run_simulation_thread(self):
+        """
+        loads a file if there is none, update parameters if necessary, 
+        and then **starts a new thread that runs the simulation**
+        """
+        # Imidiatly the Loading bar is created to signal the ongoing process in the background
+        self.create_processBar()
 
-        self.loading_bar()
-        if self.file == ' ':
+        # If no input file it is possible to loa one
+        if self.input_txt_file == ' ':
             bck.load_file(self)
-
+        # If not fitting, parameters are updated
         if self.fit_state == None:
             bck.update_parameters(self)
 
-        thread2 = Thread(target=self.run_btn,
+        # create a thread where the simulation runs
+        run_simulation_thread = Thread(target=self.simulate_and_post_event,
                          args=(self,), daemon=True)
-        thread2.start()
+        run_simulation_thread.start()
 
-    def load_run(self):
-        self.loading_bar()
+    def load_and_run(self):
+        """
+        loads input file and starts new thread to run simulation
+        only depending on the input file (offers limited interaction)
+        """
+        # Imidiatly the Loading bar is created to signal the ongoing process in the background
+        self.create_processBar()
+        # load input
         bck.load_file(self)
-        thread2 = Thread(target=self.run_btn,
-                         args=(self,), daemon=True)
-        thread2.start()
 
-    def read_run(self):
+        # create a thread where the simulation runs
+        run_simulation_thread_1 = Thread(target=self.simulate_and_post_event,
+                         args=(self,), daemon=True)
+        run_simulation_thread_1.start()
+
+    def read_UI_entries_and_run(self):
+        """
+        reads the entries in GUI (kEntries)
+        run the simulation in a thread
+        """
+        # Imidiatly the Loading bar is created to signal the ongoing process in the background
+        self.create_processBar()
+
+        # reads the KEntries and convert them into parameters
         r_e.iniciate_params01(self)
-        thread2 = Thread(target=self.run_btn,
+
+        #create a thread where the simulation runs
+        run_simulation_thread_2 = Thread(target=self.simulate_and_post_event,
                          args=(self,), daemon=True)
-        thread2.start()
-        pass
+        run_simulation_thread_2.start()
+        
 
-    def run_btn(self, _):
+    def simulate_and_post_event(self, _):
         '''
-        Where the calculations happen
+        Executes the simulation 
+        and triggers an event(send or show in graph) upon completion.
         '''
-
-        # function2
+        # runs the simulation
         bck.run_simulation(self)
+
+        # Stops the loading bar
         self.event_generate('<<ThreadFinished>>')
 
-    def thread_stopped(self, event):
+    def handle_simulation_thread_completion(self, event):
+        """
+        Handles actions to be performed when a simulation hread stops
+        sending the data to wimda or showing it in graph (in the case no fitting is occuring)
+        """
+        # In the case of fitting the data is sent to WiMDA if not is shown in the UI graph
         if self.fit_state == True:
             sck.send_function(bck.data_processing_xy(self))
         else:
             bck.graph_update(self)
-        print('inside stopping thread')
-        # self.bar.destroy()
-        print('process bar shoulfd have stopped')
+    
+        # In the completion of task destroy processbar
+        self.processBar.destroy()
+        
 
-    def loading_bar(self):
-        self.bar = Progressbar(self,
+    def create_processBar(self):
+        """
+        Creates the process bar and dispaus it in the main root
+        """
+
+        self.processBar = Progressbar(self,
                                orient='horizontal', mode='indeterminate', length=300)
-        self.bar.place(x=280, y=185)  # x=320
-        self.bar.start()
+        self.processBar.place(x=280, y=185)  # x=320
+        self.processBar.start()
 
-    def send_result_tored(self, _):
-        '''the stored values in the dictionray of 'variables_to_fit':x and y  '''  # what happens in this function
-        print('entered send stored result')  # debug
-        # what is the current variables?
-        # sck.send_function(bck.data_processing_xy(self))
+    def send_stored_simulation_result(self, _):
+        """
+        simulated results that are stored are send to client
+        this happens when the parameters has not change (or almost has not change)
+        """
+        #Debug print
+        #print('entered send stored result')
+
+        # send data to client
         sck.send_function(bck.data_processing_stored(self))
 
-    def run_send(self, _):
-        '''The '''  # wat is happening in this function
-        print('inside run send')  # debug
+    def run_send(self, _): ####????????????????????????
+        """
+        Once the new parameters are updated 
+        Runs the simulation and 'handle_simulation_thread_completion' sends data to wimda in the case of fitting
+        """  
+        # Debug print
+        print('inside run send')
 
         # The parameters are updated from self.fitting_variables to self.parameters:
         bck.update_param_spec(self)
         # with the updates parameters the simulation runs
         # in the run thread there is an event that depending on the self.state_fitting will senf the results to wimda
-        self.run_thread_btn()
-
-    def interpolation(self, _):  # draft
-        bck.process_time_wimda(self)  # this should give us an array of times
-        pass
+        self.run_simulation_thread()
 
     def store_tkentries(self):
+        """ 
+        Stores various Tkinter entry widgets and other values into the 'kEntries' list 
+        Organized them entries by index (as in the muspinsim atomistic pparameters the first 22)
+        """
+     
         self.kEntries[0] = self.name_entry
         self.kEntries[1] = self.spins_entry
         self.kEntries[2] = [self.time_entry1,
@@ -701,59 +769,5 @@ class windows(tk.Tk):
         self.kEntries[20] = self.fitting_tolerance_value
         self.kEntries[21] = self.experiments
         self.labels = ['name', 'spins', 'time', '']
+    
     # ---------------------------------------------------------------------------------------------------------------------
-    #                                       Drafts
-    # --------------------------------------------------------------------------------------------------------------------
-
-    def updat_fit(self, event):
-
-        # self.parameters._keywords["field"] = KWField(variables[0])
-
-        bck.run_simulation(self)
-        # print(self.pvar_hist)
-
-
-def create_scrollable_frame(root):
-    # Create a canvas widget
-    canvas = tk.Canvas(root)
-
-    # Create a frame widget inside the canvas
-    frame = tk.Frame(canvas)
-
-    # Create vertical and horizontal scrollbars
-    vsb = tk.Scrollbar(root, orient="vertical", command=canvas.yview)
-    hsb = tk.Scrollbar(root, orient="horizontal", command=canvas.xview)
-
-    # Configure the canvas to use the scrollbars
-    canvas.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
-
-    # Pack the scrollbars and the canvas
-    vsb.pack(side="right", fill="y")
-    hsb.pack(side="bottom", fill="x")
-    canvas.pack(side="left", fill="both", expand=True)
-
-    # Create a window in the canvas to hold the frame
-    canvas_frame = canvas.create_window((0, 0), window=frame, anchor="nw")
-
-    # Update the scroll region whenever the frame size changes
-    def on_frame_configure(event):
-        canvas.configure(scrollregion=canvas.bbox("all"))
-
-    # Update the frame width to match the canvas width
-    def on_canvas_configure(event):
-        canvas.itemconfig(canvas_frame, width=event.width)
-
-    frame.bind("<Configure>", on_frame_configure)
-    canvas.bind("<Configure>", on_canvas_configure)
-
-    return frame
-# -------------------------------------------------
-#           Run te tkinter window
-# ------------------------------------------------
-
-
-'''
-if __name__ == "__main__":
-    App=windows()
-    App.mainloop()
-'''

@@ -65,7 +65,7 @@ def data_processing_xy(object_of_class, terminator='Hello'):
     data_str_terminator = ' ' + xy + ' value ' + \
         object_of_class.fitting_variables + terminator
 
-    object_of_class.hist.append(data_str_terminator)
+    object_of_class.fitting_history.append(data_str_terminator)
 
     object_of_class.result_dic[object_of_class.fitting_variables] = xy
     print('***********************result dic when we are in the send processing',
@@ -111,15 +111,15 @@ def dt_processing_extract_var(object_of_class):
     var = 'field'
     i_params = object_of_class.parameters.evaluate()
     fit_var = i_params[var].value[0]
-    # if object_of_class.pvar_hist == []:
+    # if object_of_class.pvar_fitting_history == []:
     # now that things are new we try only one parameter
-    #    object_of_class.pvar_hist.append([float(fit_var), 0, 0])
+    #    object_of_class.pvar_fitting_history.append([float(fit_var), 0, 0])
     #    pass
     if len(fit_var) == 1:
-        # object_of_class.pvar_hist.append([float(fit_var), 0, 0])
+        # object_of_class.pvar_fitting_history.append([float(fit_var), 0, 0])
         fit_var = [float(fit_var), 0, 0]
     elif len(fit_var) == 2:
-        # object_of_class.pvar_hist.append(
+        # object_of_class.pvar_fitting_history.append(
         #   [float(fit_var[0]), float(fit_var[0]), 0])
         fit_var = [float(fit_var[0]), float(fit_var[0]), 0]
 
@@ -150,9 +150,9 @@ def clean_whitespace_and_brackets(string: str) -> str:
 
 def load_file(object_of_class):
 
-    object_of_class.file = filedialog.askopenfilename()
-    print(object_of_class.file)
-    object_of_class.parameters = MuSpinInput(open(object_of_class.file))
+    object_of_class.input_txt_file = filedialog.askopenfilename()
+    print(object_of_class.input_txt_file)
+    object_of_class.parameters = MuSpinInput(open(object_of_class.input_txt_file))
     read_variables(object_of_class)
 
 
@@ -213,10 +213,10 @@ def create(object_of_class):
 
 def save_as(object_of_class):
     name = filedialog.askdirectory()
-    object_of_class.Input_path.set(name)
+    object_of_class.save_path.set(name)
     print(name)
-    print(object_of_class.Input_path.get())
-    # Input_path.config()
+    print(object_of_class.save_path.get())
+    # save_path.config()
 
 
 def graph_update(object_of_class):
@@ -564,6 +564,7 @@ def update_spin_dipolar_interaction(object_of_class, str_dipolar_value, indexx, 
 
     # store the dipolar interactions selected
     object_of_class.dipolar_dic[spin_entry_position] = str_dipolar_value
+    print(object_of_class.dipolar_dic,"<  < >")
 
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     Update data
@@ -583,108 +584,8 @@ def update_parameters(object_of_class):
 #                                                     DRAFT
 # --------------------------------------------------------------------------------------------------------------------
 
-def opennn(object_of_class):
-    # Select the cif file
-    file = filedialog.askopenfilename()
-    # read the file and make it into a atoms object
-    object_of_class.cif_read = ase.io.read(file)
-
-    top = customtkinter.CTkToplevel(object_of_class)
-    top.title("Custom TopLevel Window")
-    top.geometry("400x300")
-    frame_structure = LabelFrame(top, text="Structure", width=200)
-    frame_structure.place(x=5, y=5)
-
-    calculate_button = customtkinter.CTkButton(frame_structure, text="Calculate Muon Position",
-                                               command=lambda: selecting__nn_indices(object_of_class))
-    calculate_button.grid(row=0, column=0, padx=5, pady=5)
-
-    frame_angle = LabelFrame(frame_structure, text='__')
-    frame_angle.grid(row=1, column=0, padx=5, pady=5)
-
-    struc_phi_label = customtkinter.CTkLabel(
-        master=frame_angle, text="Phi", width=40)
-    struc_phi_label.grid(row=1, column=0, padx=5, pady=5)
-
-    struc_phi_entry = customtkinter.CTkEntry(
-        frame_angle, width=40)
-    struc_phi_entry.grid(row=1, column=1)
-
-    struc_theta_label = customtkinter.CTkLabel(
-        master=frame_angle, text="Theta")
-    struc_theta_label.grid(row=1, column=2, padx=5, pady=5)
-
-    struc_phi_entry = customtkinter.CTkEntry(
-        frame_angle, width=40)
-    struc_phi_entry.grid(row=1, column=3)
-
-    calculate_button = customtkinter.CTkButton(frame_structure, text="Generate Supercell",
-                                               command=lambda: make_supercell(object_of_class))
-    calculate_button.grid(row=2, column=0, padx=5, pady=5)
-
-    frame_options = LabelFrame(frame_structure, text='__')
-    frame_options.grid(row=3, column=0, padx=5, pady=5)
-
-    radios_symmetry_label = customtkinter.CTkLabel(
-        master=frame_options, text="Radius")
-    radios_symmetry_label.grid(row=3, column=0, padx=5, pady=5)
-
-    radius_entry = customtkinter.CTkEntry(
-        frame_options, width=40)
-    radius_entry.grid(row=3, column=1)
-    print('DEBUG: this is the cif file read', object_of_class.cif_read)
-    # table(top, cif_data(object_of_class.cif_read))
-
-    object_of_class.images = Images()
-    object_of_class.images.initialize([object_of_class.cif_read])
-    object_of_class.gui = GUI(object_of_class.images)
-    object_of_class.gui.run()
-   # print('babababab')
 
 
-def cif_data(cif_read_io):
-    cif_read_io.get_positions()
-    cif_read_io.get_chemical_symbols()
-
-    lst = []
-    for i in range(cif_read_io.get_global_number_of_atoms()):
-        lst_tuple = (cif_read_io.get_chemical_symbols()[
-                     i], cif_read_io.get_positions()[i])
-        lst.append(lst_tuple)
-
-    return lst
-
-
-def table(root, lst):
-    listinha = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
-
-    dicc = {}
-    total_rows = len(lst)
-    total_columns = len(lst[0])
-    for i in range(total_rows):
-        for j in range(total_columns):
-            dicc[listinha[j]] = tk.Entry(root, width=40)
-            entry = tk.Entry(root, width=40)
-            entry.grid(row=i, column=j)
-            entry.insert('end', lst[i][j])
-
-
-def update_param_spec(object_of_class):
-    # print('we entered param')
-    # my_string = " ".join(str(element)
-    #                     for element in object_of_class.fitting_variables)
-    # print('fitting vari', object_of_class.fitting_variables)
-    # print('my tring', my_string)
-    # i_params = object_of_class.parameters.evaluate()
-    # print('param before', i_params['field'].value[0])
-    object_of_class.parameters._keywords["field"] = KWField(
-        object_of_class.fitting_variables)
-
-    i_params = object_of_class.parameters.evaluate()
-    print('//////fitting variables', object_of_class.fitting_variables)
-    print('***the', i_params['field'].value[0])
-    # print('param after', i_params['field'].value[0])
 
 
 def read_variables(object_of_class):
@@ -755,90 +656,3 @@ def read_variables(object_of_class):
     #                   Dipolar          #
     # Recognize how manny couplings we ha
 
-
-def data_processing_xy_terminator(object_of_class, terminator='Hello'):
-    # scientific notation is removed
-    data_str_terminator = ' ' + \
-        data_processing_xy(object_of_class) + terminator
-    # print(data_str_terminator)
-    object_of_class.hist.append(data_str_terminator)
-    # print('hana is printed', object_of_class.hist)
-    return data_str_terminator
-
-
-def process_time_wimda(object_of_class):
-    # object_of_class.wimda_time #from which we extract the times
-    pass
-
-
-def cif():
-    Create_Input.cif_files()
-
-
-def data_processing_terminator(data, terminator='Hello'):
-    # scientific notation is removed
-    data_str_terminator = ' '+data_processing(data) + terminator
-    return data_str_terminator
-
-    # scientific notation is removed
-
-
-def load_variables(object_of_class, inn):
-    object_of_class.name_text.set('mu')
-    object_of_class.spins_entry.delete(0, 'end')
-    object_of_class.spins_entry.insert('end', 'mu F')
-
-    if object_of_class.time_entry1.get() != '' and object_of_class.time_entry2.get() != '' and object_of_class.time_entry3.get() != '':
-        inn.times = f'range({object_of_class.time_entry1.get()},{object_of_class.time_entry2.get()},{object_of_class.time_entry3.get()})'
-    inn.cif = False
-
-    object_of_class.zeeman_value.insert('end', 'aaaaaaaaaaa')
-
-
-def readding(object_of_class):
-
-    params = MuSpinInput(open(object_of_class.file))
-
-    params._keywords["Time"] = KWTime(
-        f"range({object_of_class.time_entry1.get()},{object_of_class.time_entry2.get()},{object_of_class.time_entry3.get()})")
-
-    params._keywords["field"] = KWField(0)
-
-    experiment = ExperimentRunner(params)
-
-    results = experiment.run()
-    object_of_class.results = results
-
-
-def transform_reading(object_of_class):
-    # Essential frame
-    params = MuSpinInput(open(object_of_class.file))
-    params._keywords["name"] = KWName(object_of_class.name_text.get())
-    params._keywords["spin"] = KWSpins[object_of_class.spins_entry.get()]
-    params._keywords["Time"] = KWTime(
-        f"range({object_of_class.time_entry1.get()},{object_of_class.time_entry2.get()},{object_of_class.time_entry3.get()})")
-
-
-def transform_reading(object_of_class):
-    # Essential frame
-    params = MuSpinInput(open(object_of_class.file))
-    params._keywords["name"] = KWName(object_of_class.name_text.get())
-    params._keywords["spin"] = KWSpins[object_of_class.spins_entry.get()]
-    params._keywords["Time"] = KWTime(
-        f"range({object_of_class.time_entry1.get()},{object_of_class.time_entry2.get()},{object_of_class.time_entry3.get()})")
-
-
-def strength(muon_position, element, iso=None):
-    # interaction with muon
-    # here
-    # ideally this is done in muspinsim
-    if element == 'x':
-        element = 'mu'
-    magnetic_moment = gyromagnetic_ratio(element, iso)*spin(element, iso)
-    magnetic_m = magnetic_moment(element)
-    relative_position = muon_position
-
-    results = 'x'
-    print((np.linalg.norm(relative_position))**2)
-
-    return results
