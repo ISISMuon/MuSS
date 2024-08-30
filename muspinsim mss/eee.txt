@@ -1,0 +1,4 @@
+order in the table-------------> yi
+botton to stop process bar-----------> yi
+can get a list of all threads in function---------->yi
+graphs and tablesin txt of the datain fiiting 

@@ -1,0 +1,10 @@
+name
+    simulation_1
+spins
+    mu 
+time
+    range(0, 32, 100)
+y_axis
+    asymmetry
+field 
+	10

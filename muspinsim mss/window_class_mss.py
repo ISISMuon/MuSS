@@ -24,7 +24,8 @@ code structure:
 """
 
 import tkinter as tk
-from tkinter.ttk import Label, LabelFrame, Progressbar, Style
+
+from tkinter.ttk import Label, LabelFrame, Progressbar, Style, Combobox
 import customtkinter
 from tkinter import filedialog
 from muspinsim.input.keyword import *
@@ -34,19 +35,32 @@ from matplotlib.figure import Figure
 
 import os
 from threading import Thread
+import threading
 import ase
 from ase.gui.images import Images
 from ase.gui.gui import GUI
+
 # -------------------------------------
 #       Homemade scripts
 # -------------------------------------
+
 import backend_mss as bck
 import socket_comunication_mss as sck
 import read_entries as r_e
 
 
 class MuSS_window(tk.Tk):
-    ''' '''
+    ''' 
+     MuSS_window is the 'chassis' for the MuSS progarm
+     The object of this class has tkinter methods and also the atomistic parameters
+     All major frames are defined (in the Defining Frames section ) here and the entries are stored accoring to the muspinsim indexing of parameters
+     The main functionalities are defined in the Auxiliary functions but the are built on top (or referencing) of other functions defined in the backend
+        Note:
+        Creation of thread to peform calculation so the GUI does not freeze 
+        The Tkinter version used here is a single thread GUI so eveything depening on the UI must run on the main thread (but the object can be referenced in other threads)
+    Run this script: create a MuSS_window object and run tkinter mainloop 
+    :) 
+    '''
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -74,17 +88,19 @@ class MuSS_window(tk.Tk):
         
         self.dipolar_dic = {} #stored the dipolar interaction distances with the key as the number of interaction
         #(why not combine fitting history with result_dic)
-        
+
         # store the simulated data, indices are number of the fitting loop [0]=initials values
         self.fitting_history = []  #
          # store  the variables and time and results, key of the dictionary is the list of parameters
         self.result_dic = {}   
-        #change the name to fitting_param
-        self.fitting_variables = ' '        
+        #change the name to fitting_para
+        # fit_params_to_generate_simulation is the variable  that contains the value of the variable that has been senf from wimda to MuSS to generate new simulation data 
+        self.fit_params_to_generate_simulation = ' '        
         # checks if the fitting is occuring (None in the first run, True when fitting)
         self.fit_state = None               
         # array with wimda times (x-values) to do the interpolation in muspinsim
-        self.wimda_time = None             
+        self.wimda_time = None
+                 
         
         # ------------------------------------------------------------------------------------------------------
         #                                   Esentials
@@ -178,7 +194,7 @@ class MuSS_window(tk.Tk):
         self.cif_check.grid(row=3, column=0, padx=5, pady=5)
         # Create a button to load CIF files, triggering the frame_structure method when clicked
         self.cif_btn = customtkinter.CTkButton(
-            self.frame_essentials, text="Load", command=lambda: self.frame_structure(), width=40)
+            self.frame_essentials, text=" Cif Load", command=lambda: self.frame_structure(), width=40)
         self.cif_btn.grid(row=3, column=1, padx=5, pady=5)
 
     def frame_plot(self):
@@ -336,12 +352,12 @@ class MuSS_window(tk.Tk):
 
         # Create a 'Disconnect' button to stop the socket connection
         self.send_btn = customtkinter.CTkButton(
-            self.socketa, text="Send", command=lambda: sck.send_function(bck.data_processing_xy(self)), width=50)
+            self.socketa, text="Send", command=lambda: sck.sckt_send_function(bck.data_processing_xy(self)), width=50)
         self.send_btn.grid(row=4, column=0, padx=5, pady=5)
 
         # Create read button to interpret the data recieved in the socket
         self.read = customtkinter.CTkButton(
-            self.socketa, text="Read", command=lambda: sck.receiver(), width=50)
+            self.socketa, text="Read", command=lambda: sck.sckt_receive_and_interpret_message(self), width=50)
         self.read.grid(row=3, column=0, padx=5, pady=5)
 
     def frame_structure(self):
@@ -428,7 +444,7 @@ class MuSS_window(tk.Tk):
         self.file_menu.add_command(
             label="Save As", command=lambda: bck.save_as(self))
         self.file_menu.add_command(
-            label="Load", command=lambda: bck.load_file(self))
+            label="Load", command=lambda: bck.load_input_file(self))
         self.file_menu.add_command(
             label="Load and Run", command=lambda: self.load_and_run())
         
@@ -443,6 +459,27 @@ class MuSS_window(tk.Tk):
         self.more_menu.add_command(
             label="Others", command=lambda: self.frame_Others())
         
+        # 
+        self.options_menu = tk.Menu(self.mainmenu, tearoff=0)
+        self.mainmenu.add_cascade(label="Options", menu=self.options_menu)
+
+        self.options_menu.add_command(
+            label="Fitting Parameters", command=lambda: self.frame_data())
+
+        # Help is a way to undestand and be helped using the MuSS
+        self.help_menu = tk.Menu(self.mainmenu, tearoff=0)
+        self.mainmenu.add_cascade(label="Help", menu=self.help_menu)#
+
+        # to be an hiperlink to the documentations
+        self.help_menu.add_command(
+            label="Documentation", command=lambda: self.frame_data())
+        #Retuns information on active threads
+        self.help_menu.add_command(
+            label="Active Treads", command=self.handle_active_thhread )
+        #handle when the error happen in the thread so process can't stop (this is a manual temporary alternative)
+        self.help_menu.add_command(
+            label="Stop Process bar", command=self.handle_process_bar_failed_stop)
+
         self.mainmenu.add_command(label="Exit", command=self.destroy) #Exit the program
         
         # Configure the main window to display the created menu bar
@@ -606,26 +643,75 @@ class MuSS_window(tk.Tk):
         self.fitting_tolerance_value.grid(row=0, column=5, padx=10, pady=5)
 
     def frame_fit_selection(self):
+        '''
+        The atomistic parameters to be used as fitting parameters are selected here
+        '''
         self.fit_selection_frame = LabelFrame(
             self, text="Fit Selection", width=900, height=100)
-        self.fit_selection_frame.place(x=250, y=720)
+    
+        self.fit_selection_frame.place(x=600, y=20)
 
-        self.field_check = customtkinter.CTkCheckBox(
-            self.fit_selection_frame, text="Field")
-        self.field_check.grid(row=0, column=0, padx=5, pady=5)
+        
+        self.max_selection = 3
+        self.selected_items = []
 
-        self.dipole_check = customtkinter.CTkCheckBox(
-            self.fit_selection_frame, text="Dipole")
-        self.dipole_check.grid(row=0, column=1, padx=5, pady=5)
+        self.options = ['field', 'dipolar', 'zeeman', 'intrinsic_field', 'quadrupolar']
 
-        self.intrisic_check = customtkinter.CTkCheckBox(
-            self.fit_selection_frame, text="Intrinsic")
-        self.intrisic_check.grid(row=0, column=2, padx=5, pady=5)
+        self.dropdown = Combobox(self.fit_selection_frame, values=self.options)
+        self.dropdown.grid(row=0, column=0,columnspan=2,padx=5, pady=5)
+        #self.dropdown.pack(pady=10)
+        self.dropdown.bind("<<ComboboxSelected>>", self.add_selection)
+        
+        self.label_of = customtkinter.CTkLabel(self.fit_selection_frame,text="---")
+        #self.label_of.configure(state=tk.DISABLED)
+        #self.show_button.pack(pady=10)
+        self.label_of.grid(row=1, column=0,columnspan=2, padx=0, pady=5)
+
+        self.show_button =customtkinter.CTkButton(self.fit_selection_frame, text="Show", command=self.show_selected_options,width=50)
+        #self.show_button.pack(pady=10)
+        self.show_button.grid(row=2, column=0, padx=0, pady=5)
+
+        self.clear_button = customtkinter.CTkButton(self.fit_selection_frame, text="Clear", command=self.clear_selected_options,width=50)
+        #self.show_button.pack(pady=10)
+        self.clear_button.grid(row=2, column=1, padx=0, pady=5)
 
     # ---------------------------------------------------------------------------------------------------------------------
     #                                       Auxiliary Functions
     # --------------------------------------------------------------------------------------------------------------------
 
+    def add_selection(self, event):
+        selected_option = self.dropdown.get()
+
+        if selected_option:
+            if selected_option not in self.selected_items:
+                if len(self.selected_items) >= self.max_selection:
+                    # Remove the oldest item
+                    oldest_item = self.selected_items.pop(0)
+                    
+                
+                # Add the new item
+                self.selected_items.append(selected_option)
+                # Optionally, clear the combobox
+                self.dropdown.set('')
+                
+                #self.label_of.configure(text=self.selected_items)
+            else:
+                tk. messagebox.showinfo("Duplicate Selection", "This option is already selected.")
+                self.dropdown.set('')
+               
+    def show_selected_options(self):
+        if self.selected_items:
+            options = "\n".join(self.selected_items)
+            tk.messagebox.showinfo("Selected Options", f"Selected Options:\n{options}")
+        else:
+            tk.messagebox.showinfo("Selected Options", "No options selected.")
+
+    def clear_selected_options(self):
+    
+        self.selected_items=[]
+        self.label_of.configure(text=self.selected_items)
+
+        
     def run_simulation_thread(self):
         """
         loads a file if there is none, update parameters if necessary, 
@@ -633,18 +719,22 @@ class MuSS_window(tk.Tk):
         """
         # Imidiatly the Loading bar is created to signal the ongoing process in the background
         self.create_processBar()
+         # DEBUG1
+        print('################################ INSIDE RUN SIMULATION PROGRESS BAR HAS BEEN CREATED',self.fit_params_to_generate_simulation, self.fit_state,self.parameters.evaluate())
 
         # If no input file it is possible to loa one
         if self.input_txt_file == ' ':
-            bck.load_file(self)
+            bck.load_input_file(self)
         # If not fitting, parameters are updated
         if self.fit_state == None:
             bck.update_parameters(self)
 
         # create a thread where the simulation runs
-        run_simulation_thread = Thread(target=self.simulate_and_post_event,
+         # DEBUG1
+        print('################################ ABOUT TO ENTER THE THREA TO SIMULATE AND POST',self.fit_params_to_generate_simulation, self.fit_state,self.parameters.evaluate())
+        run_simulation_thread_0 = Thread(target=self.simulate_and_post_event,
                          args=(self,), daemon=True)
-        run_simulation_thread.start()
+        run_simulation_thread_0.start()
 
     def load_and_run(self):
         """
@@ -654,7 +744,7 @@ class MuSS_window(tk.Tk):
         # Imidiatly the Loading bar is created to signal the ongoing process in the background
         self.create_processBar()
         # load input
-        bck.load_file(self)
+        bck.load_input_file(self)
 
         # create a thread where the simulation runs
         run_simulation_thread_1 = Thread(target=self.simulate_and_post_event,
@@ -670,7 +760,11 @@ class MuSS_window(tk.Tk):
         self.create_processBar()
 
         # reads the KEntries and convert them into parameters
-        r_e.iniciate_params01(self)
+        print('#################################################################################################',self.fit_state)
+        if self.fit_state==None:
+           #r_e.iniciate_params01(self)
+           pass
+           
 
         #create a thread where the simulation runs
         run_simulation_thread_2 = Thread(target=self.simulate_and_post_event,
@@ -684,21 +778,28 @@ class MuSS_window(tk.Tk):
         and triggers an event(send or show in graph) upon completion.
         '''
         # runs the simulation
+        
         bck.run_simulation(self)
+         # DEBUG1
+        print('################################ ENTERED THE THREAD AND THE SIMULATION HAS RUN',self.fit_params_to_generate_simulation, self.fit_state,self.parameters.evaluate(),'results',self.results)
 
         # Stops the loading bar
+        
         self.event_generate('<<ThreadFinished>>')
 
     def handle_simulation_thread_completion(self, event):
         """
-        Handles actions to be performed when a simulation hread stops
+        Handles actions to be performed when a simulation thread stops
         sending the data to wimda or showing it in graph (in the case no fitting is occuring)
         """
         # In the case of fitting the data is sent to WiMDA if not is shown in the UI graph
+         # DEBUG1
+        print('################################ ENTERED THE HANDLE OF THINGS',self.fit_params_to_generate_simulation, self.fit_state,'PARAMETERS EVALUATED===============',self.parameters.evaluate())
+        bck.graph_update_and_retrieve_time(self)
         if self.fit_state == True:
-            sck.send_function(bck.data_processing_xy(self))
-        else:
-            bck.graph_update(self)
+            sck.sckt_send_function(bck.data_processing_xy(self))
+        
+        
     
         # In the completion of task destroy processbar
         self.processBar.destroy()
@@ -719,11 +820,9 @@ class MuSS_window(tk.Tk):
         simulated results that are stored are send to client
         this happens when the parameters has not change (or almost has not change)
         """
-        #Debug print
-        #print('entered send stored result')
 
         # send data to client
-        sck.send_function(bck.data_processing_stored(self))
+        sck.sckt_send_function(bck.data_processing_stored(self))
 
     def run_send(self, _): ####????????????????????????
         """
@@ -732,12 +831,16 @@ class MuSS_window(tk.Tk):
         """  
         # Debug print
         print('inside run send')
-
+         # DEBUG1
+        print('################################ WE ENTER SEND_RUN',self.fit_params_to_generate_simulation, self.fit_state,self.parameters.evaluate())
         # The parameters are updated from self.fitting_variables to self.parameters:
         bck.update_param_spec(self)
+         # DEBUG1
+        print('################################ AFTER UPDATING THE PARAMETERS',self.fit_params_to_generate_simulation, self.fit_state,self.parameters.evaluate())
         # with the updates parameters the simulation runs
         # in the run thread there is an event that depending on the self.state_fitting will senf the results to wimda
         self.run_simulation_thread()
+        
 
     def store_tkentries(self):
         """ 
@@ -770,4 +873,23 @@ class MuSS_window(tk.Tk):
         self.kEntries[21] = self.experiments
         self.labels = ['name', 'spins', 'time', '']
     
+
+    def handle_active_thhread(self):
+        ''' Prints information about current threads
+        '''
+        active_treads=threading.enumerate()
+        print(f'Currently there are {len(active_treads)} threads active')
+        for i in active_treads:
+            print(f' Thread name: {i.name}, alive: {i.is_alive()}')
+        print(f'This message was originated from the following thread {threading.current_thread()}')
+
+
+    def handle_process_bar_failed_stop(self):
+        try:
+            self.processBar.destroy()
+        except:
+            print('Failed to destroy process bar')
+        
+    
+        
     # ---------------------------------------------------------------------------------------------------------------------

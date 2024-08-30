@@ -92,26 +92,7 @@ def iniciate_params01(object_of_class):
         object_of_class.parameters._keywords['intrinsic_field'] = KWIntrinsicField(
             object_of_class.intrisic_field_value.get("1.0", "end-1c"))
 
-    '''if object_of_class.polarization_value.get(1.0, tk.END) != '\n':
-        object_of_class.parameters._keywords['polarization'] = KWPolarization(
-            object_of_class.polarization_value.get("1.0", "end-1c"))'''
-
-    '''if object_of_class.orientation_value.get("1.0", "end-1c") != '\n':
-        object_of_class.parameters._keywords['orientation'] = KWPolarization(
-            object_of_class.orientation_value.get("1.0", "end-1c"))'''
-    # object_of_class.parameters._keywords['temperature'] = KWTemperature(
-    #    object_of_class.polarization.get())
-    
-
-    '''if object_of_class.quadrupolar_value.get("1.0", "end-1c") != '\n':
-        object_of_class.parameters._keywords['quadrupolar'] = KWQuadrupolar(
-            object_of_class.quadrupolar_value.get("1.0", "end-1c"))'''
-
-    '''if object_of_class.hyperfine_value.get("1.0", "end-1c") != '\n':
-        object_of_class.parameters._keywords['hyperfine'] = KWHyperfine(
-            object_of_class.hyperfine_value.get("1.0", "end-1c"))'''
-
-
+  
     if object_of_class.zeeman_value.get(1.0, tk.END) != '\n':
         b = get_lines(object_of_class.zeeman_value)
         ana = {f'zeeman_{i+1}': KWZeeman(

@@ -26,115 +26,112 @@ import ase
 import ase.data
 from ase.visualize import view
 import os
+
 # --------------------------------------
 #       Homemade scripts
 # -------------------------------------
 
 from input_class import Create_Input
 
-
 # -------------------------------------------------------------------------------------------------------
 #                                           DATA PROCESSING
 # -------------------------------------------------------------------------------------------------------
 
-
 def data_processing_stored(object_of_class, terminator='Hello'):
-    ''' '''  # what does the function do
-    xy = object_of_class.result_dic[object_of_class.fitting_variables]
-    # print('****************************************')  # debug
-    # print(xy, type(xy))  # debug
+    ''' Retrives the stored data when the parameters (fit_params_to_generate_simulation) has not changed
+    with result_dic which is the dictionary where xy are stored as values and the key is the set of parameters that is being fitted to
+    '''
+    # retrive the stored xy according to set of parameters changed
+    xy = object_of_class.result_dic[object_of_class.fit_params_to_generate_simulation]
 
+    # format the message to be sent so that client can decode it retrieving y and the parameters
     data_str_terminator = ' ' + xy + ' value ' + \
-        object_of_class.fitting_variables + terminator
-    # print(data_str_terminator)  # debug
+        object_of_class.fit_params_to_generate_simulation + terminator
+    
     return data_str_terminator
 
 
 def data_processing_xy(object_of_class, terminator='Hello'):
+    '''
+    format the data to be read and interpreted by the client incorporated data_processing
+    determines the terminator to signal the end of the message
+    '''
 
+    # list_x to hold x_axis_values
     list_x = []
-    for i in range(len(object_of_class.x)):
-        list_x.append(object_of_class.x[i][0])
+
+    for i in range(len(object_of_class.x_axis_simulated_values)):
+        list_x.append(object_of_class.x_axis_simulated_values[i][0])
 
     xy = data_processing(list_x) + ' ' + \
         data_processing(object_of_class.results)
 
-    if object_of_class.fitting_variables == ' ':
+    if object_of_class.fit_params_to_generate_simulation == ' ':
         dt_processing_extract_var(object_of_class)
 
+    # define the sequence of information cleint is expecting
     data_str_terminator = ' ' + xy + ' value ' + \
-        object_of_class.fitting_variables + terminator
+        object_of_class.fit_params_to_generate_simulation + terminator
 
-    object_of_class.fitting_history.append(data_str_terminator)
+    # assign the result_dic to have the key as the set of parameters being fitted and the value the simulation result considering those parameters
+    object_of_class.result_dic[object_of_class.fit_params_to_generate_simulation] = xy
+    
+    #Debug print
+    print(f'The parameters set being fiited is {object_of_class.result_dic.keys()}, this was retrived from the stored dictionary')
 
-    object_of_class.result_dic[object_of_class.fitting_variables] = xy
-    print('***********************result dic when we are in the send processing',
-          object_of_class.result_dic.keys())
-    # debug
     return data_str_terminator
 
 
 def data_processing(data):
+    ''' Process the data resulting of the simulation
+    Essentially from array to string cleaning '[' , ']'and  ','
+    '''
+    #used here to avoid scientific notation
     np.set_printoptions(suppress=True)
-    # print('ammmm')
+
+    #turn array into string
     data_string = str(data)
+
+    # clean characters
     results_string_1 = data_string.replace('[', '')
     results_string_1 = results_string_1.replace(',', '')
     results_string_2 = results_string_1.replace(']', '')
+
+    # introduce space before string
     resultsToClient = ' '+results_string_2
+
     return resultsToClient
 
+def dipolar_fitting_parameter(object_of_class,simmetry):
+    '''
+    '''
+    #x= p*np.sin(theta)*np.cos(phi)
+    #y=p*np.sin(theta)* np.sin(phi)
+    #z=p*cos(tetha)
+    #p=sqrt(x^2+y^2+z^2)
 
-'''def data_processing_xy(object_of_class, terminator='Hello'):
-    data_processing(object_of_class.x)
-    data_processing(object_of_class.results)
-    xy = data_processing(object_of_class.x) + ' ' + \
-        data_processing(object_of_class.results)
-    return xy
+    #object_of_class.fit_params_to_generate_simulation = distance
 
-
-def data_processing(data):
-    np.set_printoptions(suppress=True)
-    # print('ammmm')
-    data_string = str(data)
-    results_string_1 = data_string.replace('[', '')
-    results_string_1 = results_string_1.replace(',', '')
-    results_string_2 = results_string_1.replace(']', '')
-    resultsToClient = ' '+results_string_2
-    return resultsToClient'''
-
+    #how many of the dipolar variables are being fitted against
+    pass 
 
 def dt_processing_extract_var(object_of_class):
     ''' Here we are extracting the initial variables'''
     '''here we get the variables from the te parameters directly meaning we need fiiting to be equated with variables'''
-    # print('ab')
+
     var = 'field'
     i_params = object_of_class.parameters.evaluate()
     fit_var = i_params[var].value[0]
-    # if object_of_class.pvar_fitting_history == []:
-    # now that things are new we try only one parameter
-    #    object_of_class.pvar_fitting_history.append([float(fit_var), 0, 0])
-    #    pass
+    
     if len(fit_var) == 1:
-        # object_of_class.pvar_fitting_history.append([float(fit_var), 0, 0])
         fit_var = [float(fit_var), 0, 0]
     elif len(fit_var) == 2:
-        # object_of_class.pvar_fitting_history.append(
-        #   [float(fit_var[0]), float(fit_var[0]), 0])
+        
         fit_var = [float(fit_var[0]), float(fit_var[0]), 0]
-
-    # i_params[var].valufloat(fit_var), 0, 0]e[0]
-    # print('here')
-    # fit_var = data_processing(i_params[var].value[0])
-    # print(fit_var)
-    # print('a')
-    # print(fit_var, type(fit_var))
     fit_var = data_processing(fit_var)
-    # print(fit_var, type(fit_var))
 
-    object_of_class.fitting_variables = fit_var
+    object_of_class.fit_params_to_generate_simulation = fit_var
 
-    # return fit_var
 
 
 def clean_whitespace_and_brackets(string: str) -> str:
@@ -142,23 +139,51 @@ def clean_whitespace_and_brackets(string: str) -> str:
         ']', '').replace('[', '').replace(
         '    ', ' ').replace('   ', ' ').replace('  ', ' ')
     return result_string
+# --------------------------------------------------------------------------------------------------------------------
+#                                                     Fitting
+# --------------------------------------------------------------------------------------------------------------------
+
+def fitting_options_window(object_of_class):
+    top = customtkinter.CTkToplevel(object_of_class)
+    dir = os.path.dirname(__file__)
+    filename = dir+'\logo_mm.ico'
+    # top.iconbitmap(filename)
+    top.after(200, lambda: top.iconbitmap(filename))
+    top.title("Fitting parameters")
+
+    
+    pass
 
 # -------------------------------------------------------------------------------------------------------
 #                                           File Reading
 # -------------------------------------------------------------------------------------------------------
 
 
-def load_file(object_of_class):
-
+def load_input_file(object_of_class):
+    '''
+    Opens the txt inout file, then variables are intepreted using the MuSpinInput class
+    The characteristic called paramteres is used to store the parameters
+    The variables are then displayed in the UI
+    '''
+    
     object_of_class.input_txt_file = filedialog.askopenfilename()
-    print(object_of_class.input_txt_file)
+    # Debug print
+    print(f'The file {object_of_class.input_txt_file} was selected as the input file')
+
+    # store parameters
     object_of_class.parameters = MuSpinInput(open(object_of_class.input_txt_file))
+
+    #displays variables in UI
     read_variables(object_of_class)
 
 
 def run_simulation(object_of_class):
-
+    '''
+    The Simulation runs and the results value is determined
+    '''
+    #Assert the parameters as the input of the simulation
     experiment = ExperimentRunner(object_of_class.parameters)
+    
     object_of_class.results = experiment.run()
 
 
@@ -166,14 +191,11 @@ def get_path(object_of_class):
     '''
     Returns the path where the txt file will be saved
     '''
-    '''
-    Returns the path where the txt file will be saved
-    '''
+    #define object_of_class.username
     object_of_class.name_entry.configure()
     path = object_of_class.username + '\Documents' + \
         '/'+object_of_class.name_entry.get()+'.txt'
-    # print('This is the name of the txt that could be created', path)
-    # print('This is the name of the txt that could be created', path)
+    
     return path
 
 
@@ -219,23 +241,22 @@ def save_as(object_of_class):
     # save_path.config()
 
 
-def graph_update(object_of_class):
-
-    # clean_graph
-
-    # clean_graph
+def graph_update_and_retrieve_time(object_of_class):
+    '''
+    The graph updates and display the result of the simulation
+    retrive x-axis values (time)
+    '''
+    #the graph is cleared
     object_of_class.a.clear()
-    timefrom = float(object_of_class.time_entry1.get())
-    timeto = float(object_of_class.time_entry2.get())
-    timedivision = float(object_of_class.time_entry3.get())
-    # object_of_class.a.plot(np.linspace(
-    #    timefrom, timeto, timedivision), object_of_class.results)
+
+    #get the x_axis value(time) directly from the parameters plot results depending on time
     object_of_class.a.plot(object_of_class.parameters.evaluate()[
                            'time'].value, object_of_class.results)
+    # display on the canvas
     object_of_class.canvas.draw()
-    # object_of_class.x = np.linspace(0, 32, 100)
-    # object_of_class.x = np.linspace(timefrom, timeto, timedivision)
-    object_of_class.x = object_of_class.parameters.evaluate()['time'].value
+
+    #store x_axis value (time) in x_axis_simulation_values
+    object_of_class.x_axis_simulated_values = object_of_class.parameters.evaluate()['time'].value
 
 
 def parameters_initialize(object_of_class):
@@ -480,13 +501,25 @@ def generate_cell_components_window(object_of_class):
     # define elements of the table
     columns = ("#1", "#2", "#3", "#4", '#5')
     tree = ttk.Treeview(top, columns=columns, show='headings')
+    
+    def sort_columns(column,descending):
+        data = [(tree.item(item)["values"], item) for item in tree.get_children()]
+        data.sort(key=lambda x: x[0][tree["columns"].index(column)], reverse=descending)
+
+        for index, (values, item) in enumerate(data):
+            tree.move(item, '', index)
+
+        tree.heading(column, command=lambda: sort_columns(column, not descending))
+
+
+    pass
 
     # define headings
-    tree.heading("#1", text="Symmbols")
-    tree.heading("#2", text="Strentgh")
-    tree.heading("#3", text="Position")
-    tree.heading("#4", text="Spin")
-    tree.heading("#5", text="Distance")
+    tree.heading("#1", text="Symmbols",command=lambda:sort_columns('#1',False))
+    tree.heading("#2", text="Strentgh",command=lambda:sort_columns('#2',False))
+    tree.heading("#3", text="Position",command=lambda:sort_columns('#3',False))
+    tree.heading("#4", text="Spin",command=lambda:sort_columns('#4',False))
+    tree.heading("#5", text="Distance",command=lambda:sort_columns('#5',False))
 
     # insert elemets in the structure_data to the table
     for item in object_of_class.structure_data:
@@ -529,8 +562,7 @@ def generate_cell_components_window(object_of_class):
 
     # Pack the Treeview widget
     tree.pack(fill='both', expand=True)
-
-
+    
 def update_spin_dipolar_interaction(object_of_class, str_dipolar_value, indexx, index_in_structure_data_selected_components):
     ''' add the spin and dipolar interactions into the dipolar frame
         update object_of_class.dipolar_dic[
@@ -564,7 +596,7 @@ def update_spin_dipolar_interaction(object_of_class, str_dipolar_value, indexx, 
 
     # store the dipolar interactions selected
     object_of_class.dipolar_dic[spin_entry_position] = str_dipolar_value
-    print(object_of_class.dipolar_dic,"<  < >")
+    print(object_of_class.dipolar_dic,"<  ")
 
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     Update data
@@ -580,13 +612,11 @@ def update_parameters(object_of_class):
             object_of_class.first_param)
 
 
+
+
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     DRAFT
 # --------------------------------------------------------------------------------------------------------------------
-
-
-
-
 
 def read_variables(object_of_class):
     '''To facilitate redability i_params is used instead'''
@@ -656,3 +686,19 @@ def read_variables(object_of_class):
     #                   Dipolar          #
     # Recognize how manny couplings we ha
 
+def update_param_spec(object_of_class):
+    # print('we entered param')
+    # my_string = " ".join(str(element)
+    #                     for element in object_of_class.fit_params_to_generate_simulation)
+    # print('fitting vari', object_of_class.fit_params_to_generate_simulation)
+    # print('my tring', my_string)
+    # i_params = object_of_class.parameters.evaluate()
+    # print('param before', i_params['field'].value[0])
+    object_of_class.parameters._keywords["field"] = KWField(
+        object_of_class.fit_params_to_generate_simulation)
+    
+    #object_of_class.parameters
+    i_params = object_of_class.parameters.evaluate()
+    print('//////fitting variables', object_of_class.fit_params_to_generate_simulation)
+    print('***the', i_params['field'].value[0])
+    # print('param after', i_params['field'].value[0])
