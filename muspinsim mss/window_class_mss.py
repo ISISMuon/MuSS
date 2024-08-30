@@ -342,12 +342,12 @@ class MuSS_window(tk.Tk):
 
         # Create Connect that initiate the connection (if desable means server is operating)
         self.connect_btn = customtkinter.CTkButton(
-            self.socketa, text="Connect", state=self.statess, command=lambda: sck.server_connection_tread(self), width=50)
+            self.socketa, text="Connect", state=self.statess, command=lambda: sck.start_server_connection_thread(self), width=50)
         self.connect_btn.grid(row=3, column=1, padx=5, pady=5)
 
         # Create send button to send strings to the client (wimda)
         self.disconnect_btn = customtkinter.CTkButton(
-            self.socketa, text="Disconnect", command=sck.disconnect_socket, width=50)
+            self.socketa, text="Disconnect", command=sck.close_socket_connection, width=50)
         self.disconnect_btn.grid(row=4, column=1, padx=5, pady=5)
 
         # Create a 'Disconnect' button to stop the socket connection
@@ -357,7 +357,7 @@ class MuSS_window(tk.Tk):
 
         # Create read button to interpret the data recieved in the socket
         self.read = customtkinter.CTkButton(
-            self.socketa, text="Read", command=lambda: sck.sckt_receive_and_interpret_message(self), width=50)
+            self.socketa, text="Read", command=lambda: sck.receive_and_process_socket_message(self), width=50)
         self.read.grid(row=3, column=0, padx=5, pady=5)
 
     def frame_structure(self):
@@ -796,7 +796,7 @@ class MuSS_window(tk.Tk):
         print('################################ ENTERED THE HANDLE OF THINGS',self.fit_params_to_generate_simulation, self.fit_state,'PARAMETERS EVALUATED===============',self.parameters.evaluate())
         bck.graph_update_and_retrieve_time(self)
         if self.fit_state == True:
-            sck.sckt_send_function(bck.format_simulation_data(self))
+            sck.send_data(bck.format_simulation_data(self))
         
         
     
@@ -821,7 +821,7 @@ class MuSS_window(tk.Tk):
         """
 
         # send data to client
-        sck.sckt_send_function(bck.retrieve_stored_simulation_data(self))
+        sck.send_data(bck.retrieve_stored_simulation_data(self))
 
     def run_send(self, _): ####????????????????????????
         """

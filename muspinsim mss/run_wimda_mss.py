@@ -26,7 +26,7 @@ if __name__ == "__main__":
     App = MuSS_window()
 
     # the server is initiated ans listening
-    sck.server_connection_tread(App)
+    sck.start_server_connection_thread(App)
 
     #get the current directory as to create relative path for icon
     dir = os.path.dirname(__file__)
