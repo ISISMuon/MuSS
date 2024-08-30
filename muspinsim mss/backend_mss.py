@@ -4,6 +4,8 @@ Author: Paula Franco
 Date: February 2024
 
 Summary:
+This module provides a set of functions for managing and interacting with simulation parameters, 
+including GUI integration, data processing, and simulation management for a scientific or engineering application
 
 """
 import numpy as np
@@ -37,70 +39,77 @@ from input_class import Create_Input
 #                                           DATA PROCESSING
 # -------------------------------------------------------------------------------------------------------
 
-def data_processing_stored(object_of_class, terminator='Hello'):
-    ''' Retrives the stored data when the parameters (fit_params_to_generate_simulation) has not changed
-    with result_dic which is the dictionary where xy are stored as values and the key is the set of parameters that is being fitted to
+def retrieve_stored_simulation_data(object_of_class, terminator='Hello'):
+    ''' 
+    Retrieves the stored simulation data based on the current parameters.
+    
+    This function retrieves the previously stored xy data from the result_dic using the current set of parameters (fit_params_to_generate_simulation). 
+    The retrieved data is then formatted into a string that includes the data, parameter values, and a terminator string.
     '''
-    # retrive the stored xy according to set of parameters changed
+    # retrive the stored xy according to set of current simulation parameters
     xy = object_of_class.result_dic[object_of_class.fit_params_to_generate_simulation]
 
     # format the message to be sent so that client can decode it retrieving y and the parameters
-    data_str_terminator = ' ' + xy + ' value ' + \
+    formatted_data_str = ' ' + xy + ' value ' + \
         object_of_class.fit_params_to_generate_simulation + terminator
+    #retrieve_stored_simulation_data
     
-    return data_str_terminator
+    return formatted_data_str
 
-
-def data_processing_xy(object_of_class, terminator='Hello'):
+def format_simulation_data(object_of_class, terminator='Hello'):
     '''
-    format the data to be read and interpreted by the client incorporated data_processing
-    determines the terminator to signal the end of the message
+    Formats the simulation data to be read and interpreted by the client,
+    and appends a terminator to signal the end of the message.
+
+    It also updates the simulation_object's result dictionary with the formatted data, using the
+    current set of parameters as the key.
     '''
 
-    # list_x to hold x_axis_values
-    list_x = []
+    # Initialize list to hold the x-axis values
+    x_values = [] 
 
+    # Extract the first element from each simulated x-axis value and store it in the list
     for i in range(len(object_of_class.x_axis_simulated_values)):
-        list_x.append(object_of_class.x_axis_simulated_values[i][0])
+        x_values.append(object_of_class.x_axis_simulated_values[i][0])
 
-    xy = data_processing(list_x) + ' ' + \
+    # Process the x-axis values and results, then combine them into a single string
+    xy_data = data_processing(x_values) + ' ' + \
         data_processing(object_of_class.results)
-
+    
+    # Check if no parameters are set; if so, extract and update the parameters
     if object_of_class.fit_params_to_generate_simulation == ' ':
-        dt_processing_extract_var(object_of_class)
+        extract_initial_variables(object_of_class)
 
     # define the sequence of information cleint is expecting
-    data_str_terminator = ' ' + xy + ' value ' + \
+    formatted_data_str = ' ' + xy_data + ' value ' + \
         object_of_class.fit_params_to_generate_simulation + terminator
 
-    # assign the result_dic to have the key as the set of parameters being fitted and the value the simulation result considering those parameters
-    object_of_class.result_dic[object_of_class.fit_params_to_generate_simulation] = xy
+    # Update the result dictionary with the current parameters and processed data
+    object_of_class.result_dic[object_of_class.fit_params_to_generate_simulation] = xy_data
     
     #Debug print
     print(f'The parameters set being fiited is {object_of_class.result_dic.keys()}, this was retrived from the stored dictionary')
 
-    return data_str_terminator
-
+    return formatted_data_str
 
 def data_processing(data):
-    ''' Process the data resulting of the simulation
-    Essentially from array to string cleaning '[' , ']'and  ','
+    ''' 
+    Process the data resulting from the simulation (mainly)
+    Converts array to string, cleans unwanted characters and add space in the beguining of the string
     '''
-    #used here to avoid scientific notation
+    # Suppress scientific notation in the numpy output
     np.set_printoptions(suppress=True)
 
-    #turn array into string
+    # Convert the array to a string
     data_string = str(data)
 
-    # clean characters
-    results_string_1 = data_string.replace('[', '')
-    results_string_1 = results_string_1.replace(',', '')
-    results_string_2 = results_string_1.replace(']', '')
+    # Clean the string by removing unwanted characters
+    results_string = data_string.replace('[', '').replace(',', '').replace(']', '')
 
     # introduce space before string
-    resultsToClient = ' '+results_string_2
+    formatted_data_string = ' '+ results_string
 
-    return resultsToClient
+    return formatted_data_string
 
 def dipolar_fitting_parameter(object_of_class,simmetry):
     '''
@@ -115,99 +124,121 @@ def dipolar_fitting_parameter(object_of_class,simmetry):
     #how many of the dipolar variables are being fitted against
     pass 
 
-def dt_processing_extract_var(object_of_class):
-    ''' Here we are extracting the initial variables'''
-    '''here we get the variables from the te parameters directly meaning we need fiiting to be equated with variables'''
+def extract_initial_variables(object_of_class):
+    '''
+    Extracts and processes the initial variables for fitting and assigns the processed variables
+    to the `fit_params_to_generate_simulation` attribute of the simulation object.'''
 
+    # Define the variable name to extract
     var = 'field'
+    
+    # Evaluate and retrieve the parameters from the simulation object
     i_params = object_of_class.parameters.evaluate()
     fit_var = i_params[var].value[0]
-    
+
+    # Adjust the fitting variable based on its length
     if len(fit_var) == 1:
         fit_var = [float(fit_var), 0, 0]
     elif len(fit_var) == 2:
-        
         fit_var = [float(fit_var[0]), float(fit_var[0]), 0]
+    
+    # Process the fitting variable into a string format
     fit_var = data_processing(fit_var)
-
+    
+    # Assign the processed variable to the simulation object for use in generating the simulation
     object_of_class.fit_params_to_generate_simulation = fit_var
 
-
-
 def clean_whitespace_and_brackets(string: str) -> str:
+    ''' 
+    Cleans a string by removing brackets and reducing multiple spaces to a single space
+    by removing '[',']' and spaces in a string
+    '''
     result_string = string.replace(
         ']', '').replace('[', '').replace(
         '    ', ' ').replace('   ', ' ').replace('  ', ' ')
     return result_string
+
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     Fitting
 # --------------------------------------------------------------------------------------------------------------------
 
-def fitting_options_window(object_of_class):
-    top = customtkinter.CTkToplevel(object_of_class)
+def fitting_options_window(parent_object):
+    '''
+    '''
+    
+    # Create a new top-level window associated with the parent object
+    fitting_top_window = customtkinter.CTkToplevel(parent_object)
+    # Set the window icon
     dir = os.path.dirname(__file__)
     filename = dir+'\logo_mm.ico'
-    # top.iconbitmap(filename)
-    top.after(200, lambda: top.iconbitmap(filename))
-    top.title("Fitting parameters")
-
+    fitting_top_window.after(200, lambda: fitting_top_window.iconbitmap(filename))
     
-    pass
+    # Set the window title
+    fitting_top_window.title("Fitting parameters")
 
 # -------------------------------------------------------------------------------------------------------
 #                                           File Reading
 # -------------------------------------------------------------------------------------------------------
 
 
-def load_input_file(object_of_class):
+def load_input_file(simulation_object):
     '''
-    Opens the txt inout file, then variables are intepreted using the MuSpinInput class
+    Opens the txt input file, then variables are intepreted using the MuSpinInput class
     The characteristic called paramteres is used to store the parameters
     The variables are then displayed in the UI
     '''
     
-    object_of_class.input_txt_file = filedialog.askopenfilename()
+    simulation_object.input_txt_file = filedialog.askopenfilename()
     # Debug print
-    print(f'The file {object_of_class.input_txt_file} was selected as the input file')
+    print(f'The file {simulation_object.input_txt_file} was selected as the input file')
 
     # store parameters
-    object_of_class.parameters = MuSpinInput(open(object_of_class.input_txt_file))
+    simulation_object.parameters = MuSpinInput(open(simulation_object.input_txt_file))
 
     #displays variables in UI
-    read_variables(object_of_class)
+    populate_gui_with_parameters(simulation_object)
 
 
-def run_simulation(object_of_class):
+def run_simulation(simulation_object):
     '''
     The Simulation runs and the results value is determined
     '''
     #Assert the parameters as the input of the simulation
-    experiment = ExperimentRunner(object_of_class.parameters)
-    
-    object_of_class.results = experiment.run()
+    experiment = ExperimentRunner(simulation_object.parameters)
+    simulation_object.results = experiment.run()
 
 
-def get_path(object_of_class):
+def get_path(object_of_class)->str:
     '''
     Returns the path where the txt file will be saved
     '''
-    #define object_of_class.username
+    # Ensure the name entry field is configured correctly
     object_of_class.name_entry.configure()
+
+    # Construct the file path using the username and name entry input
     path = object_of_class.username + '\Documents' + \
         '/'+object_of_class.name_entry.get()+'.txt'
     
     return path
 
 
-def create(object_of_class):
-    """Here we are creatingf a new input file """
+def create_input_file(object_of_class):
+    ''''
+    Creates a new input file with the parameters specified in the simulation object's UI fields.
+    '''
+    
+    # Access the `inn` object from the simulation object
     inn = object_of_class.inn
+    
+    # Set the name and spins from the respective entry fields
     inn.name = object_of_class.name_entry.get()
     inn.spins = object_of_class.spins_entry.get()
+
+    # Set the time range if all time entries are provided
     if object_of_class.time_entry1.get() != '' and object_of_class.time_entry2.get() != '' and object_of_class.time_entry3.get() != '':
         inn.times = f'range({object_of_class.time_entry1.get()},{object_of_class.time_entry2.get()},{object_of_class.time_entry3.get()})'
+    
     inn.cif = False
-
     inn.zeeman = object_of_class.zeeman_value.get("1.0", "end-1c")
     print(inn.zeeman)
     inn.dipolar = object_of_class.dipolar_value.get("1.0", "end-1c")
@@ -217,34 +248,50 @@ def create(object_of_class):
     inn.intrisic_field = object_of_class.intrisic_field_value.get(
         "1.0", "end-1c")
     inn.celio = object_of_class.celio_value.get("1.0", "end-1c")
-
+    
+    # Set fitting parameters
     inn.fitting_tolerance = object_of_class.fitting_tolerance_value.get()
     inn.fitting_variables = object_of_class.fitting_variables_values.get(
         "1.0", "end-1c")
     inn.fitting_method = object_of_class.fitting_method.get()
-
+    
+    # Set additional simulation configuration
     inn.orientation = object_of_class.orientation_value.get("1.0", "end-1c")
     inn.polarization = object_of_class.polarization_value.get("1.0", "end-1c")
     inn.experiment = None
 
+    # Set the x and y axes for the simulation
     inn.x_axis = object_of_class.x_axis_value.get()
     inn.y_axis = object_of_class.y_axis_value.get()
 
+    # Finalize the creation of the input file
     inn()
 
 
-def save_as(object_of_class):
-    name = filedialog.askdirectory()
-    object_of_class.save_path.set(name)
-    print(name)
+def save_as_directory(object_of_class):
+    '''
+    This function prompts the user to select a directory where files will be saved. The selected path is then
+    stored in the simulation object's `save_path` attribute for future use.
+    '''
+    # Open a directory selection dialog and get the chosen path
+    selected_directory = filedialog.askdirectory()
+
+    # Update the simulation object's save path with the selected directory
+    object_of_class.save_path.set(selected_directory)
+
+    # Debug print to confirm the selected path
+    print(selected_directory)
     print(object_of_class.save_path.get())
-    # save_path.config()
-
-
+    
 def graph_update_and_retrieve_time(object_of_class):
     '''
-    The graph updates and display the result of the simulation
-    retrive x-axis values (time)
+    Updates the graph with the latest simulation results and retrieves the x-axis (time) values.
+    
+     Actions:
+    1. Clears the current graph.
+    2. Plots the results of the simulation against time.
+    3. Draws the updated graph on the canvas.
+    4. Stores the x-axis (time) values for future use.
     '''
     #the graph is cleared
     object_of_class.a.clear()
@@ -252,52 +299,47 @@ def graph_update_and_retrieve_time(object_of_class):
     #get the x_axis value(time) directly from the parameters plot results depending on time
     object_of_class.a.plot(object_of_class.parameters.evaluate()[
                            'time'].value, object_of_class.results)
-    # display on the canvas
+    
+    # display the updated graph on the canvas
     object_of_class.canvas.draw()
 
     #store x_axis value (time) in x_axis_simulation_values
     object_of_class.x_axis_simulated_values = object_of_class.parameters.evaluate()['time'].value
 
-
-def parameters_initialize(object_of_class):
-    object_of_class.parameters = MuSpinInput()
-
-    # call the
-    pass
-
-
-def read_gui_vaiables(input_object):
-    # ___________ Essential frame
-    if type(input_object) == MuSpinInput:
-        print('banana')
-        # here everything is read and transformed t
-    pass
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     CIF FILE
 # --------------------------------------------------------------------------------------------------------------------
 
 
 def selecting__nn_indices(object_of_class):
-    ''' Recognize the elemets selected in the ase viewer'''
+    '''
+    Recognizes the elements (atoms) selected in the ASE viewer and handles the 
+    initialization and visualization of the updated images with a muon added.
+    '''
 
-    # create the list where the selected atoms are stored
-    selected = []
+    # Initialize an empty list to store the indices of selected atoms
+    selected_atoms = []
+    
+    # Loop through the selected atoms in the ASE viewer and store their indices
     for i_images_selected_atom in range(0, len(object_of_class.images.selected)):
         if object_of_class.images.selected[i_images_selected_atom]:
-            selected.append(i_images_selected_atom)
+            selected_atoms.append(i_images_selected_atom)
 
-    # exict the initial view
+    # Exit the initial GUI view
     object_of_class.gui.exit()
 
+    # Create a new Images object with a muon added to the selected atoms
     object_of_class.images_with_muon = Images()
     object_of_class.images_with_muon.initialize(
-        [add_muon_to_aseatoms(object_of_class, nn_indices=selected)])
+        [add_muon_to_aseatoms(object_of_class.cif_read, nn_indices=selected_atoms)])
+    
+    # Initialize a new GUI to display the updated images with the muon
     object_of_class.gui_with_muon = GUI(object_of_class.images_with_muon)
+
+    # Run the new GUI
     object_of_class.gui_with_muon.run()
-    # view(add_muon_to_aseatoms(object_of_class, nn_indices=selected))
 
-
-def add_muon_to_aseatoms(object_of_class, theta: float = 180, phi: float = 0, nn_indices: list = None,
+def add_muon_to_aseatoms(atoms_structure:atoms, theta: float = 180, phi: float = 0, nn_indices: list = None,
                          muon_position: np.ndarray = None, plane_atom_index: int = None,
                          plane_atom_position: np.ndarray = None, midpoint=0.5) -> atoms:
     """
@@ -315,29 +357,37 @@ def add_muon_to_aseatoms(object_of_class, theta: float = 180, phi: float = 0, nn
                                 atom per se, but useful if it is. Do not define this and the index.
     :param midpoint: weighting of the midpoint to the two nnindices. 0 puts the muon on nn_indices[0], 1 puts it on
                      nn_indices[2]. 0.5 puts it in between the two.
+    
+    
     :return: ase_atoms with the muon
     """
 
-    # check either muon_position nor nn_indices is None
+    # Ensure that either muon_position or nn_indices is defined, but not both
     assert (muon_position is None) != (nn_indices is None)
 
-    ase_atoms = copy.deepcopy(object_of_class.cif_read)
+    # Make a deep copy of the ASE atoms structure to avoid modifying the original object
+    ase_atoms = copy.deepcopy(atoms_structure)
     # three possibilities:
     # 1) >2 nn_indices -> just find average, ignore angles
     # 2) 2 nn_indices or muon_position, theta not given (or 180) -> just find midpoint
     # 3) 2 nn_indices, theta and phi -- find muon_position using theta and phi
 
-    # see how many nn_indices there are
+    # If nn_indices is provided, calculate the muon position
     if nn_indices is not None:
-        muon_position = np.zeros((3,))
-        # possibility 1 (or 2)
+        muon_position = np.zeros((3,)) # Initialize muon position
+        
+        # Case 1: More than 2 nn_indices - take the average position of the neighbors
         if len(nn_indices) > 2:
             # if nn_indices are given, work out the average of them to get the muon position (there can be more than 2!)
             for nn_index in nn_indices:
                 muon_position += ase_atoms[nn_index].position / len(nn_indices)
+        
+        # Case 2: Two nn_indices and theta is 180 (or undefined) - place the muon at the midpoint
         elif (len(nn_indices) == 2 and (theta == 180 or theta is None)):
             muon_position = ase_atoms[nn_indices[0]].position * midpoint \
                 + ase_atoms[nn_indices[1]].position*(1-midpoint)
+        
+        # Case 3: Two nn_indices with defined theta and phi - calculate muon position based on angles
         elif len(nn_indices) == 2:
             # we need to calculate the muon position with theta and phi...
 
@@ -347,9 +397,10 @@ def add_muon_to_aseatoms(object_of_class, theta: float = 180, phi: float = 0, nn
             nn_position_2 = ase_atoms[nn_indices[1]].position
             # nn_position_2 = coord(nn_position_2[0], nn_position_2[1], nn_position_2[2])
 
-            # check the plane atom has been defined
+            # Ensure plane_atom_position or plane_atom_index is provided, but not both
             assert (plane_atom_index is None) != (plane_atom_position is None)
 
+            # Get the plane atom position from its index if not directly provided
             if plane_atom_position is None:
                 plane_atom_position = ase_atoms[plane_atom_index].position
             # plane_atom_position_c = coord(plane_atom_position[0], plane_atom_position[1], plane_atom_position[2])
@@ -361,61 +412,69 @@ def add_muon_to_aseatoms(object_of_class, theta: float = 180, phi: float = 0, nn
             print('Error with the muon position parameters.')
             assert False
 
-    # add the muon to the ASE atoms
+    # Create a new atom for the muon at the calculated or provided position
     muon = atom.Atom('X', position=muon_position)
 
-    # add the muon to the ASE atoms
+    # Append the muon to the ASE atoms structure
     ase_atoms.append(muon)
-    object_of_class.cif_read = ase_atoms
+
+    # Update the simulation object with the modified atoms
+    atoms_structure = ase_atoms
+
     return ase_atoms
 
-
-def make_supercell(object_of_class, unperturbed_atoms: atoms = None, unperturbed_supercell=1,
+def make_supercell(simulation_object, unperturbed_atoms: atoms = None, unperturbed_supercell=1,
                    small_output=False):
     """
     make a supercell with atoms_mu in the centre, and surrounded by unperturbed_supercell unperturbed_atoms
-    :param atoms_mu: ASE atoms, maybe with distortions, including muon
+    :param atoms_mu: (object of the windows class-muspinism object) ASE atoms, maybe with distortions, including muon
     :param unperturbed_atoms: ASE atoms of unperturbed structure
     :param unperturbed_supercell: number of instances of unperturbed_atoms to bolt on to the end of atoms_mu
     :return: supercell of atoms_mu+unperturbed_supercell*unperturbed_atoms. If small_output==False, return ASE atoms,
              otherwise returns a list of [atom type, position]
     """
+    # Retrieve the current atomic structure with the muon
+    atoms_mu = simulation_object.cif_read
 
-    atoms_mu = object_of_class.cif_read
-
+    # If no unperturbed_atoms are provided, use atoms_mu excluding the last atom (assumed to be the muon)
     if unperturbed_atoms is None:
         # we need to confirm that atom[-1] is the muon by convetion it is but...
         unperturbed_atoms = copy.deepcopy(atoms_mu[:-1])
     else:
         unperturbed_atoms = copy.deepcopy(unperturbed_atoms)
 
-    # if atoms_mu is already a supercell, then make unperturbed_atoms a supercell of the same size
+    # Adjust unperturbed_atoms to match the supercell dimensions of atoms_mu, if atoms_mu is already a supercell
     unperturbed_atoms = build.make_supercell(unperturbed_atoms, np.diag([1, 1, 1]) *
                                              atoms_mu.cell.lengths()[0] /
                                              unperturbed_atoms.cell.lengths()[0], wrap=False)
 
+    # Store the muon atom for later re-insertion after constructing the supercell
     muon = copy.deepcopy(atoms_mu[-1])
-
+    
+    # Initialize output list if small_output mode is enabled
     output_list = []
     if small_output:
         output_list = [[this_atom.symbol, this_atom.position]
                        for this_atom in atoms_mu]
-
+    
+    # Remove the muon from the original structure temporaril
     del atoms_mu[-1]
 
-    # we do the geometry of the supercell
+    # Construct the supercell by translating and replicating unperturbed_atoms around the central cell
     for x_sign in range(-unperturbed_supercell, unperturbed_supercell + 1):
         for y_sign in range(-unperturbed_supercell, unperturbed_supercell + 1):
             for z_sign in range(-unperturbed_supercell, unperturbed_supercell + 1):
-                if x_sign == y_sign == z_sign == 0:
+                if x_sign == y_sign == z_sign == 0: # Skip the central cell containing the muon
                     continue
+                 # Calculate translation vectors for the unperturbed_atoms
                 translation_vector = np.sign(x_sign) * (abs(x_sign) - 1) * unperturbed_atoms.cell[0] + \
                     np.sign(x_sign) * atoms_mu.cell[0]
                 translation_vector += np.sign(y_sign) * (abs(y_sign) - 1) * unperturbed_atoms.cell[1] + \
                     np.sign(y_sign) * atoms_mu.cell[1]
                 translation_vector += np.sign(z_sign) * (abs(z_sign) - 1) * unperturbed_atoms.cell[2] + \
                     np.sign(z_sign) * atoms_mu.cell[2]
-                # print(translation_vector)
+                
+                # Translate and append the unperturbed atoms to form the supercell
                 unperturbed_atoms.translate(translation_vector)
                 for this_atom in unperturbed_atoms:
                     if small_output:
@@ -424,12 +483,12 @@ def make_supercell(object_of_class, unperturbed_atoms: atoms = None, unperturbed
                     else:
                         atoms_mu.append(this_atom)
                 unperturbed_atoms.translate(-1 * translation_vector)
-
+    # Re-insert the muon at the center of the supercell
     atoms_mu.append(muon)
     if small_output:
         return output_list
     else:
-
+        # Adjust the cell dimensions and positions to accommodate the supercell
         old_cell = atoms_mu.get_cell()
         atoms_mu.set_cell(
             old_cell*(2*unperturbed_supercell + 1), scale_atoms=False)
@@ -437,64 +496,115 @@ def make_supercell(object_of_class, unperturbed_atoms: atoms = None, unperturbed
         atoms_mu.translate(unperturbed_supercell * old_cell[1])
         atoms_mu.translate(unperturbed_supercell * old_cell[2])
 
-        object_of_class.gui_with_muon.exit()
+        # Exit the old GUI and update with the new supercell structure
+        simulation_object.gui_with_muon.exit()
+        simulation_object.cif_read = atoms_mu
+        simulation_object.cif_read = apply_mask_to_structure(
+            atoms_mu, simulation_object.radius_entry.get())
+        generate_cell_components_window(simulation_object)
 
-        object_of_class.cif_read = atoms_mu
-        object_of_class.cif_read = masking(
-            atoms_mu, object_of_class.radius_entry.get())
-        generate_cell_components_window(object_of_class)
+        # Initialize a new GUI with the supercell
+        simulation_object.images_supercell = Images()
+        simulation_object.images_supercell.initialize([atoms_mu])
+        simulation_object.gui_supercell = GUI(simulation_object.images_supercell)
+        simulation_object.gui_supercell.run()
 
-        object_of_class.images_supercell = Images()
-        object_of_class.images_supercell.initialize([atoms_mu])
-        object_of_class.gui_supercell = GUI(object_of_class.images_supercell)
-        object_of_class.gui_supercell.run()
+def apply_mask_to_structure(atoms_mu: atoms, radius: float)->atoms:
+    '''
+    Applies a spherical mask to the atoms object, selecting atoms within a specified radius from the muon.
+    
+    Parameters:
+    atoms_with_muon: ASE atoms object containing the structure, including the muon.
+    cutoff_radius: Radius within which atoms are selected relative to the muon's position.
 
-
-def masking(atoms_mu: atoms, radius: float):
+    Returns:
+    ASE atoms object containing only the atoms within the specified radius from the muon
+    '''
+    # Get the position of the muon (assumed to be the last atom in the structure)
     center = atoms_mu[-1].position
 
+    # Calculate the distances of all atoms from the muon's position and create a mask for atoms within the radius
     mask = np.linalg.norm(atoms_mu.positions - center, axis=1) < int(radius)
-    i_atoms = atoms_mu[mask]
-    print(i_atoms)
-    view(i_atoms)
-    return i_atoms
+    
+    # Apply the mask to select the atoms within the specified radius
+    selected_atoms = atoms_mu[mask]
 
+    # Print the selected atoms and display them in the viewer
+    print(selected_atoms)
+    view(selected_atoms)
 
-def update_strcuture_data(object_of_class, iso=None):
-    object_of_class.structure_data = []
-    mu_position = object_of_class.cif_read[-1].position
-    print('muon positon', mu_position)
-    # Create the data
-    for atom in object_of_class.cif_read:
-        element = atom.symbol
-        relative_postision = atom.position-mu_position
-        # atom.symbol
-        print(atom.symbol, relative_postision, '@', atom.position)
-        if element == 'X':
-            element = 'mu'
+    return selected_atoms
 
-        magnetic_moment = gyromagnetic_ratio(
-            element, iso)*spin(element, iso)
-
-        if np.linalg.norm(relative_postision) == 0:
-            strength = 0
-        strength = abs(magnetic_moment/np.linalg.norm(relative_postision)**3)
-        distance = abs(np.linalg.norm(relative_postision))
-        info = (atom.symbol, strength, relative_postision,
-                spin(element, iso), distance)
-        object_of_class.structure_data.append(info)
-
-
-def generate_cell_components_window(object_of_class):
-    ''' Inserts the structure_data to the table
+def update_structure_data(simulation_object, iso=None):
     '''
-    update_strcuture_data(object_of_class, iso=None)
+    Updates the structure data by calculating the relative positions, magnetic moments, 
+    and field strengths of atoms relative to the muon in the structure.
 
-    # create a window to contain the table
-    top = customtkinter.CTkToplevel(object_of_class)
-    dir = os.path.dirname(__file__)
-    filename = dir+'\logo_mm.ico'
-    # top.iconbitmap(filename)
+    Parameters:
+    simulation_object: Object containing the atomic structure and simulation parameters.
+    isotope: The isotope to use for calculating gyromagnetic ratio and spin. If None, defaults to standard values.
+    '''
+    # Initialize the structure data list to store information about each atom in the structure
+    simulation_object.structure_data = []
+    
+    # Retrieve the position of the muon, assumed to be the last atom in the structure
+    mu_position = simulation_object.cif_read[-1].position
+    print('muon positon', mu_position)
+    
+    # Iterate over each atom in the structure to calculate its relative position, magnetic moment, and field strength
+    for atom in simulation_object.cif_read:
+        # Get the element symbol of the atom
+        element_symbol = atom.symbol
+
+        # Calculate the relative position of the atom with respect to the muon's position
+        relative_postision = atom.position-mu_position
+        print(atom.symbol, relative_postision, '@', atom.position)
+        
+        # If the atom is the muon (assumed to be labeled 'X'), rename the element symbol to 'mu'
+        if element_symbol == 'X':
+            element_symbol = 'mu'
+        # Calculate the magnetic moment of the atom based on its element and isotope
+        magnetic_moment = gyromagnetic_ratio(
+            element_symbol, iso)*spin(element_symbol, iso)
+
+        # Calculate the distance from the muon to the atom
+        distance_to_muon = np.linalg.norm(relative_postision)
+
+        # Calculate the magnetic field strength; if the atom is the muon itself, set the strength to 0
+        if distance_to_muon == 0:
+            strength = 0
+        else:    
+            strength = abs(magnetic_moment/distance_to_muon**3)
+
+        # Gather information about the atom: element symbol, field strength, relative position, spin, and distance
+        atom_info = (atom.symbol, strength, relative_postision,
+                spin(element_symbol, iso), distance_to_muon)
+        
+        # Update the structure information 
+        simulation_object.structure_data.append(atom_info)
+
+def generate_cell_components_window(class_instance):
+    ''' 
+    Creates a window to display and interact with the structure data of a class instance.
+    
+    This function inserts the structure data of the provided class instance into a 
+    Treeview table and allows for sorting and selection of the data, which then triggers 
+    updates to the dipolar interaction frame.
+    
+    Args:
+        class_instance: An instance of a class that contains structure_data and 
+                        methods for updating interactions.
+    '''
+    
+    # Update the structure data for the class instance (with no specific isotope selected)
+    update_structure_data(class_instance, iso=None)
+
+    # create a top-level to contain the table
+    top = customtkinter.CTkToplevel(class_instance)
+
+    # Set the window icon (after a slight delay to avoid potential timing issues)
+    directory = os.path.dirname(__file__)
+    filename = directory+'\logo_mm.ico'
     top.after(200, lambda: top.iconbitmap(filename))
     top.title("Characterization of muon stopping site")
 
@@ -503,162 +613,197 @@ def generate_cell_components_window(object_of_class):
     tree = ttk.Treeview(top, columns=columns, show='headings')
     
     def sort_columns(column,descending):
+        '''
+        Sorts the Treeview data based on the selected column.
+        '''
         data = [(tree.item(item)["values"], item) for item in tree.get_children()]
         data.sort(key=lambda x: x[0][tree["columns"].index(column)], reverse=descending)
 
         for index, (values, item) in enumerate(data):
             tree.move(item, '', index)
 
+        # Update the heading to allow toggling between ascending and descending sort
         tree.heading(column, command=lambda: sort_columns(column, not descending))
 
 
-    pass
-
-    # define headings
+    # Define the column headings with sorting functionality
     tree.heading("#1", text="Symmbols",command=lambda:sort_columns('#1',False))
     tree.heading("#2", text="Strentgh",command=lambda:sort_columns('#2',False))
     tree.heading("#3", text="Position",command=lambda:sort_columns('#3',False))
     tree.heading("#4", text="Spin",command=lambda:sort_columns('#4',False))
     tree.heading("#5", text="Distance",command=lambda:sort_columns('#5',False))
 
-    # insert elemets in the structure_data to the table
-    for item in object_of_class.structure_data:
+    # Insert elements from the structure_data into the Treeview table
+    for item in class_instance.structure_data:
         tree.insert('', 'end', values=item)
 
-    # Define variables
-    object_of_class.count_dinteractions = 0
-    index_in_structure_data_selected_components = []
+    # Initialize variables for interaction tracking
+    class_instance.count_dinteractions = 0
+    selected_component_indices = []
 
     def handle_item_selection(event):
-        ''' Binded to the Treeview
-            Acts when an element of the table of 'Characterization of muon stopping site'
-            is selected and transfer the information to dipolar interactions frame
+        ''' 
+        Handles the selection of an item in the Treeview.
+
+        When an item in the 'Characterization of Muon Stopping Site' table is selected,
+        this function updates the dipolar interactions frame with the selected data.
         '''
 
-        # obtain the selected item
+        # obtain the details of selected item
         item_details = tree.item(tree.selection()[0])
         item_values = item_details['values']
+
+        # Clean the position data for comparison
         dipolar_interaction_string = clean_whitespace_and_brackets(
             item_values[2])
 
-        # retrieve and store the index of the selected components
-        for i in range(len(object_of_class.structure_data)):
+        # Find and store the index of the selected components in structure_data
+        for i in range(len(class_instance.structure_data)):
             maria = clean_whitespace_and_brackets(
-                str(object_of_class.structure_data[i][2]))
+                str(class_instance.structure_data[i][2]))
             if dipolar_interaction_string == maria:
-                if i not in index_in_structure_data_selected_components:
-                    index_in_structure_data_selected_components.append(i)
+                if i not in selected_component_indices:
+                    selected_component_indices.append(i)
 
-                    # add the item selected to dipolar frame
-                    update_spin_dipolar_interaction(object_of_class,
-                                                    dipolar_interaction_string, object_of_class.count_dinteractions,
-                                                    index_in_structure_data_selected_components)
+                    # Update the dipolar interaction frame with the selected item
+                    update_spin_dipolar_interaction(class_instance,
+                                                    dipolar_interaction_string, class_instance.count_dinteractions,
+                                                    selected_component_indices)
 
-        object_of_class.count_dinteractions = len(
-            index_in_structure_data_selected_components)
+        # Update the count of dipolar interactions
+        class_instance.count_dinteractions = len(
+            selected_component_indices)
 
-    # bind the clicking of the item in table to adding entry in dipolar frame
+    # Bind the Treeview selection event to the item selection handler
     tree.bind('<<TreeviewSelect>>', handle_item_selection)
 
     # Pack the Treeview widget
     tree.pack(fill='both', expand=True)
     
-def update_spin_dipolar_interaction(object_of_class, str_dipolar_value, indexx, index_in_structure_data_selected_components):
-    ''' add the spin and dipolar interactions into the dipolar frame
-        update object_of_class.dipolar_dic[
+def update_spin_dipolar_interaction(class_instance, dipolar_value_str, interaction_index, selected_component_indice):
+    ''' 
+    Updates the dipolar interaction with spin and dipolar interactions and updates the relevant dictionary in the class instance.
+
+    Args:
+        class_instance: An instance of a class containing the GUI elements and structure data.
+        dipolar_value_str: A string representing the dipolar interaction value to be added.
+        interaction_index: The index of the interaction being added.
+        selected_component_indice: A list of indices representing the selected components 
+                                    in the structure data.
     '''
     # clean spin entry and assert the first element to be muon
-    if indexx == 0:
-        object_of_class.spins_entry.delete(0, 'end')
-        object_of_class.spins_entry.insert(0, 'mu ')
+    if interaction_index == 0:
+        class_instance.spins_entry.delete(0, 'end')
+        class_instance.spins_entry.insert(0, 'mu ')
         try:
-            object_of_class.gui_supercell.exit()
+            # Attempt to close the GUI supercell if it exists
+            class_instance.gui_supercell.exit()
         finally:
             pass
+    
     # retrieve symbol of selected element
-    index = index_in_structure_data_selected_components[-1]
-    element_symbol = object_of_class.structure_data[index][0]
-    object_of_class.spins_entry.insert('end', element_symbol+' ')
+    index = selected_component_indice[-1]
+    element_symbol = class_instance.structure_data[index][0]
+    class_instance.spins_entry.insert('end', element_symbol+' ')
 
-    # create label
-    spin_entry_position = 2+indexx
+    # Create a label for the dipolar interaction
+    spin_entry_position = 2+interaction_index
     label = 'dipolar_1_'+str(spin_entry_position)
 
-    # Add the label
+    # Add the label to the frame
     str_1 = tk.StringVar()
-    str_1.set(str_dipolar_value)
-    add_label = tk.Label(object_of_class.framess, text=label)
+    str_1.set(dipolar_value_str)
+    add_label = tk.Label(class_instance.framess, text=label)
     add_label.pack()
 
-    # add dipolar interaction as entry
-    add_entry = tk.Entry(object_of_class.framess, textvariable=str_1)
+    # Add dipolar interaction as an entry
+    add_entry = tk.Entry(class_instance.framess, textvariable=str_1)
     add_entry.pack(pady=5)
 
-    # store the dipolar interactions selected
-    object_of_class.dipolar_dic[spin_entry_position] = str_dipolar_value
-    print(object_of_class.dipolar_dic,"<  ")
+    # Store the dipolar interaction value in the class instance's dictionary    
+    class_instance.dipolar_dic[spin_entry_position] = dipolar_value_str
+    #Debug print
+    print(class_instance.dipolar_dic,"Dipolar distionary ")
 
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     Update data
 # --------------------------------------------------------------------------------------------------------------------
 
+def update_parameters(class_instance):
+    '''
+    Updates the parameter of the class instance based on the UI input value.
+    Retrieves the value from the field input in the GUI, and if the value is not empty, it updates the 'field' parameter
 
-def update_parameters(object_of_class):
-    object_of_class.first_param = object_of_class.field_value.get(
+    Args:
+        class_instance: An instance of a class that contains GUI elements and a parameters object.
+    '''
+    # Retrieve the value from the field input (assumed to be a text widget) and store it
+    class_instance.first_param = class_instance.field_value.get(
         1.0, "end-1c")
-
-    if object_of_class.first_param != '':
-        object_of_class.parameters._keywords["field"] = KWField(
-            object_of_class.first_param)
-
-
-
+    
+    # If the field value is not empty, update the 'field' parameter in the parameters object
+    if class_instance.first_param != '':
+        class_instance.parameters._keywords["field"] = KWField(
+            class_instance.first_param)
 
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     DRAFT
 # --------------------------------------------------------------------------------------------------------------------
 
-def read_variables(object_of_class):
-    '''To facilitate redability i_params is used instead'''
-    # Ideally the for loops are standarized to be functions called
+def populate_gui_with_parameters(class_instance):
+    '''
+    Populates the GUI elements with parameter values from the class instance's parameters.
 
-    i_params = object_of_class.parameters.evaluate()
+    This function reads various parameters from the class instance's parameters object and 
+    updates the corresponding GUI input fields, such as name, spins, time, and field.
+
+    Args:
+        class_instance: An instance of a class that contains GUI elements and a parameters object.
+    '''
+    
+    # Evaluate and retrieve the parameters for easier readability
+    i_params = class_instance.parameters.evaluate()
 
     # -----------------------------------
     #               Name               #
-    object_of_class.name_entry.delete(0, 'end')
-    object_of_class.name_entry.insert('0', str(i_params['name'].value[0][0]))
+    # Clear the current name entry and insert the name parameter value
+    class_instance.name_entry.delete(0, 'end')
+    class_instance.name_entry.insert('0', str(i_params['name'].value[0][0]))
 
     # -----------------------------------
     #               Spin               #
-    object_of_class.spins_entry.delete(0, 'end')
+    # Clear the spins entry and construct a string from the spins parameter values
+    class_instance.spins_entry.delete(0, 'end')
     spins_str = ''
     count = 0
     for i in i_params['spins'].value[0]:
-        # print(i)
         if count == 0:
             spins_str = i
         else:
             spins_str = spins_str+' '+i
         count = count+1
 
-    object_of_class.spins_entry.insert('0', spins_str)
+    # Insert the constructed spins string into the spins entry field
+    class_instance.spins_entry.insert('0', spins_str)
 
     # -----------------------------------
     #               Time               #
-    object_of_class.time_entry1.delete(0, 'end')
-    object_of_class.time_entry2.delete(0, 'end')
-    object_of_class.time_entry3.delete(0, 'end')
+    # Clear the time entries and populate them with time parameter values
+    class_instance.time_entry1.delete(0, 'end')
+    class_instance.time_entry2.delete(0, 'end')
+    class_instance.time_entry3.delete(0, 'end')
 
-    object_of_class.time_entry1.insert(
+    class_instance.time_entry1.insert(
         'end', str(i_params['time'].value[0][0]))
-    object_of_class.time_entry2.insert(
+    class_instance.time_entry2.insert(
         'end', str(i_params['time'].value[-1][0]))
-    object_of_class.time_entry3.insert(
+    class_instance.time_entry3.insert(
         'end', str(len(i_params['time'].value)))
 
     # -----------------------------------
     #               Field              #
+    # Clear the field value entry and construct a string from the field parameter values
+    class_instance.field_value.delete(0, 'end')
     field_str = ''
     count = 0
     for i in i_params['field'].value[0]:
@@ -668,37 +813,39 @@ def read_variables(object_of_class):
         else:
             field_str = field_str+' '+i
         count = count+1
-    object_of_class.field_value.insert('end', field_str)
+
+    # Insert the constructed field string into the field entry field
+    class_instance.field_value.insert('end', field_str)
 
     # -----------------------------------
     #            Polarization          #
 
-    # if for the case of    anu couplings
-    # we can add for later the axis
-    # we only make the rest appear if they are different from default
-    # average_axes
+    # Placeholder for potential future code to handle polarization and couplings
+    # Currently, these sections are not implemented but can be added later as needed
 
     # -----------------------------------
-    #               Couplings              #
-    # ------------------------------------
+    #               Couplings              
 
     # -----------------------------------
     #                   Dipolar          #
-    # Recognize how manny couplings we ha
+    # Placeholder for handling dipolar couplings
+    # Implementation can be added later as required
 
-def update_param_spec(object_of_class):
-    # print('we entered param')
-    # my_string = " ".join(str(element)
-    #                     for element in object_of_class.fit_params_to_generate_simulation)
-    # print('fitting vari', object_of_class.fit_params_to_generate_simulation)
-    # print('my tring', my_string)
-    # i_params = object_of_class.parameters.evaluate()
-    # print('param before', i_params['field'].value[0])
-    object_of_class.parameters._keywords["field"] = KWField(
-        object_of_class.fit_params_to_generate_simulation)
+def update_param_spec(class_instance):
+    '''
+    Updates the parameters used for generating simulations.
+
+    Args:
+        class_instance: An instance of a class that contains parameters and fitting data
+    '''
+    # Update the 'field' parameter with the fitting parameters used for simulation
+    class_instance.parameters._keywords["field"] = KWField(
+        class_instance.fit_params_to_generate_simulation)
     
-    #object_of_class.parameters
-    i_params = object_of_class.parameters.evaluate()
-    print('//////fitting variables', object_of_class.fit_params_to_generate_simulation)
+    # Evaluate the parameters to update the internal state
+    i_params = class_instance.parameters.evaluate()
+
+    # Print statements to debug and confirm the fitting variables and updated field parameter
+    print('//////fitting variables', class_instance.fit_params_to_generate_simulation)
     print('***the', i_params['field'].value[0])
-    # print('param after', i_params['field'].value[0])
+    

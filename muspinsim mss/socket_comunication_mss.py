@@ -159,12 +159,14 @@ def sckt_receive_and_interpret_message(object_of_class):
 # -------------------------------------------------------------------------------------------------------
 def sckt_send_function(processed_data):
     """
-    send information (in this case simulation resul that has been processed) to the client
+    send the processed simulation results  to the client
+    Args:
+        processed_data (str): The simulation results that have been processed and are ready to be sent to the client.
     """
     #Debug Message
     print('The following message has been sent to the client:  ', processed_data.encode('utf-8'))
     
-    #Sending data
+    # Sending data to the client
     comunication_socket.send(processed_data.encode('utf-8'))
    
 # -------------------------------------------------------------------------------------------------------

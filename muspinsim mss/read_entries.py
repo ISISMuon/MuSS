@@ -70,7 +70,7 @@ def iniciate_params01(object_of_class):
     the essential object as name, spin and time are created are created
     '''
     object_of_class.parameters = MuSpinInput()
-
+    
     name_entry = KWName(object_of_class.name_entry.get())
     spins_entry = KWSpins(object_of_class.spins_entry.get())
     time_entry = KWTime(
