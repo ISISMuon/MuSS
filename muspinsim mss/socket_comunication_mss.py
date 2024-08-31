@@ -15,9 +15,6 @@ import time
 # -------------------------------------------------------------------------------------------------------
 #                                           Connect
 # -------------------------------------------------------------------------------------------------------
-
-
-
 def start_server_connection_thread(handler):
     """
     Initializes the socket server, sets it to listen for multiple clients, 
@@ -47,7 +44,6 @@ def start_server_connection_thread(handler):
     handler.statess = "disabled" 
     handler.connect_btn.configure(state='disabled')
 
-
 def initialize_and_start_socket_server(host,Port):
     '''
     Defines and creates a global socket server,and starts listening for incoming connections.
@@ -65,7 +61,6 @@ def initialize_and_start_socket_server(host,Port):
 
     # Debug Message to confirm that the server is now listening
     print('Server is listening')
-
 
 def handle_connection_receive_thread(object):
     """

@@ -762,7 +762,7 @@ class MuSS_window(tk.Tk):
         # reads the KEntries and convert them into parameters
         print('#################################################################################################',self.fit_state)
         if self.fit_state==None:
-           #r_e.iniciate_params01(self)
+           #r_e.initialize_simulation_parameters(self)
            pass
            
 
