@@ -43,10 +43,8 @@ from ase.gui.gui import GUI
 # -------------------------------------
 #       Homemade scripts
 # -------------------------------------
-
 import backend_mss as bck
 import socket_comunication_mss as sck
-import read_entries as r_e
 
 
 class MuSS_window(tk.Tk):
@@ -75,8 +73,6 @@ class MuSS_window(tk.Tk):
         #                           Bind Functions
         # ------------------------------------------------------------------------------------------------------
         self.bind("<<ThreadFinished>> ", self.handle_simulation_thread_completion)
-        self.bind("<<SendResultStored>>", self.send_stored_simulation_result)
-        self.bind("<<CalculateSend>>", self.run_send)
         # ------------------------------------------------------------------------------------------------------
         #                                           Variables Initiated
         # ------------------------------------------------------------------------------------------------------
@@ -208,7 +204,7 @@ class MuSS_window(tk.Tk):
 
         # Create a 'Run' button that runs simulation in a thread
         self.runBtn = customtkinter.CTkButton(
-            self, text='Run', command=self.read_UI_entries_and_run, width=64, height=30)
+            self, text='Run', command=lambda:bck.read_UI_entries_and_run(self), width=64, height=30)
         self.runBtn.place(x=670, y=175)
 
         # Initialize a Matplotlib figure object with a 5x5 inch size and a DPI (resolution) of 100
@@ -239,7 +235,7 @@ class MuSS_window(tk.Tk):
         self.zeeman_value = tk.Text(
             self.field_frame, width=15, height=3, bd=0,)
         self.zeeman_value.grid(row=0, column=2, padx=5, pady=5)
-        self.kEntries[9] = self.zeeman_value
+        
 
         def dipolar_frame(a):
             dipolar_frame = LabelFrame(a, text="dipolar")
@@ -280,7 +276,7 @@ class MuSS_window(tk.Tk):
 
         self.field_value = tk.Text(self.field_frame, width=15, height=3, bd=0,)
         self.field_value.grid(row=4, column=2, padx=5, pady=5)
-        self.kEntries[3] = self.field_value
+        
 
         self.hyperfine_label = customtkinter.CTkLabel(
             self.field_frame, text="hyperfine")
@@ -289,7 +285,7 @@ class MuSS_window(tk.Tk):
         self.hyperfine_value = tk.Text(
             self.field_frame, width=15, height=3, bd=0,)
         self.hyperfine_value.grid(row=2, column=2, padx=5, pady=5)
-        self.kEntries[12] = self.hyperfine_value
+        
 
         self.quadrupolar_label = customtkinter.CTkLabel(
             self.field_frame, text="quadrupolar")
@@ -352,7 +348,7 @@ class MuSS_window(tk.Tk):
 
         # Create a 'Disconnect' button to stop the socket connection
         self.send_btn = customtkinter.CTkButton(
-            self.socketa, text="Send", command=lambda: sck.sckt_send_function(bck.format_simulation_data(self)), width=50)
+            self.socketa, text="Send", command=lambda: sck.send_data(bck.format_simulation_data(self)), width=50)
         self.send_btn.grid(row=4, column=0, padx=5, pady=5)
 
         # Create read button to interpret the data recieved in the socket
@@ -446,7 +442,7 @@ class MuSS_window(tk.Tk):
         self.file_menu.add_command(
             label="Load", command=lambda: bck.load_input_file(self))
         self.file_menu.add_command(
-            label="Load and Run", command=lambda: self.load_and_run())
+            label="Load and Run", command=lambda: bck.load_and_run(self))
         
         # Create a 'More' menu and add it to the main menu bar
         self.more_menu = tk.Menu(self.mainmenu, tearoff=0)
@@ -475,10 +471,10 @@ class MuSS_window(tk.Tk):
             label="Documentation", command=lambda: self.frame_data())
         #Retuns information on active threads
         self.help_menu.add_command(
-            label="Active Treads", command=self.handle_active_thhread )
+            label="Active Treads", command=bck.handle_active_thhread )
         #handle when the error happen in the thread so process can't stop (this is a manual temporary alternative)
         self.help_menu.add_command(
-            label="Stop Process bar", command=self.handle_process_bar_failed_stop)
+            label="Stop Process bar", command=lambda:bck.safely_destroy_progress_bar(self))
 
         self.mainmenu.add_command(label="Exit", command=self.destroy) #Exit the program
         
@@ -660,235 +656,81 @@ class MuSS_window(tk.Tk):
         self.dropdown = Combobox(self.fit_selection_frame, values=self.options)
         self.dropdown.grid(row=0, column=0,columnspan=2,padx=5, pady=5)
         #self.dropdown.pack(pady=10)
-        self.dropdown.bind("<<ComboboxSelected>>", self.add_selection)
+        self.dropdown.bind("<<ComboboxSelected>>",self.handle_dropdown_selection)
         
         self.label_of = customtkinter.CTkLabel(self.fit_selection_frame,text="---")
         #self.label_of.configure(state=tk.DISABLED)
         #self.show_button.pack(pady=10)
         self.label_of.grid(row=1, column=0,columnspan=2, padx=0, pady=5)
 
-        self.show_button =customtkinter.CTkButton(self.fit_selection_frame, text="Show", command=self.show_selected_options,width=50)
+        self.show_button =customtkinter.CTkButton(self.fit_selection_frame, text="Show", command=lambda:bck.show_selected_options(self),width=50)
         #self.show_button.pack(pady=10)
         self.show_button.grid(row=2, column=0, padx=0, pady=5)
 
-        self.clear_button = customtkinter.CTkButton(self.fit_selection_frame, text="Clear", command=self.clear_selected_options,width=50)
+        self.clear_button = customtkinter.CTkButton(self.fit_selection_frame, text="Clear", command=lambda:bck.clear_selected_options(self),width=50)
         #self.show_button.pack(pady=10)
         self.clear_button.grid(row=2, column=1, padx=0, pady=5)
 
     # ---------------------------------------------------------------------------------------------------------------------
-    #                                       Auxiliary Functions
-    # --------------------------------------------------------------------------------------------------------------------
-
-    def add_selection(self, event):
-        selected_option = self.dropdown.get()
-
-        if selected_option:
-            if selected_option not in self.selected_items:
-                if len(self.selected_items) >= self.max_selection:
-                    # Remove the oldest item
-                    oldest_item = self.selected_items.pop(0)
-                    
-                
-                # Add the new item
-                self.selected_items.append(selected_option)
-                # Optionally, clear the combobox
-                self.dropdown.set('')
-                
-                #self.label_of.configure(text=self.selected_items)
-            else:
-                tk. messagebox.showinfo("Duplicate Selection", "This option is already selected.")
-                self.dropdown.set('')
-               
-    def show_selected_options(self):
-        if self.selected_items:
-            options = "\n".join(self.selected_items)
-            tk.messagebox.showinfo("Selected Options", f"Selected Options:\n{options}")
-        else:
-            tk.messagebox.showinfo("Selected Options", "No options selected.")
-
-    def clear_selected_options(self):
-    
-        self.selected_items=[]
-        self.label_of.configure(text=self.selected_items)
-
-        
-    def run_simulation_thread(self):
-        """
-        loads a file if there is none, update parameters if necessary, 
-        and then **starts a new thread that runs the simulation**
-        """
-        # Imidiatly the Loading bar is created to signal the ongoing process in the background
-        self.create_processBar()
-         # DEBUG1
-        print('################################ INSIDE RUN SIMULATION PROGRESS BAR HAS BEEN CREATED',self.fit_params_to_generate_simulation, self.fit_state,self.parameters.evaluate())
-
-        # If no input file it is possible to loa one
-        if self.input_txt_file == ' ':
-            bck.load_input_file(self)
-        # If not fitting, parameters are updated
-        if self.fit_state == None:
-            bck.update_parameters(self)
-
-        # create a thread where the simulation runs
-         # DEBUG1
-        print('################################ ABOUT TO ENTER THE THREA TO SIMULATE AND POST',self.fit_params_to_generate_simulation, self.fit_state,self.parameters.evaluate())
-        run_simulation_thread_0 = Thread(target=self.simulate_and_post_event,
-                         args=(self,), daemon=True)
-        run_simulation_thread_0.start()
-
-    def load_and_run(self):
-        """
-        loads input file and starts new thread to run simulation
-        only depending on the input file (offers limited interaction)
-        """
-        # Imidiatly the Loading bar is created to signal the ongoing process in the background
-        self.create_processBar()
-        # load input
-        bck.load_input_file(self)
-
-        # create a thread where the simulation runs
-        run_simulation_thread_1 = Thread(target=self.simulate_and_post_event,
-                         args=(self,), daemon=True)
-        run_simulation_thread_1.start()
-
-    def read_UI_entries_and_run(self):
-        """
-        reads the entries in GUI (kEntries)
-        run the simulation in a thread
-        """
-        # Imidiatly the Loading bar is created to signal the ongoing process in the background
-        self.create_processBar()
-
-        # reads the KEntries and convert them into parameters
-        print('#################################################################################################',self.fit_state)
-        if self.fit_state==None:
-           #r_e.initialize_simulation_parameters(self)
-           pass
-           
-
-        #create a thread where the simulation runs
-        run_simulation_thread_2 = Thread(target=self.simulate_and_post_event,
-                         args=(self,), daemon=True)
-        run_simulation_thread_2.start()
-        
-
-    def simulate_and_post_event(self, _):
-        '''
-        Executes the simulation 
-        and triggers an event(send or show in graph) upon completion.
-        '''
-        # runs the simulation
-        
-        bck.run_simulation(self)
-         # DEBUG1
-        print('################################ ENTERED THE THREAD AND THE SIMULATION HAS RUN',self.fit_params_to_generate_simulation, self.fit_state,self.parameters.evaluate(),'results',self.results)
-
-        # Stops the loading bar
-        self.event_generate('<<ThreadFinished>>')
+    #                                       Binded Functions
+    # --------------------------------------------------------------------------------------------------------------------        
 
     def handle_simulation_thread_completion(self, event):
         """
         Handles actions to be performed when a simulation thread stops
         sending the data to wimda or showing it in graph (in the case no fitting is occuring)
         """
-        # In the case of fitting the data is sent to WiMDA if not is shown in the UI graph
-         # DEBUG1
+        # DEBUG: Print the current state when entering the completion handler
         print('################################ ENTERED THE HANDLE OF THINGS',self.fit_params_to_generate_simulation, self.fit_state,'PARAMETERS EVALUATED===============',self.parameters.evaluate())
+        # Update the graph and retrieve timing data
         bck.graph_update_and_retrieve_time(self)
+        
+        # If fitting is occurring, send the formatted simulation data to WiMDA
         if self.fit_state == True:
             sck.send_data(bck.format_simulation_data(self))
         
-        
-    
-        # In the completion of task destroy processbar
+        # Destroy the progress bar upon task completion
         self.processBar.destroy()
-        
 
-    def create_processBar(self):
+    def send_stored_simulation_result(self):
         """
-        Creates the process bar and dispaus it in the main root
-        """
-
-        self.processBar = Progressbar(self,
-                               orient='horizontal', mode='indeterminate', length=300)
-        self.processBar.place(x=280, y=185)  # x=320
-        self.processBar.start()
-
-    def send_stored_simulation_result(self, _):
-        """
-        simulated results that are stored are send to client
-        this happens when the parameters has not change (or almost has not change)
+        Sends stored simulation results to the client.
+        This occurs when the simulation parameters have not changed or have changed insignificantly.
         """
 
         # send data to client
         sck.send_data(bck.retrieve_stored_simulation_data(self))
 
-    def run_send(self, _): ####????????????????????????
-        """
-        Once the new parameters are updated 
-        Runs the simulation and 'handle_simulation_thread_completion' sends data to wimda in the case of fitting
-        """  
-        # Debug print
-        print('inside run send')
-         # DEBUG1
-        print('################################ WE ENTER SEND_RUN',self.fit_params_to_generate_simulation, self.fit_state,self.parameters.evaluate())
-        # The parameters are updated from self.fitting_variables to self.parameters:
-        bck.update_param_spec(self)
-         # DEBUG1
-        print('################################ AFTER UPDATING THE PARAMETERS',self.fit_params_to_generate_simulation, self.fit_state,self.parameters.evaluate())
-        # with the updates parameters the simulation runs
-        # in the run thread there is an event that depending on the self.state_fitting will senf the results to wimda
-        self.run_simulation_thread()
-        
+    def handle_dropdown_selection(self, event):
+        '''Manages the selection from a dropdown menu. Adds the selected item to a list if it's not  already present, enforcing a maximum selection limit. Displays a message if a duplicate 
+        selection is made.
 
-    def store_tkentries(self):
-        """ 
-        Stores various Tkinter entry widgets and other values into the 'kEntries' list 
-        Organized them entries by index (as in the muspinsim atomistic pparameters the first 22)
-        """
-     
-        self.kEntries[0] = self.name_entry
-        self.kEntries[1] = self.spins_entry
-        self.kEntries[2] = [self.time_entry1,
-                            self.time_entry2, self.time_entry3]
-        self.kEntries[3] = self.field_value
-        self.kEntries[4] = self.intrisic_field_value
-        self.kEntries[5] = self.polarization_value
-        self.kEntries[6] = self.buffer_entry
-        self.kEntries[7] = self.orientation_value
-        self.kEntries[8] = self.buffer_entry
-        self.kEntries[9] = self.zeeman_value
-        self.kEntries[10] = self.buffer_entry
-        self.kEntries[11] = self.quadrupolar_value
-        self.kEntries[12] = self.hyperfine_value
-        self.kEntries[13] = self.x_axis_value
-        self.kEntries[14] = self.y_axis_value
-        self.kEntries[15] = self.celio_value
-        self.kEntries[16] = self.buffer_entry
-        self.kEntries[17] = self.fitting_variables_values
-        self.kEntries[18] = self.buffer_entry
-        self.kEntries[19] = self.fitting_method
-        self.kEntries[20] = self.fitting_tolerance_value
-        self.kEntries[21] = self.experiments
-        self.labels = ['name', 'spins', 'time', '']
-    
-
-    def handle_active_thhread(self):
-        ''' Prints information about current threads
+        Args: handler (object): An instance of a class that contains the dropdown, selected items list, 
+        and maximum selection limit
         '''
-        active_treads=threading.enumerate()
-        print(f'Currently there are {len(active_treads)} threads active')
-        for i in active_treads:
-            print(f' Thread name: {i.name}, alive: {i.is_alive()}')
-        print(f'This message was originated from the following thread {threading.current_thread()}')
-
-
-    def handle_process_bar_failed_stop(self):
-        try:
-            self.processBar.destroy()
-        except:
-            print('Failed to destroy process bar')
+        # Retrieve the currently selected option from the dropdown
+        selected_option = self.dropdown.get()
         
+        # Check if an option was selected  
+        if selected_option:
+        # Ensure the selected option is not already in the selected items list
+            if selected_option not in self.selected_items:
+            # Check if the selected items list has reached its maximum limit
+                if len(self.selected_items) >= self.max_selection:
+                # Remove the oldest item
+                    oldest_item = self.selected_items.pop(0)
+                    
+                
+            # Add the newly selected option to the list
+                self.selected_items.append(selected_option)
+            # Optionally, clear the dropdown selection after adding the item
+                self.dropdown.set('')
+                
+            else:
+            # Show an information message if the selected option is a duplicate
+                tk. messagebox.showinfo("Duplicate Selection", "This option is already selected.")
+                self.dropdown.set('') # Clear the dropdown selection
     
-        
-    # ---------------------------------------------------------------------------------------------------------------------
+    def rre(self):
+        bck.update_param_spec(self)
+        bck.read_UI_entries_and_run(self)

@@ -1,4 +1,21 @@
+TO DO
+
+
+graphs and tablesin txt of the datain fiiting 
+comment all of backend--------------------------->y
+generate spinsinc
+ask GPT about it and if i can add more stuff
+take the extra fucntion to backend-------------->yi
+add the txt file default and test
+Transfer the repository
+Delphi prepare for testing
+add all parameters in help
+
+
+
+
+
+
 order in the table-------------> yi
 botton to stop process bar-----------> yi
 can get a list of all threads in function---------->yi
-graphs and tablesin txt of the datain fiiting 

@@ -105,8 +105,6 @@ def close_socket_connection():
 #                                           Recieve
 # -------------------------------------------------------------------------------------------------------
 
-keys=['param','Delphi','timefrom + timeto']
-
 def receive_and_process_socket_message(object_of_class):  
     """
     Receives and interprets messages from a socket, then performs actions based on specific keywords.
@@ -138,17 +136,20 @@ def receive_and_process_socket_message(object_of_class):
             # DEBUG: Print information about received parameters
             print('################################ IF WE RECIEVE A MESSAGE WITH THE KEY PARAM',object_of_class.fit_params_to_generate_simulation, object_of_class.fit_state)
             
+            #first_value=float(list(object_of_class.result_dic.keys())[0].split()[0])-float(object_of_class.fit_params_to_generate_simulation.split()[0])
             # Check if these parameters have been received before
-            if object_of_class.fit_params_to_generate_simulation in object_of_class.result_dic:
+            if object_of_class.fit_params_to_generate_simulation in object_of_class.result_dic:# or first_value==0 :
                 # Trigger an event to send stored results
-                object_of_class.event_generate('<<SendResultStored>>')
+                #object_of_class.event_generate('<<SendResultStored>>')
+                object_of_class.send_stored_simulation_result()
                 # DEBUG: Print a message indicating the parameters were previously received
                 print(f'---------------------------------------------- The set of parameters {object_of_class.fit_params_to_generate_simulation} has been recieved before              The simulation results sent were stored previously')            
             else:
                 # Mark the fitting state as activ
                 object_of_class.fit_state = True
                 # Trigger an event to calculate and send new simulation results
-                object_of_class.event_generate('<<CalculateSend>>')
+                #object_of_class.event_generate('<<CalculateSend>>')
+                object_of_class.rre()
                 # DEBUG: Print a message indicating new simulation results are being generated
                 print(f'++++++++++++++++++++++++++++++++++++++++++++++ The set of parameters {object_of_class.fit_params_to_generate_simulation} have been used to generate new simmulation       The results will be sent shortly')
         

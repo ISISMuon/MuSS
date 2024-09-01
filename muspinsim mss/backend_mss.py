@@ -17,8 +17,11 @@ from muspinsim.constants import gyromagnetic_ratio, spin
 from tkinter.ttk import Label, LabelFrame
 from ase.gui.images import Images
 from ase.gui.gui import GUI
+import threading
+from threading import Thread
 
 import customtkinter
+from tkinter.ttk import Label, LabelFrame, Progressbar
 from tkinter import ttk
 import ase
 from ase import atom, atoms, visualize, build
@@ -32,8 +35,6 @@ import os
 # --------------------------------------
 #       Homemade scripts
 # -------------------------------------
-
-from input_class import Create_Input
 
 # -------------------------------------------------------------------------------------------------------
 #                                           DATA PROCESSING
@@ -144,7 +145,7 @@ def extract_initial_variables(object_of_class):
     
     # Process the fitting variable into a string format
     fit_var = data_processing(fit_var)
-    
+    object_of_class.fit_var=fit_var
     # Assign the processed variable to the simulation object for use in generating the simulation
     object_of_class.fit_params_to_generate_simulation = fit_var
 
@@ -803,7 +804,7 @@ def populate_gui_with_parameters(class_instance):
     # -----------------------------------
     #               Field              #
     # Clear the field value entry and construct a string from the field parameter values
-    class_instance.field_value.delete(0, 'end')
+    #class_instance.field_value.delete(0, 'end')
     field_str = ''
     count = 0
     for i in i_params['field'].value[0]:
@@ -849,3 +850,180 @@ def update_param_spec(class_instance):
     print('//////fitting variables', class_instance.fit_params_to_generate_simulation)
     print('***the', i_params['field'].value[0])
     
+# ---------------------------------------------------------------------------------------------------------------------
+#                                       Auxiliary Functions
+# --------------------------------------------------------------------------------------------------------------------
+def safely_destroy_progress_bar(handler):
+    #safely_destroy_progress_bar
+    '''
+    Safely attempts to destroy the progress bar widget. 
+    If the destruction fails, an error message is printed.
+    '''
+    try:
+        handler.processBar.destroy()
+    except:
+        print('Failed to destroy process bar')
+
+def handle_active_thhread():
+    ''' 
+    Prints information about all currently active threads, including their names 
+    and statuses. Also identifies the thread from which the message originated.
+    '''
+    # Get a list of all active threads
+    active_treads=threading.enumerate()
+    # Print the number of active threads
+    print(f'Currently there are {len(active_treads)} threads active')
+
+    # Iterate over each thread and print its name and status
+    for i in active_treads:
+        print(f' Thread name: {i.name}, alive: {i.is_alive()}')
+
+    # Print the thread from which this log was generated
+    print(f'This message was originated from the following thread {threading.current_thread()}')
+
+
+
+def show_selected_options(handler):
+    if handler.selected_items:
+        options = "\n".join(handler.selected_items)
+        tk.messagebox.showinfo("Selected Options", f"Selected Options:\n{options}")
+    else:
+        tk.messagebox.showinfo("Selected Options", "No options selected.")
+
+def clear_selected_options(handler):
+    '''
+    Clears the list of selected items and updates the corresponding label in the UI.
+    Args:(object): An instance of a class that contains the list of selected items and the label to update.
+    '''
+    # Clear the list of selected items
+    handler.selected_items=[]
+
+    # Update the label to reflect the cleared selection
+    handler.label_of.configure(text=handler.selected_items)
+
+def run_simulation_thread(handler):
+    """
+    Loads an input file if none is loaded, updates parameters if necessary, 
+    and starts a new thread that runs the simulation
+    """
+    # Immediately create a progress bar to signal the ongoing background process
+    create_processBar(handler)
+    
+    # DEBUG: Print the current state before running the simulation
+    print('################################ INSIDE RUN SIMULATION PROGRESS BAR HAS BEEN CREATED',handler.fit_params_to_generate_simulation, handler.fit_state,handler.parameters.evaluate())
+
+    # Load an input file if none is present
+    if handler.input_txt_file == ' ':
+        load_input_file(handler)
+
+    # Update parameters if not in a fitting state
+    if handler.fit_state == None:
+        update_parameters(handler)
+
+    # Create and start a new thread to run the simulation
+    # DEBUG: Print the current state before entering the simulation thread
+    print('################################ ABOUT TO ENTER THE THREA TO SIMULATE AND POST',handler.fit_params_to_generate_simulation, handler.fit_state,handler.parameters.evaluate())
+    run_simulation_thread_0 = Thread(target=execute_simulation_and_trigger_event,
+                         args=(handler,), daemon=True)
+    run_simulation_thread_0.start()
+
+def load_and_run(handler):
+    """
+    Loads input file and starts new thread to run simulation
+    only depending on the input file (offers limited interaction)
+    """
+    # Immediately create a progress bar to signal the ongoing background process
+    create_processBar(handler)
+    
+    # Load the input file
+    load_input_file(handler)
+
+    # Create and start a new thread to run the simulation
+    run_simulation_thread_1 = Thread(target=execute_simulation_and_trigger_event,
+                         args=(handler,), daemon=True)
+    run_simulation_thread_1.start()
+
+def read_UI_entries_and_run(handler):
+    """
+    Reads the entries from the GUI (kEntries) and starts a new thread to run the simulation.
+    """
+    # Immediately create a progress bar to signal the ongoing background process
+    create_processBar(handler)
+
+    # DEBUG: Print the current fit state before processing entries
+    print('#################################################################################################',handler.fit_state)
+    
+    
+    if handler.fit_state==None:
+        print('bananana')
+        #r_e.initialize_simulation_parameters(handler)
+        pass
+           
+
+    # Create and start a new thread to run the simulation    
+    run_simulation_thread_2 = Thread(target=execute_simulation_and_trigger_event,
+                         args=(handler,), daemon=True)
+    run_simulation_thread_2.start()
+
+def execute_simulation_and_trigger_event(handler):
+    '''
+    Executes the simulation and triggers an event to send results or display them on a graph upon completion.
+
+    Args:handler (object): An instance of a class that manages the simulation parameters and event handling.
+        _ (any): Placeholder for additional arguments that might be passed when the function is invoked as an event handler.
+    '''
+    # Runs the simulation
+    run_simulation(handler)
+        
+    # DEBUG: Print the current state after the simulation has run
+    print('################################ ENTERED THE THREAD AND THE SIMULATION HAS RUN',handler.fit_params_to_generate_simulation, handler.fit_state,handler.parameters.evaluate(),'results',handler.results)
+
+    # Trigger an event indicating that the simulation thread has finished
+    handler.event_generate('<<ThreadFinished>>')
+
+def create_processBar(handler):
+    '''
+    Creates a progress bar and displays it in the main root window.
+
+    Args: handler (object): An instance of a class that manages the UI elements, including where the progress bar will be displayed.
+    '''
+    # Initialize the progress bar with horizontal orientation and indeterminate mode
+    handler.processBar = Progressbar(handler,
+                               orient='horizontal', mode='indeterminate', length=300)
+    
+    # Position the progress bar within the main window
+    handler.processBar.place(x=280, y=185) 
+
+    # Start the progress bar animation
+    handler.processBar.start()
+
+def store_tkentries(handle):
+    '''
+    Stores various Tkinter entry widgets and other values into the 'kEntries' list.
+    Organizes the entries by index, corresponding to the first 22 atomistic parameters in MuSpinSim.
+    '''
+    
+    handle.kEntries[0] = handle.name_entry
+    handle.kEntries[1] = handle.spins_entry
+    handle.kEntries[2] = [handle.time_entry1,
+                            handle.time_entry2, handle.time_entry3]
+    handle.kEntries[3] = handle.field_value
+    handle.kEntries[4] = handle.intrisic_field_value
+    handle.kEntries[5] = handle.polarization_value
+    handle.kEntries[6] = handle.buffer_entry
+    handle.kEntries[7] = handle.orientation_value
+    handle.kEntries[8] = handle.buffer_entry
+    handle.kEntries[9] = handle.zeeman_value
+    handle.kEntries[10] = handle.buffer_entry
+    handle.kEntries[11] = handle.quadrupolar_value
+    handle.kEntries[12] = handle.hyperfine_value
+    handle.kEntries[13] = handle.x_axis_value
+    handle.kEntries[14] = handle.y_axis_value
+    handle.kEntries[15] = handle.celio_value
+    handle.kEntries[16] = handle.buffer_entry
+    handle.kEntries[17] = handle.fitting_variables_values
+    handle.kEntries[18] = handle.buffer_entry
+    handle.kEntries[19] = handle.fitting_method
+    handle.kEntries[20] = handle.fitting_tolerance_value
+    handle.kEntries[21] = handle.experiments
+    handle.labels = ['name', 'spins', 'time', '']

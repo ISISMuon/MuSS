@@ -11,56 +11,11 @@ import tkinter as tk
 from muspinsim import MuSpinInput, ExperimentRunner
 from muspinsim.input.keyword import *
 from tkinter.ttk import Label, LabelFrame
+import os
 
-
-def iniciate_params(object_of_class):
-    '''
-    a muspinInput object is created
-    the essential object as name, spin and time are created are created
-    '''
-
-    '''
-    object_of_class.parameters = MuSpinInput()
-
-    name_entry = KWName(object_of_class.name_entry.get())
-    spins_entry = KWSpins(object_of_class.spins_entry.get())
-    time_entry = KWTime(
-        f'range({object_of_class.time_entry1}, {object_of_class.time_entry2}, {object_of_class.time_entry3})')
-     for i in range(len( object_of_class.kEntries)):
-        if i==2:
-            pass
-        else
-            value=
-            object_of_class.parameters._keywords[]'''
-    # ____INCORPORATE IT INTO THE PARAMS
-
-    '''object_of_class.parameters._keywords['name'] = name_entry
-    object_of_class.parameters._keywords['spins'] = spins_entry
-    object_of_class.parameters._keywords['time'] = time_entry
-    object_of_class.parameters._keywords['field'] = KWField(
-        object_of_class.field_value.get())
-    object_of_class.parameters._keywords['intrinsic_field'] = KWIntrinsicField(
-        object_of_class.intrinsic_field.get())
-    object_of_class.parameters._keywords['polarization'] = KWPolarization(
-        object_of_class.polarization.get())'''
-
-    object_of_class.parameters = MuSpinInput()
-
-    for i in range(22):
-        j = object_of_class.labelstring[i]
-        k = object_of_class.kEntries[i].get()
-        if object_of_class.kEntries[i].get() != '':
-            object_of_class.parameters._keywords[j] = create_object_KW(k, i)
-    # object_of_class.parameters._keywords['dipolar']={}
-    # object_of_class.parameters._keywords['field']=fied_en
-    # object_of_class.parameters._keywords[]
-    # ________________ Read everything_else_________________________
-
-    for i in range(5):
-        dipolar_entry = KWDipolar(block=['0 0 8'], args=(1, i))
-        object_of_class.parameters._keywords['dipolar'] = {'': dipolar_entry}
-
-
+# --------------------------------------------------------------------------------------------------------------------
+#                                                     Initialize
+# --------------------------------------------------------------------------------------------------------------------
 def initialize_simulation_parameters(object_of_class):
     '''
     Initializes the essential simulation parameters by creating a MuSpinInput object 
@@ -69,7 +24,9 @@ def initialize_simulation_parameters(object_of_class):
     Args: handler (object): An instance of a class that manages UI elements and holds parameter values
     '''
     # Create a new MuSpinInput object to hold simulation parameters
-    object_of_class.parameters = MuSpinInput()
+    dir = os.path.dirname(__file__)
+    default_input_path = dir+'\default_input.txt'
+    object_of_class.parameters = MuSpinInput(open(default_input_path))
     
     # Retrieve and set the name, spins, and time entries from the UI
     name_entry = KWName(object_of_class.name_entry.get())
