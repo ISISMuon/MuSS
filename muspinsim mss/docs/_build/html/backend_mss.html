@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>backend_mss module &mdash; MuSS 0.1.0-dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=ee2d09ae"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            MuSS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="detailed_functionality.html">Detailed Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="technical_details.html">Technical Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version_history_and_future_plans.html">Version History and Future Plans</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MuSS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">backend_mss module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/backend_mss.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-backend_mss">
+<span id="backend-mss-module"></span><h1>backend_mss module<a class="headerlink" href="#module-backend_mss" title="Link to this heading"></a></h1>
+<p>Project: Simulations for muSR data Analysis Industrial Placement
+Author: Paula Franco
+Date: February 2024</p>
+<p>Summary:
+This module provides a set of functions for managing and interacting with simulation parameters,
+including GUI integration, data processing, and simulation management for a scientific or engineering application</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.add_muon_to_aseatoms">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">add_muon_to_aseatoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms_structure:</span> <span class="pre">&lt;module</span> <span class="pre">'ase.atoms'</span> <span class="pre">from</span> <span class="pre">'C:\\Users\\BNW71814\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\ase\\atoms.py'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nn_indices:</span> <span class="pre">list</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">muon_position:</span> <span class="pre">~numpy.ndarray</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane_atom_index:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane_atom_position:</span> <span class="pre">~numpy.ndarray</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midpoint=0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">&lt;module</span> <span class="pre">'ase.atoms'</span> <span class="pre">from</span> <span class="pre">'C:\\Users\\BNW71814\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\ase\\atoms.py'&gt;</span></span></span><a class="reference internal" href="_modules/backend_mss.html#add_muon_to_aseatoms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.add_muon_to_aseatoms" title="Link to this definition"></a></dt>
+<dd><p>adds a muon to ase_atoms
+:param ase_atoms: ASE atoms of the crystal the muon is going to be placed into
+:param theta: F–mu–F angle in degrees. Must also define nn_indices if this is not 180deg.
+:param phi: angle of the F–mu–F plane. Must also define theta and nn_indices to use this.
+:param nn_indices: ASE index of the nearest-neighbour atoms to place the muon in between. Do not define this AND</p>
+<blockquote>
+<div><p>muon_position</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>muon_position</strong> – position of the muon, in angstroms. Use EITHER this or nn_indices. Do not define this and
+theta and phi</p></li>
+<li><p><strong>plane_atom_index</strong> – index of atom which the muon moves away from to create the angle theta. Do not define this
+and plane_atom_position.</p></li>
+<li><p><strong>plane_atom_position</strong> – np array of position of the plane_atom (doesn’t actually need to be a position of an
+atom per se, but useful if it is. Do not define this and the index.</p></li>
+<li><p><strong>midpoint</strong> – weighting of the midpoint to the two nnindices. 0 puts the muon on nn_indices[0], 1 puts it on
+nn_indices[2]. 0.5 puts it in between the two.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ase_atoms with the muon</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.apply_mask_to_structure">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">apply_mask_to_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms_mu:</span> <span class="pre">&lt;module</span> <span class="pre">'ase.atoms'</span> <span class="pre">from</span> <span class="pre">'C:\\Users\\BNW71814\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\ase\\atoms.py'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius:</span> <span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">&lt;module</span> <span class="pre">'ase.atoms'</span> <span class="pre">from</span> <span class="pre">'C:\\Users\\BNW71814\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\ase\\atoms.py'&gt;</span></span></span><a class="reference internal" href="_modules/backend_mss.html#apply_mask_to_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.apply_mask_to_structure" title="Link to this definition"></a></dt>
+<dd><p>Applies a spherical mask to the atoms object, selecting atoms within a specified radius from the muon.</p>
+<p>Parameters:
+atoms_with_muon: ASE atoms object containing the structure, including the muon.
+cutoff_radius: Radius within which atoms are selected relative to the muon’s position.</p>
+<p>Returns:
+ASE atoms object containing only the atoms within the specified radius from the muon</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.clean_whitespace_and_brackets">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">clean_whitespace_and_brackets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/backend_mss.html#clean_whitespace_and_brackets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.clean_whitespace_and_brackets" title="Link to this definition"></a></dt>
+<dd><p>Cleans a string by removing brackets and reducing multiple spaces to a single space
+by removing ‘[‘,’]’ and spaces in a string</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.clear_selected_options">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">clear_selected_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#clear_selected_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.clear_selected_options" title="Link to this definition"></a></dt>
+<dd><p>Clears the list of selected items and updates the corresponding label in the UI.
+Args:(object): An instance of a class that contains the list of selected items and the label to update.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.create_input_file">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">create_input_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#create_input_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.create_input_file" title="Link to this definition"></a></dt>
+<dd><p>‘
+Creates a new input file with the parameters specified in the simulation object’s UI fields.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.create_processBar">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">create_processBar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#create_processBar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.create_processBar" title="Link to this definition"></a></dt>
+<dd><p>Creates a progress bar and displays it in the main root window.</p>
+<p>Args: handler (object): An instance of a class that manages the UI elements, including where the progress bar will be displayed.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.data_processing">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">data_processing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#data_processing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.data_processing" title="Link to this definition"></a></dt>
+<dd><p>Process the data resulting from the simulation (mainly)
+Converts array to string, cleans unwanted characters and add space in the beguining of the string</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.dipolar_fitting_parameter">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">dipolar_fitting_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simmetry</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#dipolar_fitting_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.dipolar_fitting_parameter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.execute_simulation_and_trigger_event">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">execute_simulation_and_trigger_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#execute_simulation_and_trigger_event"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.execute_simulation_and_trigger_event" title="Link to this definition"></a></dt>
+<dd><p>Executes the simulation and triggers an event to send results or display them on a graph upon completion.</p>
+<dl class="simple">
+<dt>Args:handler (object): An instance of a class that manages the simulation parameters and event handling.</dt><dd><p>_ (any): Placeholder for additional arguments that might be passed when the function is invoked as an event handler.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.extract_initial_variables">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">extract_initial_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#extract_initial_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.extract_initial_variables" title="Link to this definition"></a></dt>
+<dd><p>Extracts and processes the initial variables for fitting and assigns the processed variables
+to the <cite>fit_params_to_generate_simulation</cite> attribute of the simulation object.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.fitting_options_window">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">fitting_options_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#fitting_options_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.fitting_options_window" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.fitting_parameters_choise">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">fitting_parameters_choise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#fitting_parameters_choise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.fitting_parameters_choise" title="Link to this definition"></a></dt>
+<dd><p>Considering the 22 atomistic parameters in muspinsim the 4 couplings (zeeman, dipolar, quadrupolar and hyperfine)
+can be used to fit as well as field and instrisic_fielf, and more (polarization, orientation, temperature, average axis)</p>
+<p>Celio and dissipation can also be considered for fitting</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.format_simulation_data">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">format_simulation_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">terminator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Hello'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#format_simulation_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.format_simulation_data" title="Link to this definition"></a></dt>
+<dd><p>Formats the simulation data to be read and interpreted by the client,
+and appends a terminator to signal the end of the message.</p>
+<p>It also updates the simulation_object’s result dictionary with the formatted data, using the
+current set of parameters as the key.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.generate_cell_components_window">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">generate_cell_components_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#generate_cell_components_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.generate_cell_components_window" title="Link to this definition"></a></dt>
+<dd><p>Creates a window to display and interact with the structure data of a class instance.</p>
+<p>This function inserts the structure data of the provided class instance into a
+Treeview table and allows for sorting and selection of the data, which then triggers
+updates to the dipolar interaction frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>class_instance</strong> – An instance of a class that contains structure_data and
+methods for updating interactions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.get_path">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">get_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/backend_mss.html#get_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.get_path" title="Link to this definition"></a></dt>
+<dd><p>Returns the path where the txt file will be saved</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.graph_update_and_retrieve_time">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">graph_update_and_retrieve_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#graph_update_and_retrieve_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.graph_update_and_retrieve_time" title="Link to this definition"></a></dt>
+<dd><p>Updates the graph with the latest simulation results and retrieves the x-axis (time) values.</p>
+<blockquote>
+<div><p>Actions:</p>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>Clears the current graph.</p></li>
+<li><p>Plots the results of the simulation against time.</p></li>
+<li><p>Draws the updated graph on the canvas.</p></li>
+<li><p>Stores the x-axis (time) values for future use.</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.handle_active_thhread">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">handle_active_thhread</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#handle_active_thhread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.handle_active_thhread" title="Link to this definition"></a></dt>
+<dd><p>Prints information about all currently active threads, including their names
+and statuses. Also identifies the thread from which the message originated.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.load_and_run">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">load_and_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#load_and_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.load_and_run" title="Link to this definition"></a></dt>
+<dd><p>Loads input file and starts new thread to run simulation
+only depending on the input file (offers limited interaction)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.load_input_file">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">load_input_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#load_input_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.load_input_file" title="Link to this definition"></a></dt>
+<dd><p>Opens the txt input file, then variables are intepreted using the MuSpinInput class
+The characteristic called paramteres is used to store the parameters
+The variables are then displayed in the UI</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.make_supercell">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">make_supercell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unperturbed_atoms:</span> <span class="pre">&lt;module</span> <span class="pre">'ase.atoms'</span> <span class="pre">from</span> <span class="pre">'C:\\Users\\BNW71814\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\ase\\atoms.py'&gt;</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unperturbed_supercell=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">small_output=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#make_supercell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.make_supercell" title="Link to this definition"></a></dt>
+<dd><p>make a supercell with atoms_mu in the centre, and surrounded by unperturbed_supercell unperturbed_atoms
+:param atoms_mu: (object of the windows class-muspinism object) ASE atoms, maybe with distortions, including muon
+:param unperturbed_atoms: ASE atoms of unperturbed structure
+:param unperturbed_supercell: number of instances of unperturbed_atoms to bolt on to the end of atoms_mu
+:return: supercell of atoms_mu+unperturbed_supercell*unperturbed_atoms. If small_output==False, return ASE atoms,</p>
+<blockquote>
+<div><p>otherwise returns a list of [atom type, position]</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.populate_gui_with_parameters">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">populate_gui_with_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#populate_gui_with_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.populate_gui_with_parameters" title="Link to this definition"></a></dt>
+<dd><p>Populates the GUI elements with parameter values from the class instance’s parameters.</p>
+<p>This function reads various parameters from the class instance’s parameters object and
+updates the corresponding GUI input fields, such as name, spins, time, and field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>class_instance</strong> – An instance of a class that contains GUI elements and a parameters object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.read_UI_entries_and_run">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">read_UI_entries_and_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#read_UI_entries_and_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.read_UI_entries_and_run" title="Link to this definition"></a></dt>
+<dd><p>Reads the entries from the GUI (kEntries) and starts a new thread to run the simulation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.retrieve_stored_simulation_data">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">retrieve_stored_simulation_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">terminator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Hello'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#retrieve_stored_simulation_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.retrieve_stored_simulation_data" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the stored simulation data based on the current parameters.</p>
+<p>This function retrieves the previously stored xy data from the result_dic using the current set of parameters (fit_params_to_generate_simulation).
+The retrieved data is then formatted into a string that includes the data, parameter values, and a terminator string.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.run_simulation">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">run_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#run_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.run_simulation" title="Link to this definition"></a></dt>
+<dd><p>The Simulation runs and the results value is determined</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.run_simulation_thread">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">run_simulation_thread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#run_simulation_thread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.run_simulation_thread" title="Link to this definition"></a></dt>
+<dd><p>Loads an input file if none is loaded, updates parameters if necessary,
+and starts a new thread that runs the simulation</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.safely_destroy_progress_bar">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">safely_destroy_progress_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#safely_destroy_progress_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.safely_destroy_progress_bar" title="Link to this definition"></a></dt>
+<dd><p>Safely attempts to destroy the progress bar widget.
+If the destruction fails, an error message is printed.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.save_as_directory">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">save_as_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#save_as_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.save_as_directory" title="Link to this definition"></a></dt>
+<dd><p>This function prompts the user to select a directory where files will be saved. The selected path is then
+stored in the simulation object’s <cite>save_path</cite> attribute for future use.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.selecting__nn_indices">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">selecting__nn_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#selecting__nn_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.selecting__nn_indices" title="Link to this definition"></a></dt>
+<dd><p>Recognizes the elements (atoms) selected in the ASE viewer and handles the
+initialization and visualization of the updated images with a muon added.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.show_selected_options">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">show_selected_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#show_selected_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.show_selected_options" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.store_tkentries">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">store_tkentries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#store_tkentries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.store_tkentries" title="Link to this definition"></a></dt>
+<dd><p>Stores various Tkinter entry widgets and other values into the ‘kEntries’ list.
+Organizes the entries by index, corresponding to the first 22 atomistic parameters in MuSpinSim.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.update_param_spec">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">update_param_spec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#update_param_spec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.update_param_spec" title="Link to this definition"></a></dt>
+<dd><p>Updates the parameters used for generating simulations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>class_instance</strong> – An instance of a class that contains parameters and fitting data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.update_parameters">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">update_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#update_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.update_parameters" title="Link to this definition"></a></dt>
+<dd><p>Updates the parameter of the class instance based on the UI input value.
+Retrieves the value from the field input in the GUI, and if the value is not empty, it updates the ‘field’ parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>class_instance</strong> – An instance of a class that contains GUI elements and a parameters object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.update_spin_dipolar_interaction">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">update_spin_dipolar_interaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dipolar_value_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interaction_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_component_indice</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#update_spin_dipolar_interaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.update_spin_dipolar_interaction" title="Link to this definition"></a></dt>
+<dd><p>Updates the dipolar interaction with spin and dipolar interactions and updates the relevant dictionary in the class instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_instance</strong> – An instance of a class containing the GUI elements and structure data.</p></li>
+<li><p><strong>dipolar_value_str</strong> – A string representing the dipolar interaction value to be added.</p></li>
+<li><p><strong>interaction_index</strong> – The index of the interaction being added.</p></li>
+<li><p><strong>selected_component_indice</strong> – A list of indices representing the selected components
+in the structure data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.update_structure_data">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">update_structure_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#update_structure_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.update_structure_data" title="Link to this definition"></a></dt>
+<dd><p>Updates the structure data by calculating the relative positions, magnetic moments,
+and field strengths of atoms relative to the muon in the structure.</p>
+<p>Parameters:
+simulation_object: Object containing the atomic structure and simulation parameters.
+isotope: The isotope to use for calculating gyromagnetic ratio and spin. If None, defaults to standard values.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Paula Mpembe Franco.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>socket_comunication_mss module &mdash; MuSS 0.1.0-dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=ee2d09ae"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="window_class_mss module" href="window_class_mss.html" />
+    <link rel="prev" title="run_wimda_mss module" href="run_wimda_mss.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            MuSS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">muspinsim mss</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="backend_mss.html">backend_mss module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input_class.html">input_class module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="read_entries.html">read_entries module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="read_files.html">read_files module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="run_wimda_mss.html">run_wimda_mss module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">socket_comunication_mss module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#socket_comunication_mss.close_socket_connection"><code class="docutils literal notranslate"><span class="pre">close_socket_connection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#socket_comunication_mss.handle_connection_receive_thread"><code class="docutils literal notranslate"><span class="pre">handle_connection_receive_thread()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#socket_comunication_mss.initialize_and_start_socket_server"><code class="docutils literal notranslate"><span class="pre">initialize_and_start_socket_server()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#socket_comunication_mss.receive_and_process_socket_message"><code class="docutils literal notranslate"><span class="pre">receive_and_process_socket_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#socket_comunication_mss.send_data"><code class="docutils literal notranslate"><span class="pre">send_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#socket_comunication_mss.start_server_connection_thread"><code class="docutils literal notranslate"><span class="pre">start_server_connection_thread()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="window_class_mss.html">window_class_mss module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="z_windows_draft.html">z_windows_draft module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MuSS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">muspinsim mss</a></li>
+      <li class="breadcrumb-item active">socket_comunication_mss module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/socket_comunication_mss.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-socket_comunication_mss">
+<span id="socket-comunication-mss-module"></span><h1>socket_comunication_mss module<a class="headerlink" href="#module-socket_comunication_mss" title="Link to this heading"></a></h1>
+<p>Project: Simulations for muSR data Analysis Industrial Placement
+Author: Paula Franco
+Date: February 2024</p>
+<dl class="simple">
+<dt>Summary:</dt><dd><p>Sockets are created and listens until the program is closes, here ports are descibed.
+The sockets recieve and send informtaion here.</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="socket_comunication_mss.close_socket_connection">
+<span class="sig-prename descclassname"><span class="pre">socket_comunication_mss.</span></span><span class="sig-name descname"><span class="pre">close_socket_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/socket_comunication_mss.html#close_socket_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#socket_comunication_mss.close_socket_connection" title="Link to this definition"></a></dt>
+<dd><p>Gracefully disconnects the socket from the client and closes the connection.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="socket_comunication_mss.handle_connection_receive_thread">
+<span class="sig-prename descclassname"><span class="pre">socket_comunication_mss.</span></span><span class="sig-name descname"><span class="pre">handle_connection_receive_thread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/socket_comunication_mss.html#handle_connection_receive_thread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#socket_comunication_mss.handle_connection_receive_thread" title="Link to this definition"></a></dt>
+<dd><p>Establishes a connection to the client, prints connection details,
+and starts a thread to receive and process incoming messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>handler</strong> (<em>object</em>) – An instance of a class that manages simulation parameters and states.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="socket_comunication_mss.initialize_and_start_socket_server">
+<span class="sig-prename descclassname"><span class="pre">socket_comunication_mss.</span></span><span class="sig-name descname"><span class="pre">initialize_and_start_socket_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Port</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/socket_comunication_mss.html#initialize_and_start_socket_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#socket_comunication_mss.initialize_and_start_socket_server" title="Link to this definition"></a></dt>
+<dd><p>Defines and creates a global socket server,and starts listening for incoming connections.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong></p></li>
+<li><p><strong>port</strong></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="socket_comunication_mss.receive_and_process_socket_message">
+<span class="sig-prename descclassname"><span class="pre">socket_comunication_mss.</span></span><span class="sig-name descname"><span class="pre">receive_and_process_socket_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/socket_comunication_mss.html#receive_and_process_socket_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#socket_comunication_mss.receive_and_process_socket_message" title="Link to this definition"></a></dt>
+<dd><p>Receives and interprets messages from a socket, then performs actions based on specific keywords.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>handler</strong> (<em>object</em>) – An instance of a class that handles simulation parameters and states.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="socket_comunication_mss.send_data">
+<span class="sig-prename descclassname"><span class="pre">socket_comunication_mss.</span></span><span class="sig-name descname"><span class="pre">send_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processed_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/socket_comunication_mss.html#send_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#socket_comunication_mss.send_data" title="Link to this definition"></a></dt>
+<dd><p>send the processed simulation results  to the client
+:param processed_data: The simulation results that have been processed and are ready to be sent to the client.
+:type processed_data: str</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="socket_comunication_mss.start_server_connection_thread">
+<span class="sig-prename descclassname"><span class="pre">socket_comunication_mss.</span></span><span class="sig-name descname"><span class="pre">start_server_connection_thread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/socket_comunication_mss.html#start_server_connection_thread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#socket_comunication_mss.start_server_connection_thread" title="Link to this definition"></a></dt>
+<dd><p>Initializes the socket server, sets it to listen for multiple clients,
+and starts receiving and interpreting incoming messages from clients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>handler</strong> (<em>object</em>) – An instance of a class that manages UI elements and server settings.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="run_wimda_mss.html" class="btn btn-neutral float-left" title="run_wimda_mss module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="window_class_mss.html" class="btn btn-neutral float-right" title="window_class_mss module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Paula Mpembe Franco.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

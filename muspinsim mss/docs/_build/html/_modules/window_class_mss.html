@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>window_class_mss &mdash; MuSS 0.1.0-dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ee2d09ae"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MuSS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">muspinsim mss</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MuSS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">window_class_mss</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for window_class_mss</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Project: Simulations for muSR data Analysis Industrial Placement</span>
+<span class="sd">Author: Paula Franco</span>
+<span class="sd">Date: December 2023</span>
+
+<span class="sd">Summary:</span>
+<span class="sd">This script is (a front-end GUI) an aid for MuSpinSim users, eliminating the necessity to write MuSpiSim script to run the program (for example run simulations).</span>
+<span class="sd">The concept applied here is to have as entry all MuSpinSpim variables and be able to use all functionalities of MuSpiSim.</span>
+<span class="sd">https://muon-spectroscopy-computational-project.github.io/muspinsim/ --&gt; For information on MSS</span>
+
+<span class="sd">code structure:</span>
+<span class="sd">    *The GUI is defined as the Windows class that inherit from tkinter.</span>
+<span class="sd">    *In the init function the tkinter window geometry is described and the functions that defined the essential frames are called.</span>
+
+<span class="sd">    Additional Scripts:</span>
+<span class="sd">        + muspinsim:</span>
+<span class="sd">            as this GUI is made for MSS it is all based in MSS code and its only a chanel to make the usage easier</span>
+<span class="sd">        + tkinter_muspinsim01backend as bck:</span>
+<span class="sd">            which is where other functions are defined describing the calculations, data processing, file reading, interpretation of data</span>
+<span class="sd">        + sockets_tk as sck :</span>
+<span class="sd">           sockets are created and listens until the program is closes, here ports are descibed. The sockets recieve and send informtaion here.</span>
+<span class="sd">    Run</span>
+<span class="sd">        To run this script run_guy_2 is used as to tailor this to faster wimda comunication. Therefore, the .py file that runs in wimda is &#39;run_guy_2&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">tkinter</span> <span class="k">as</span> <span class="nn">tk</span>
+
+<span class="kn">from</span> <span class="nn">tkinter.ttk</span> <span class="kn">import</span> <span class="n">Label</span><span class="p">,</span> <span class="n">LabelFrame</span><span class="p">,</span> <span class="n">Progressbar</span><span class="p">,</span> <span class="n">Style</span><span class="p">,</span> <span class="n">Combobox</span>
+<span class="kn">import</span> <span class="nn">customtkinter</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">filedialog</span>
+<span class="kn">from</span> <span class="nn">muspinsim.input.keyword</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_tkagg</span> <span class="kn">import</span> <span class="n">FigureCanvasTkAgg</span><span class="p">,</span> <span class="n">NavigationToolbar2Tk</span>
+<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">ase</span>
+<span class="kn">from</span> <span class="nn">ase.gui.images</span> <span class="kn">import</span> <span class="n">Images</span>
+<span class="kn">from</span> <span class="nn">ase.gui.gui</span> <span class="kn">import</span> <span class="n">GUI</span>
+
+<span class="c1"># -------------------------------------</span>
+<span class="c1">#       Homemade scripts</span>
+<span class="c1"># -------------------------------------</span>
+<span class="kn">import</span> <span class="nn">backend_mss</span> <span class="k">as</span> <span class="nn">bck</span>
+<span class="kn">import</span> <span class="nn">socket_comunication_mss</span> <span class="k">as</span> <span class="nn">sck</span>
+
+
+<div class="viewcode-block" id="MuSS_window">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window">[docs]</a>
+<span class="k">class</span> <span class="nc">MuSS_window</span><span class="p">(</span><span class="n">tk</span><span class="o">.</span><span class="n">Tk</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">     MuSS_window is the &#39;chassis&#39; for the MuSS progarm</span>
+<span class="sd">     The object of this class has tkinter methods and also the atomistic parameters</span>
+<span class="sd">     All major frames are defined (in the Defining Frames section ) here and the entries are stored accoring to the muspinsim indexing of parameters</span>
+<span class="sd">     The main functionalities are defined in the Auxiliary functions but the are built on top (or referencing) of other functions defined in the backend</span>
+<span class="sd">        Note:</span>
+<span class="sd">        Creation of thread to peform calculation so the GUI does not freeze </span>
+<span class="sd">        The Tkinter version used here is a single thread GUI so eveything depening on the UI must run on the main thread (but the object can be referenced in other threads)</span>
+<span class="sd">    Run this script: create a MuSS_window object and run tkinter mainloop </span>
+<span class="sd">    :) </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">tk</span><span class="o">.</span><span class="n">Tk</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        
+        <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+        <span class="c1">#                           Geometry of the window</span>
+        <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;MuSS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">(</span><span class="s2">&quot;1000x800&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minsize</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+        <span class="c1">#                           Bind Functions</span>
+        <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;ThreadFinished&gt;&gt; &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_simulation_thread_completion</span><span class="p">)</span>
+        <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+        <span class="c1">#                                           Variables Initiated</span>
+        <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kEntries</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="mi">22</span>  <span class="c1"># Refering to all tkentries possible in muspinsim (collectively store the entries by index)</span>
+        <span class="c1"># label of te muspinsim possible entries in order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelstring</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;spins&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="s1">&#39;intrinsic_field&#39;</span><span class="p">,</span> <span class="s1">&#39;polarization&#39;</span><span class="p">,</span> <span class="s1">&#39;average_axis&#39;</span><span class="p">,</span> <span class="s1">&#39;orientation&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;zeeman&#39;</span><span class="p">,</span> <span class="s1">&#39;dipolar&#39;</span><span class="p">,</span> <span class="s1">&#39;quadrupolar&#39;</span><span class="p">,</span> <span class="s1">&#39;hyperfine&#39;</span><span class="p">,</span> <span class="s1">&#39;x_axis&#39;</span><span class="p">,</span> <span class="s1">&#39;y_axis&#39;</span><span class="p">,</span> <span class="s1">&#39;celio&#39;</span><span class="p">,</span> <span class="s1">&#39;dissipation&#39;</span><span class="p">,</span> <span class="s1">&#39;fitting_variales&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;fitting_data&#39;</span><span class="p">,</span> <span class="s1">&#39;fitting_method&#39;</span><span class="p">,</span> <span class="s1">&#39;fitting_tolerance&#39;</span><span class="p">,</span> <span class="s1">&#39;experiments&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;zeeman&#39;</span><span class="p">,</span> <span class="s1">&#39;dipolar&#39;</span><span class="p">,</span> <span class="s1">&#39;quadrupolar&#39;</span><span class="p">,</span> <span class="s1">&#39;hyperfine&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fittable_atomistic_parameters</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="s1">&#39;intrinsic_field&#39;</span><span class="p">,</span> <span class="s1">&#39;polarization&#39;</span><span class="p">,</span> <span class="s1">&#39;average_axes&#39;</span><span class="p">,</span><span class="s1">&#39;orientation&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">,</span><span class="s1">&#39;celio&#39;</span><span class="p">,</span> <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dipolar_dic</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1">#stored the dipolar interaction distances with the key as the number of interaction</span>
+        <span class="c1">#(why not combine fitting history with result_dic)</span>
+
+        <span class="c1"># store the simulated data, indices are number of the fitting loop [0]=initials values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_history</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1">#</span>
+         <span class="c1"># store  the variables and time and results, key of the dictionary is the list of parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result_dic</span> <span class="o">=</span> <span class="p">{}</span>   
+        <span class="c1">#change the name to fitting_para</span>
+        <span class="c1"># fit_params_to_generate_simulation is the variable  that contains the value of the variable that has been senf from wimda to MuSS to generate new simulation data </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>        
+        <span class="c1"># checks if the fitting is occuring (None in the first run, True when fitting)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit_state</span> <span class="o">=</span> <span class="kc">None</span>               
+        <span class="c1"># array with wimda times (x-values) to do the interpolation in muspinsim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wimda_time</span> <span class="o">=</span> <span class="kc">None</span>
+                 
+        
+        <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+        <span class="c1">#                                   Esentials</span>
+        <span class="c1"># ------------------------------------------------------------------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_txt_file</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_param</span> <span class="o">=</span> <span class="mf">17.3</span> <span class="c1">#To be erased</span>
+        
+
+        <span class="c1">#this allows to save and open files in user´s documents </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_path</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">StringVar</span><span class="p">()</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_path</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="o">+</span><span class="s1">&#39;\Documents&#39;</span><span class="p">)</span>
+        <span class="c1"># ----------------------------------------------------------------------------------------------------------</span>
+        <span class="c1">#                                   Calling the Frames</span>
+        <span class="c1"># ----------------------------------------------------------------------------------------------------------</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">menus</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_essential</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_socketa</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_field</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_plot</span><span class="p">()</span>
+        <span class="c1">#self.frame_fit_selection()</span>
+
+        <span class="c1">#retrives the path and gives the name of the file</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">bck</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1">#                                   Defining frames</span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="MuSS_window.frame_essential">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.frame_essential">[docs]</a>
+    <span class="k">def</span> <span class="nf">frame_essential</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Creates the Essntial frame in the UI containing name, spins, time range </span>
+<span class="sd">        and the capability to load a cif file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create the frame that will contain thw widgets defined here</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_essentials</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Essential&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_essentials</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+        <span class="c1"># Placeholder for buffer entry, necessary for kEntries (Temporary)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer_entry</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frame_essentials</span><span class="p">)</span>
+        
+        <span class="c1"># param: name entry, label and default  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frame_essentials</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Name&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_entry</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_essentials</span><span class="p">)</span>
+        <span class="c1"># Insert default text &#39;simulation_1&#39; in the name entry field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_entry</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="s1">&#39;simulation_1&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1"># Create a label and entry field for &#39;spins&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spins_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frame_essentials</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;spins&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spins_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spins_entry</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_essentials</span><span class="p">)</span>
+        <span class="c1"># Insert default text &#39;mu e&#39; in the spins entry field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spins_entry</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="s1">&#39;mu e&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spins_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Create a label for &#39;Time&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frame_essentials</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frame_essentials</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="c1"># Create a nested frame for time entry fields</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_entry_frame</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_essentials</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_entry_frame</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_entry1</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_entry_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_entry1</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_entry1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_entry2</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_entry_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_entry2</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_entry2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_entry3</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_entry_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_entry3</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_entry3</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+       
+        <span class="c1"># Create a label for CIF file loading functionality</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cif_check</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frame_essentials</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Cif File&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cif_check</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="c1"># Create a button to load CIF files, triggering the frame_structure method when clicked</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cif_btn</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frame_essentials</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot; Cif Load&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_structure</span><span class="p">(),</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cif_btn</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MuSS_window.frame_plot">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.frame_plot">[docs]</a>
+    <span class="k">def</span> <span class="nf">frame_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets up the &#39;Plot&#39; frame for displaying graphs and providing user interaction </span>
+<span class="sd">        buttons Run.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Frame titled &#39;Plot&#39;containing the graphs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_plot</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Plot&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">900</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">900</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_plot</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+
+        <span class="c1"># Create a &#39;Run&#39; button that runs simulation in a thread</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runBtn</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Run&#39;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span><span class="n">bck</span><span class="o">.</span><span class="n">read_UI_entries_and_run</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runBtn</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">670</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">175</span><span class="p">)</span>
+
+        <span class="c1"># Initialize a Matplotlib figure object with a 5x5 inch size and a DPI (resolution) of 100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span> <span class="o">=</span> <span class="n">Figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="n">figure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span>
+        
+        <span class="c1"># Add a subplot (axes) to the figure (111 means a single plot, occupying the entire figure space)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span> <span class="c1"># neeeded</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span> <span class="o">=</span> <span class="n">FigureCanvasTkAgg</span><span class="p">(</span><span class="n">figure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_plot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span> <span class="o">=</span> <span class="n">NavigationToolbar2Tk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_plot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">_tkcanvas</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">BOTTOM</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">BOTH</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">get_tk_widget</span><span class="p">()</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">TOP</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">BOTH</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MuSS_window.frame_field">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.frame_field">[docs]</a>
+    <span class="k">def</span> <span class="nf">frame_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Field&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">270</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">zeeman_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;zeeman&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zeeman_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">zeeman_value</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">bd</span><span class="o">=</span><span class="mi">0</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zeeman_value</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        
+
+        <span class="k">def</span> <span class="nf">dipolar_frame</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+            <span class="n">dipolar_frame</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;dipolar&quot;</span><span class="p">)</span>
+            <span class="n">dipolar_frame</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;nsew&quot;</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+            <span class="n">canvas</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Canvas</span><span class="p">(</span><span class="n">dipolar_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+            <span class="n">canvas</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;nsew&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Create a vertical scrollbar linked to the canvas</span>
+            <span class="n">scrollbar</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Scrollbar</span><span class="p">(</span>
+                <span class="n">dipolar_frame</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;vertical&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">canvas</span><span class="o">.</span><span class="n">yview</span><span class="p">)</span>
+            <span class="n">scrollbar</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;ns&quot;</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">on_frame_configure</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+                <span class="n">canvas</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">scrollregion</span><span class="o">=</span><span class="n">canvas</span><span class="o">.</span><span class="n">bbox</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">))</span>
+
+            <span class="c1"># Create a frame to hold the entries and add it to the canvas</span>
+            <span class="n">framess</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">canvas</span><span class="p">)</span>
+            <span class="n">canvas</span><span class="o">.</span><span class="n">create_window</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">window</span><span class="o">=</span><span class="n">framess</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;nw&quot;</span><span class="p">)</span>
+            <span class="n">framess</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;Configure&gt;&quot;</span><span class="p">,</span> <span class="n">on_frame_configure</span><span class="p">)</span>
+
+            <span class="c1"># Configure scrollbar and canvas to work together</span>
+            <span class="n">canvas</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">yscrollcommand</span><span class="o">=</span><span class="n">scrollbar</span><span class="o">.</span><span class="n">set</span><span class="p">)</span>
+
+            <span class="c1"># Make the container expand with window resize, but keep canvas size fixed</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">grid_rowconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">dipolar_frame</span><span class="o">.</span><span class="n">grid_rowconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">dipolar_frame</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">framess</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">framess</span> <span class="o">=</span> <span class="n">dipolar_frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;field&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_value</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">bd</span><span class="o">=</span><span class="mi">0</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_value</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hyperfine_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;hyperfine&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hyperfine_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hyperfine_value</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">bd</span><span class="o">=</span><span class="mi">0</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hyperfine_value</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">quadrupolar_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;quadrupolar&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quadrupolar_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">quadrupolar_value</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">bd</span><span class="o">=</span><span class="mi">0</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quadrupolar_value</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">intrisic_field_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;intrisic_field&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intrisic_field_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">intrisic_field_value</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">bd</span><span class="o">=</span><span class="mi">0</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intrisic_field_value</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">celio_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;celio&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">celio_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">celio_value</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">bd</span><span class="o">=</span><span class="mi">0</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">celio_value</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MuSS_window.frame_socketa">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.frame_socketa">[docs]</a>
+    <span class="k">def</span> <span class="nf">frame_socketa</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates a labeled &quot;Socket&quot; frame in the UI, allowing the user to input a host and port, and providing </span>
+<span class="sd">        buttons to connect, disconnect, send data, and read data from a socket connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create a labeled frame named &#39;Socket&#39; within the parent window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socketa</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Socket&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socketa</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">780</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">520</span><span class="p">)</span>
+
+        <span class="c1"># Create entry and label for the HOST value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socketa</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Host&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host_entry</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socketa</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host_entry</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Create an entry box for the user to input the port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socketa</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Port&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port_entry</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socketa</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port_entry</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="s1">&#39;9092&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Set the initial state of the connect button to &#39;normal&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">statess</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
+
+        <span class="c1"># Create Connect that initiate the connection (if desable means server is operating)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_btn</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socketa</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Connect&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">statess</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">sck</span><span class="o">.</span><span class="n">start_server_connection_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_btn</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Create send button to send strings to the client (wimda)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disconnect_btn</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socketa</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Disconnect&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">sck</span><span class="o">.</span><span class="n">close_socket_connection</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disconnect_btn</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Create a &#39;Disconnect&#39; button to stop the socket connection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_btn</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socketa</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Send&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">sck</span><span class="o">.</span><span class="n">send_data</span><span class="p">(</span><span class="n">bck</span><span class="o">.</span><span class="n">format_simulation_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)),</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_btn</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Create read button to interpret the data recieved in the socket</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socketa</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Read&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">sck</span><span class="o">.</span><span class="n">receive_and_process_socket_message</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MuSS_window.frame_structure">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.frame_structure">[docs]</a>
+    <span class="k">def</span> <span class="nf">frame_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load a CIF file, display structure-related controls in a labeled frame (frame_structure), </span>
+<span class="sd">        and provides options to calculate the muon position, generate a supercell, and select the radius for masking</span>
+<span class="sd">        Display views of the atoms (structure) in ase withh possibility of interaction (the first view), </span>
+<span class="sd">        Display a table with elements the radius at last</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Open a file dialog for the user to select a file and read it as an &#39;atoms&#39; object</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="n">filedialog</span><span class="o">.</span><span class="n">askopenfilename</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cif_read</span> <span class="o">=</span> <span class="n">ase</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="c1"># Create a labeled Structure frame and send to frontend</span>
+        <span class="n">frame_structure</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Structure&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="n">frame_structure</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+        <span class="c1"># Create a button to calculate the muon position</span>
+        <span class="n">calculate_button</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span><span class="n">frame_structure</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Calculate Muon Position&quot;</span><span class="p">,</span>
+                                                   <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bck</span><span class="o">.</span><span class="n">selecting__nn_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">calculate_button</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Create a nested labeled frame within frame_structure, used for angle-related widgets</span>
+        <span class="n">frame_angle</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="n">frame_structure</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;__&#39;</span><span class="p">)</span>
+        <span class="n">frame_angle</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="c1"># Create a label and entry widget for &#39;Phi&#39; angle</span>
+        <span class="n">struc_phi_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="n">master</span><span class="o">=</span><span class="n">frame_angle</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Phi&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+        <span class="n">struc_phi_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="n">struc_phi_entry</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span>
+            <span class="n">frame_angle</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+        <span class="n">struc_phi_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># Create a label and entry widget for &#39;Theta&#39; angle </span>
+        <span class="n">struc_theta_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="n">master</span><span class="o">=</span><span class="n">frame_angle</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Theta&quot;</span><span class="p">)</span>
+        <span class="n">struc_theta_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="n">struc_phi_entry</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span>
+            <span class="n">frame_angle</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+        <span class="n">struc_phi_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="c1"># Create a button to generate a supercell, calling &#39;make_supercell&#39; when clicked</span>
+        <span class="n">calculate_button</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span><span class="n">frame_structure</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Generate Supercell&quot;</span><span class="p">,</span>
+                                                   <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bck</span><span class="o">.</span><span class="n">make_supercell</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">calculate_button</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Frameto contain the radius label and entry</span>
+        <span class="n">frame_options</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="n">frame_structure</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;__&#39;</span><span class="p">)</span>
+        <span class="n">frame_options</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># Radius (distance to muon) on the elements to be considered</span>
+        <span class="n">radios_symmetry_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="n">master</span><span class="o">=</span><span class="n">frame_options</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Radius&quot;</span><span class="p">)</span>
+        <span class="n">radios_symmetry_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius_entry</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span>
+            <span class="n">frame_options</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius_entry</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Generate the initial view of atoms in ase</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">images</span> <span class="o">=</span> <span class="n">Images</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">initialize</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">cif_read</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span> <span class="o">=</span> <span class="n">GUI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MuSS_window.menus">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.menus">[docs]</a>
+    <span class="k">def</span> <span class="nf">menus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the menu and the define te content:</span>
+<span class="sd">        - File which contains save, save as, load, load and run</span>
+<span class="sd">        - More where the hidden frames can be selected for display (Others, Axis,fitting)</span>
+<span class="sd">        - Exit     </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainmenu</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="c1"># Create a main menu bar for the application</span>
+
+        <span class="c1"># Create a &#39;File&#39; menu and add it to the main menu bar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_menu</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mainmenu</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># To the file optio, save, save as,load and load and run are added</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainmenu</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;File&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_menu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Save&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bck</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Save As&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bck</span><span class="o">.</span><span class="n">save_as_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Load&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bck</span><span class="o">.</span><span class="n">load_input_file</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Load and Run&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bck</span><span class="o">.</span><span class="n">load_and_run</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        
+        <span class="c1"># Create a &#39;More&#39; menu and add it to the main menu bar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">more_menu</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mainmenu</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainmenu</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;More&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">more_menu</span><span class="p">)</span>
+            <span class="c1"># To the more option hidden frames can be added</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">more_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Fitting Data&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_data</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">more_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Show axis&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_Axis</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">more_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Others&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_Others</span><span class="p">())</span>
+        
+        <span class="c1"># </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options_menu</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mainmenu</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainmenu</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Options&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options_menu</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">options_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Fitting Parameters&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bck</span><span class="o">.</span><span class="n">fitting_options_window</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">options_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Create input file&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bck</span><span class="o">.</span><span class="n">fitting_options_window</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        
+        <span class="c1"># Help is a way to undestand and be helped using the MuSS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mainmenu</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainmenu</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Help&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span><span class="p">)</span><span class="c1">#</span>
+
+        <span class="c1"># to be an hiperlink to the documentations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Documentation&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_data</span><span class="p">())</span>
+        <span class="c1">#Retuns information on active threads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Active Treads&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">bck</span><span class="o">.</span><span class="n">handle_active_thhread</span> <span class="p">)</span>
+        <span class="c1">#handle when the error happen in the thread so process can&#39;t stop (this is a manual temporary alternative)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Stop Process bar&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span><span class="n">bck</span><span class="o">.</span><span class="n">safely_destroy_progress_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainmenu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Exit&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">)</span> <span class="c1">#Exit the program</span>
+        
+        <span class="c1"># Configure the main window to display the created menu bar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">menu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mainmenu</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MuSS_window.frame_Axis">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.frame_Axis">[docs]</a>
+    <span class="k">def</span> <span class="nf">frame_Axis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Axis frame created for input file for x-axis and y-axis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#Create a display the axis frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Axis&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">780</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">330</span><span class="p">)</span>
+
+        <span class="c1">#label and entry for x-axis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_axis</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;a_axis&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_axis</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">,)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_axis_value</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_axis_value</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        
+        <span class="c1"># label and entry for y-axis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_axis</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;y_axis&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_axis</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_axis_value</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_axis_value</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MuSS_window.frame_Others">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.frame_Others">[docs]</a>
+    <span class="k">def</span> <span class="nf">frame_Others</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Frame contains the remaining of the 22 muspinsim entries</span>
+<span class="sd">        orientation, polarization </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Create the other frame </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Other</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Other&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Other</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">780</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+        <span class="c1"># Create a label for &#39;Orientation&#39; </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientation_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Other</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Orientation&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientation_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span>
+            <span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># create space label as a form to add space </span>
+        <span class="n">sspace_1</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Other</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">sspace_1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="c1"># Create entry for &#39;Orientation&#39; </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientation_value</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkTextbox</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Other</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientation_value</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># polarization entry and label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polarization_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Other</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Polarization&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polarization_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span>
+            <span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">polarization_value</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkTextbox</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Other</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polarization_value</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># create space label as a form to add space</span>
+        <span class="n">sspace_2</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Other</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">sspace_2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1">#label and form to select different types of experiments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiments_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Other</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;experimemt&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiments_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span>
+            <span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkOptionMenu</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Other</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="s2">&quot;alc&quot;</span><span class="p">,</span> <span class="s2">&quot;zero_field&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MuSS_window.frame_data01">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.frame_data01">[docs]</a>
+    <span class="k">def</span> <span class="nf">frame_data01</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Fitting data&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_variable</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;fitting variables&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_variable</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_variables_values</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">bd</span><span class="o">=</span><span class="mi">0</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_variables_values</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_method_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;fitting_method&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_method_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_method</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkOptionMenu</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s2">&quot;nelder-mead&quot;</span><span class="p">,</span> <span class="s2">&quot;lbfgs&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_method</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_data</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;fitting_data&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_data</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_data_btn</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;load&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_data_btn</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_tolerance</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;fitting_tolerance&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_tolerance</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span>
+            <span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_tolerance_value</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_tolerance_value</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MuSS_window.frame_data">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.frame_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">frame_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Fitting data&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_variable</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;fitting_variable&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_variable</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_variables_values</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">bd</span><span class="o">=</span><span class="mi">0</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_variables_values</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_method_label</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;fitting_method&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_method_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_method</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkOptionMenu</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s2">&quot;nelder-mead&quot;</span><span class="p">,</span> <span class="s2">&quot;lbfgs&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_method</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_data</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;fitting_data&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_data</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_data_btn</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;load&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_data_btn</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_tolerance</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;fitting_tolerance&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_tolerance</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span>
+            <span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_tolerance_value</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkEntry</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitting_frame</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitting_tolerance_value</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MuSS_window.frame_fit_selection">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.frame_fit_selection">[docs]</a>
+    <span class="k">def</span> <span class="nf">frame_fit_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        The atomistic parameters to be used as fitting parameters are selected here</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit_selection_frame</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Fit Selection&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">900</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit_selection_frame</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_selection</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_items</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="s1">&#39;dipolar&#39;</span><span class="p">,</span> <span class="s1">&#39;zeeman&#39;</span><span class="p">,</span> <span class="s1">&#39;intrinsic_field&#39;</span><span class="p">,</span> <span class="s1">&#39;quadrupolar&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropdown</span> <span class="o">=</span> <span class="n">Combobox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fit_selection_frame</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropdown</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">columnspan</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="c1">#self.dropdown.pack(pady=10)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropdown</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;ComboboxSelected&gt;&gt;&quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_dropdown_selection</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_of</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fit_selection_frame</span><span class="p">,</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+        <span class="c1">#self.label_of.configure(state=tk.DISABLED)</span>
+        <span class="c1">#self.show_button.pack(pady=10)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_of</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">columnspan</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_button</span> <span class="o">=</span><span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fit_selection_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Show&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span><span class="n">bck</span><span class="o">.</span><span class="n">show_selected_options</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span><span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="c1">#self.show_button.pack(pady=10)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_button</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_button</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fit_selection_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Clear&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span><span class="n">bck</span><span class="o">.</span><span class="n">clear_selected_options</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span><span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="c1">#self.show_button.pack(pady=10)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_button</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ---------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1">#                                       Binded Functions</span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------        </span>
+
+<div class="viewcode-block" id="MuSS_window.handle_simulation_thread_completion">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.handle_simulation_thread_completion">[docs]</a>
+    <span class="k">def</span> <span class="nf">handle_simulation_thread_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles actions to be performed when a simulation thread stops</span>
+<span class="sd">        sending the data to wimda or showing it in graph (in the case no fitting is occuring)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># DEBUG: Print the current state when entering the completion handler</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;################################ ENTERED THE HANDLE OF THINGS&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_state</span><span class="p">,</span><span class="s1">&#39;PARAMETERS EVALUATED===============&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">())</span>
+        <span class="c1"># Update the graph and retrieve timing data</span>
+        <span class="n">bck</span><span class="o">.</span><span class="n">graph_update_and_retrieve_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        
+        <span class="c1"># If fitting is occurring, send the formatted simulation data to WiMDA</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_state</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">sck</span><span class="o">.</span><span class="n">send_data</span><span class="p">(</span><span class="n">bck</span><span class="o">.</span><span class="n">format_simulation_data</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        
+        <span class="c1"># Destroy the progress bar upon task completion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processBar</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MuSS_window.send_stored_simulation_result">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.send_stored_simulation_result">[docs]</a>
+    <span class="k">def</span> <span class="nf">send_stored_simulation_result</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends stored simulation results to the client.</span>
+<span class="sd">        This occurs when the simulation parameters have not changed or have changed insignificantly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># send data to client</span>
+        <span class="n">sck</span><span class="o">.</span><span class="n">send_data</span><span class="p">(</span><span class="n">bck</span><span class="o">.</span><span class="n">retrieve_stored_simulation_data</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="MuSS_window.handle_dropdown_selection">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.handle_dropdown_selection">[docs]</a>
+    <span class="k">def</span> <span class="nf">handle_dropdown_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Manages the selection from a dropdown menu. Adds the selected item to a list if it&#39;s not  already present, enforcing a maximum selection limit. Displays a message if a duplicate </span>
+<span class="sd">        selection is made.</span>
+
+<span class="sd">        Args: handler (object): An instance of a class that contains the dropdown, selected items list, </span>
+<span class="sd">        and maximum selection limit</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Retrieve the currently selected option from the dropdown</span>
+        <span class="n">selected_option</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropdown</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        
+        <span class="c1"># Check if an option was selected  </span>
+        <span class="k">if</span> <span class="n">selected_option</span><span class="p">:</span>
+        <span class="c1"># Ensure the selected option is not already in the selected items list</span>
+            <span class="k">if</span> <span class="n">selected_option</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_items</span><span class="p">:</span>
+            <span class="c1"># Check if the selected items list has reached its maximum limit</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_items</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_selection</span><span class="p">:</span>
+                <span class="c1"># Remove the oldest item</span>
+                    <span class="n">oldest_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_items</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    
+                
+            <span class="c1"># Add the newly selected option to the list</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">selected_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">selected_option</span><span class="p">)</span>
+            <span class="c1"># Optionally, clear the dropdown selection after adding the item</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dropdown</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                
+            <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Show an information message if the selected option is a duplicate</span>
+                <span class="n">tk</span><span class="o">.</span> <span class="n">messagebox</span><span class="o">.</span><span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Duplicate Selection&quot;</span><span class="p">,</span> <span class="s2">&quot;This option is already selected.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dropdown</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="c1"># Clear the dropdown selection</span></div>
+
+    
+<div class="viewcode-block" id="MuSS_window.rre">
+<a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window.rre">[docs]</a>
+    <span class="k">def</span> <span class="nf">rre</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">bck</span><span class="o">.</span><span class="n">update_param_spec</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">bck</span><span class="o">.</span><span class="n">read_UI_entries_and_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Paula Mpembe Franco.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

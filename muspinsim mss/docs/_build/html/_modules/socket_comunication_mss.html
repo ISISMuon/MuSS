@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>socket_comunication_mss &mdash; MuSS 0.1.0-dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ee2d09ae"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MuSS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">muspinsim mss</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MuSS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">socket_comunication_mss</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for socket_comunication_mss</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Project: Simulations for muSR data Analysis Industrial Placement</span>
+<span class="sd">Author: Paula Franco</span>
+<span class="sd">Date: February 2024</span>
+
+<span class="sd">Summary:</span>
+<span class="sd">    Sockets are created and listens until the program is closes, here ports are descibed.</span>
+<span class="sd">    The sockets recieve and send informtaion here.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+
+<span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#                                           Connect</span>
+<span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="start_server_connection_thread">
+<a class="viewcode-back" href="../socket_comunication_mss.html#socket_comunication_mss.start_server_connection_thread">[docs]</a>
+<span class="k">def</span> <span class="nf">start_server_connection_thread</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes the socket server, sets it to listen for multiple clients, </span>
+<span class="sd">    and starts receiving and interpreting incoming messages from clients.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        handler (object): An instance of a class that manages UI elements and server settings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">comunication_socket</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Variable initialization (not strictly necessary)</span>
+
+    <span class="c1">#Retrieve Host and Port values from the UI</span>
+    <span class="n">Host</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">host_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="n">PORT</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">port_entry</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+
+    <span class="c1"># Create the socket and start listening for connections</span>
+    <span class="n">initialize_and_start_socket_server</span><span class="p">(</span><span class="n">Host</span><span class="p">,</span><span class="n">PORT</span><span class="p">)</span>
+
+    <span class="c1"># Pause briefly to ensure all variables and components are initialized</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  
+
+    <span class="c1"># Start a thread to handle client connections and receive messages continuously</span>
+    <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">handle_connection_receive_thread</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">handler</span><span class="p">,),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    
+    <span class="c1"># Disable the connect button on the UI once the socket server is running</span>
+    <span class="n">handler</span><span class="o">.</span><span class="n">statess</span> <span class="o">=</span> <span class="s2">&quot;disabled&quot;</span> 
+    <span class="n">handler</span><span class="o">.</span><span class="n">connect_btn</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="initialize_and_start_socket_server">
+<a class="viewcode-back" href="../socket_comunication_mss.html#socket_comunication_mss.initialize_and_start_socket_server">[docs]</a>
+<span class="k">def</span> <span class="nf">initialize_and_start_socket_server</span><span class="p">(</span><span class="n">host</span><span class="p">,</span><span class="n">Port</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Defines and creates a global socket server,and starts listening for incoming connections.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        host</span>
+<span class="sd">        port</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">global</span> <span class="n">scks</span>
+
+    <span class="c1"># Define the socket type and start the listening process</span>
+    <span class="n">scks</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+    <span class="n">scks</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">Port</span><span class="p">))</span>
+    <span class="n">scks</span><span class="o">.</span><span class="n">listen</span><span class="p">()</span>
+
+    <span class="c1"># Debug Message to confirm that the server is now listening</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Server is listening&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="handle_connection_receive_thread">
+<a class="viewcode-back" href="../socket_comunication_mss.html#socket_comunication_mss.handle_connection_receive_thread">[docs]</a>
+<span class="k">def</span> <span class="nf">handle_connection_receive_thread</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Establishes a connection to the client, prints connection details, </span>
+<span class="sd">    and starts a thread to receive and process incoming messages.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        handler (object): An instance of a class that manages simulation parameters and states.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define address and communication_socket as global variables to reference and intercept the connection</span>
+    <span class="k">global</span> <span class="n">adress</span>
+    <span class="k">global</span> <span class="n">comunication_socket</span>
+
+    <span class="c1"># Continuously listen for and accept connections from clients</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">comunication_socket</span><span class="p">,</span> <span class="n">adress</span> <span class="o">=</span> <span class="n">scks</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;communication socket&#39;</span><span class="p">,</span> <span class="n">comunication_socket</span><span class="p">,</span> <span class="s1">&#39;adressss&#39;</span><span class="p">,</span> <span class="n">adress</span><span class="p">,</span> <span class="s1">&#39;types&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span>
+            <span class="n">comunication_socket</span><span class="p">),</span> <span class="s1">&#39;type of the adress&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">adress</span><span class="p">))</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Connection from </span><span class="si">{</span><span class="n">adress</span><span class="si">}</span><span class="s1"> has been established&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Start a new thread to receive and process incoming message</span>
+        <span class="n">receive_message_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">receive_and_process_socket_message</span><span class="p">,</span>
+                                   <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="nb">object</span><span class="p">,),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">receive_message_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#                                           Disconnect</span>
+<span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="close_socket_connection">
+<a class="viewcode-back" href="../socket_comunication_mss.html#socket_comunication_mss.close_socket_connection">[docs]</a>
+<span class="k">def</span> <span class="nf">close_socket_connection</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gracefully disconnects the socket from the client and closes the connection.    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Shutdown the socket to disable further send and receive operations</span>
+    <span class="n">comunication_socket</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+
+    <span class="c1"># Close the socket to release the resource</span>
+    <span class="n">comunication_socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#                                           Recieve</span>
+<span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="receive_and_process_socket_message">
+<a class="viewcode-back" href="../socket_comunication_mss.html#socket_comunication_mss.receive_and_process_socket_message">[docs]</a>
+<span class="k">def</span> <span class="nf">receive_and_process_socket_message</span><span class="p">(</span><span class="n">object_of_class</span><span class="p">):</span>  
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Receives and interprets messages from a socket, then performs actions based on specific keywords.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        handler (object): An instance of a class that handles simulation parameters and states.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># The socket continuously waits to receive messages</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+         <span class="c1"># Decode the received message from the socket</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">comunication_socket</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Handling the absence of a message</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="c1"># Clean up the message by removing unwanted characters</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check if the message contains the &#39;param&#39; keyword for parameter fitting</span>
+        <span class="k">if</span> <span class="s1">&#39;param&#39;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
+            <span class="c1"># Remove the &#39;param&#39; keyword from the message</span>
+            <span class="n">message_processed</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;param&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Store the processed message as parameters to generate a new simulation            </span>
+            <span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span> <span class="o">=</span> <span class="n">message_processed</span>
+
+            <span class="c1"># DEBUG: Print information about received parameters</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;################################ IF WE RECIEVE A MESSAGE WITH THE KEY PARAM&#39;</span><span class="p">,</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span><span class="p">,</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_state</span><span class="p">)</span>
+            
+            <span class="c1">#first_value=float(list(object_of_class.result_dic.keys())[0].split()[0])-float(object_of_class.fit_params_to_generate_simulation.split()[0])</span>
+            <span class="c1"># Check if these parameters have been received before</span>
+            <span class="k">if</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span> <span class="ow">in</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">result_dic</span><span class="p">:</span><span class="c1"># or first_value==0 :</span>
+                <span class="c1"># Trigger an event to send stored results</span>
+                <span class="c1">#object_of_class.event_generate(&#39;&lt;&lt;SendResultStored&gt;&gt;&#39;)</span>
+                <span class="n">object_of_class</span><span class="o">.</span><span class="n">send_stored_simulation_result</span><span class="p">()</span>
+                <span class="c1"># DEBUG: Print a message indicating the parameters were previously received</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;---------------------------------------------- The set of parameters </span><span class="si">{</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span><span class="si">}</span><span class="s1"> has been recieved before              The simulation results sent were stored previously&#39;</span><span class="p">)</span>            
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Mark the fitting state as activ</span>
+                <span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_state</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="c1"># Trigger an event to calculate and send new simulation results</span>
+                <span class="c1">#object_of_class.event_generate(&#39;&lt;&lt;CalculateSend&gt;&gt;&#39;)</span>
+                <span class="n">object_of_class</span><span class="o">.</span><span class="n">rre</span><span class="p">()</span>
+                <span class="c1"># DEBUG: Print a message indicating new simulation results are being generated</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;++++++++++++++++++++++++++++++++++++++++++++++ The set of parameters </span><span class="si">{</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span><span class="si">}</span><span class="s1"> have been used to generate new simmulation       The results will be sent shortly&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Handle the case where the fitting process is completed</span>
+        <span class="k">elif</span> <span class="n">message</span> <span class="o">==</span> <span class="s1">&#39;Fit Completed&#39;</span><span class="p">:</span>
+            <span class="c1"># Mark the fitting process as complete</span>
+            <span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_state</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="c1"># Trigger an event indicating the thread has finished processing</span>
+            <span class="n">object_of_class</span><span class="o">.</span><span class="n">event_generate</span><span class="p">(</span><span class="s1">&#39;&lt;&lt;ThreadFinished&gt;&gt;&#39;</span><span class="p">)</span>
+            <span class="c1"># DEBUG: Print a message indicating the fitting process is completedt</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;=================================================== The following message was recieved </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s1"> &#39;</span><span class="p">)</span>
+
+        <span class="c1"># Handle messages related to system characterization from WiMDA</span>
+        <span class="k">if</span> <span class="s1">&#39;TimeFrom&#39;</span> <span class="ow">and</span> <span class="s1">&#39;TimeTo&#39;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
+            <span class="c1"># Store the time range information in the handler objec</span>
+            <span class="n">object_of_class</span><span class="o">.</span><span class="n">wimda_time</span> <span class="o">=</span> <span class="n">message</span>
+            <span class="c1"># Debug print</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+
+<span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#                                           Send</span>
+<span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="send_data">
+<a class="viewcode-back" href="../socket_comunication_mss.html#socket_comunication_mss.send_data">[docs]</a>
+<span class="k">def</span> <span class="nf">send_data</span><span class="p">(</span><span class="n">processed_data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    send the processed simulation results  to the client</span>
+<span class="sd">    Args:</span>
+<span class="sd">        processed_data (str): The simulation results that have been processed and are ready to be sent to the client.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#Debug Message</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The following message has been sent to the client:  &#39;</span><span class="p">,</span> <span class="n">processed_data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+    
+    <span class="c1"># Sending data to the client</span>
+    <span class="n">comunication_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">processed_data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></div>
+
+   
+<span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Paula Mpembe Franco.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

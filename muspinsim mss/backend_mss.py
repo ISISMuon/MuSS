@@ -21,7 +21,7 @@ import threading
 from threading import Thread
 
 import customtkinter
-from tkinter.ttk import Label, LabelFrame, Progressbar
+from tkinter.ttk import Label, LabelFrame, Progressbar, Combobox
 from tkinter import ttk
 import ase
 from ase import atom, atoms, visualize, build
@@ -31,6 +31,7 @@ import ase
 import ase.data
 from ase.visualize import view
 import os
+import read_entries as r_e
 
 # --------------------------------------
 #       Homemade scripts
@@ -169,6 +170,7 @@ def fitting_options_window(parent_object):
     
     # Create a new top-level window associated with the parent object
     fitting_top_window = customtkinter.CTkToplevel(parent_object)
+    
     # Set the window icon
     dir = os.path.dirname(__file__)
     filename = dir+'\logo_mm.ico'
@@ -176,6 +178,85 @@ def fitting_options_window(parent_object):
     
     # Set the window title
     fitting_top_window.title("Fitting parameters")
+    fitting_parameters_choise(parent_object)
+
+    def frame_fit_selection(parent):
+        '''
+        The atomistic parameters to be used as fitting parameters are selected here
+        '''
+        parent.fit_selection_frame = LabelFrame(fitting_top_window, text="Fit Selection", width=900, height=100)
+        parent.fit_selection_frame.pack(fill="x", padx=10, pady=10)
+
+        
+        parent.max_selection = 3
+        parent.selected_items = []
+
+        parent.options = ['field', 'dipolar', 'zeeman', 'intrinsic_field', 'quadrupolar']
+
+        parent.dropdown = Combobox(parent.fit_selection_frame, values=parent_object.verified_param)
+        parent.dropdown.grid(row=0, column=0,columnspan=2,padx=5, pady=5)
+        parent.dropdown.bind("<<ComboboxSelected>>",parent.handle_dropdown_selection)
+        
+        parent.label_of = customtkinter.CTkLabel(parent.fit_selection_frame,text="---")
+        parent.label_of.grid(row=1, column=0,columnspan=2, padx=0, pady=5)
+
+        parent.show_button =customtkinter.CTkButton(parent.fit_selection_frame, text="Show", command=lambda:show_selected_options(parent),width=50)
+        #parent.show_button.pack(pady=10)
+        parent.show_button.grid(row=2, column=0, padx=0, pady=5)
+
+        parent.clear_button = customtkinter.CTkButton(parent.fit_selection_frame, text="Clear", command=lambda:clear_selected_options(parent),width=50)
+        #parent.show_button.pack(pady=10)
+        parent.clear_button.grid(row=2, column=1, padx=0, pady=5)
+
+    frame_fit_selection(parent_object)
+    
+    frame_coupling_fit_window = tk.Frame(fitting_top_window,bg="lightblue", width=300, height=400)
+    frame_coupling_fit_window.pack(side="left", fill="both", expand=True)
+    left_label = tk.Label(frame_coupling_fit_window, text="Left Area", bg="lightblue")
+    left_label.pack(pady=20)
+
+
+    frame_noncoupling_fit_window = tk.Frame(fitting_top_window,bg="lightgreen", width=300, height=400)
+    frame_noncoupling_fit_window.pack(side="left", fill="both", expand=True)
+    right_label = tk.Label(frame_noncoupling_fit_window, text="Right Area", bg="lightgreen")
+    right_label.pack(pady=20)
+    
+# --------------------------------------------------------------------------------------------------------------------
+#                                                     Debug
+# --------------------------------------------------------------------------------------------------------------------    
+def create_input_file(instance):
+    instance.parameters
+    
+    # Separet the Couplings and the non couplings
+
+    with open("output.txt", "w") as file:
+        for key, value in instance.parameters.evaluate():
+        # Write key followed by a newline and space
+            file.write(f"{key}\n")
+            file.write(f" {value}\n\n")
+    
+def fitting_parameters_choise(instance):
+    '''
+    Considering the 22 atomistic parameters in muspinsim the 4 couplings (zeeman, dipolar, quadrupolar and hyperfine) 
+    can be used to fit as well as field and instrisic_fielf, and more (polarization, orientation, temperature, average axis)
+
+    Celio and dissipation can also be considered for fitting
+    '''
+    instance.verified_param=[]
+    couplings=instance.parameters.evaluate()['couplings']
+    dic_param=instance.parameters.evaluate()
+    print(dic_param.keys())
+    for i in instance.fittable_atomistic_parameters:
+        if i==instance.couplings:
+            dic_couplings=dic_param['couplings']
+            print(dic_couplings)
+            for ii in dic_couplings:
+                print(dic_couplings[ii])
+                instance.verified_param.append(dic_couplings[ii].name)
+        else:
+            print('dictionary',dic_param[i])
+            instance.verified_param.append(dic_param[i])
+
 
 # -------------------------------------------------------------------------------------------------------
 #                                           File Reading
@@ -886,6 +967,8 @@ def handle_active_thhread():
 def show_selected_options(handler):
     if handler.selected_items:
         options = "\n".join(handler.selected_items)
+        print(type(options),handler.selected_items)
+        print(type(handler.selected_items),handler.selected_items,handler.selected_items[0])
         tk.messagebox.showinfo("Selected Options", f"Selected Options:\n{options}")
     else:
         tk.messagebox.showinfo("Selected Options", "No options selected.")

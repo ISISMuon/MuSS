@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>backend_mss &mdash; MuSS 0.1.0-dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ee2d09ae"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MuSS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../detailed_functionality.html">Detailed Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../technical_details.html">Technical Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version_history_and_future_plans.html">Version History and Future Plans</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MuSS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">backend_mss</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for backend_mss</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Project: Simulations for muSR data Analysis Industrial Placement</span>
+<span class="sd">Author: Paula Franco</span>
+<span class="sd">Date: February 2024</span>
+
+<span class="sd">Summary:</span>
+<span class="sd">This module provides a set of functions for managing and interacting with simulation parameters, </span>
+<span class="sd">including GUI integration, data processing, and simulation management for a scientific or engineering application</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">filedialog</span>
+<span class="kn">import</span> <span class="nn">tkinter</span> <span class="k">as</span> <span class="nn">tk</span>
+<span class="kn">from</span> <span class="nn">muspinsim</span> <span class="kn">import</span> <span class="n">MuSpinInput</span><span class="p">,</span> <span class="n">ExperimentRunner</span>
+<span class="kn">from</span> <span class="nn">muspinsim.input.keyword</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">muspinsim.constants</span> <span class="kn">import</span> <span class="n">gyromagnetic_ratio</span><span class="p">,</span> <span class="n">spin</span>
+<span class="kn">from</span> <span class="nn">tkinter.ttk</span> <span class="kn">import</span> <span class="n">Label</span><span class="p">,</span> <span class="n">LabelFrame</span>
+<span class="kn">from</span> <span class="nn">ase.gui.images</span> <span class="kn">import</span> <span class="n">Images</span>
+<span class="kn">from</span> <span class="nn">ase.gui.gui</span> <span class="kn">import</span> <span class="n">GUI</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
+
+<span class="kn">import</span> <span class="nn">customtkinter</span>
+<span class="kn">from</span> <span class="nn">tkinter.ttk</span> <span class="kn">import</span> <span class="n">Label</span><span class="p">,</span> <span class="n">LabelFrame</span><span class="p">,</span> <span class="n">Progressbar</span><span class="p">,</span> <span class="n">Combobox</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">ttk</span>
+<span class="kn">import</span> <span class="nn">ase</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">atom</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">visualize</span><span class="p">,</span> <span class="n">build</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">ase</span>
+<span class="kn">import</span> <span class="nn">ase.data</span>
+<span class="kn">from</span> <span class="nn">ase.visualize</span> <span class="kn">import</span> <span class="n">view</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">read_entries</span> <span class="k">as</span> <span class="nn">r_e</span>
+
+<span class="c1"># --------------------------------------</span>
+<span class="c1">#       Homemade scripts</span>
+<span class="c1"># -------------------------------------</span>
+
+<span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#                                           DATA PROCESSING</span>
+<span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="retrieve_stored_simulation_data">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.retrieve_stored_simulation_data">[docs]</a>
+<span class="k">def</span> <span class="nf">retrieve_stored_simulation_data</span><span class="p">(</span><span class="n">object_of_class</span><span class="p">,</span> <span class="n">terminator</span><span class="o">=</span><span class="s1">&#39;Hello&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">    Retrieves the stored simulation data based on the current parameters.</span>
+<span class="sd">    </span>
+<span class="sd">    This function retrieves the previously stored xy data from the result_dic using the current set of parameters (fit_params_to_generate_simulation). </span>
+<span class="sd">    The retrieved data is then formatted into a string that includes the data, parameter values, and a terminator string.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># retrive the stored xy according to set of current simulation parameters</span>
+    <span class="n">xy</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">result_dic</span><span class="p">[</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span><span class="p">]</span>
+
+    <span class="c1"># format the message to be sent so that client can decode it retrieving y and the parameters</span>
+    <span class="n">formatted_data_str</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">xy</span> <span class="o">+</span> <span class="s1">&#39; value &#39;</span> <span class="o">+</span> \
+        <span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span> <span class="o">+</span> <span class="n">terminator</span>
+    <span class="c1">#retrieve_stored_simulation_data</span>
+    
+    <span class="k">return</span> <span class="n">formatted_data_str</span></div>
+
+
+<div class="viewcode-block" id="format_simulation_data">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.format_simulation_data">[docs]</a>
+<span class="k">def</span> <span class="nf">format_simulation_data</span><span class="p">(</span><span class="n">object_of_class</span><span class="p">,</span> <span class="n">terminator</span><span class="o">=</span><span class="s1">&#39;Hello&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Formats the simulation data to be read and interpreted by the client,</span>
+<span class="sd">    and appends a terminator to signal the end of the message.</span>
+
+<span class="sd">    It also updates the simulation_object&#39;s result dictionary with the formatted data, using the</span>
+<span class="sd">    current set of parameters as the key.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># Initialize list to hold the x-axis values</span>
+    <span class="n">x_values</span> <span class="o">=</span> <span class="p">[]</span> 
+
+    <span class="c1"># Extract the first element from each simulated x-axis value and store it in the list</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">x_axis_simulated_values</span><span class="p">)):</span>
+        <span class="n">x_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">x_axis_simulated_values</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Process the x-axis values and results, then combine them into a single string</span>
+    <span class="n">xy_data</span> <span class="o">=</span> <span class="n">data_processing</span><span class="p">(</span><span class="n">x_values</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> \
+        <span class="n">data_processing</span><span class="p">(</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+    
+    <span class="c1"># Check if no parameters are set; if so, extract and update the parameters</span>
+    <span class="k">if</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span> <span class="o">==</span> <span class="s1">&#39; &#39;</span><span class="p">:</span>
+        <span class="n">extract_initial_variables</span><span class="p">(</span><span class="n">object_of_class</span><span class="p">)</span>
+
+    <span class="c1"># define the sequence of information cleint is expecting</span>
+    <span class="n">formatted_data_str</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">xy_data</span> <span class="o">+</span> <span class="s1">&#39; value &#39;</span> <span class="o">+</span> \
+        <span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span> <span class="o">+</span> <span class="n">terminator</span>
+
+    <span class="c1"># Update the result dictionary with the current parameters and processed data</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">result_dic</span><span class="p">[</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span><span class="p">]</span> <span class="o">=</span> <span class="n">xy_data</span>
+    
+    <span class="c1">#Debug print</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The parameters set being fiited is </span><span class="si">{</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">result_dic</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s1">, this was retrived from the stored dictionary&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">formatted_data_str</span></div>
+
+
+<div class="viewcode-block" id="data_processing">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.data_processing">[docs]</a>
+<span class="k">def</span> <span class="nf">data_processing</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">    Process the data resulting from the simulation (mainly)</span>
+<span class="sd">    Converts array to string, cleans unwanted characters and add space in the beguining of the string</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Suppress scientific notation in the numpy output</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Convert the array to a string</span>
+    <span class="n">data_string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># Clean the string by removing unwanted characters</span>
+    <span class="n">results_string</span> <span class="o">=</span> <span class="n">data_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+    <span class="c1"># introduce space before string</span>
+    <span class="n">formatted_data_string</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">+</span> <span class="n">results_string</span>
+
+    <span class="k">return</span> <span class="n">formatted_data_string</span></div>
+
+
+<div class="viewcode-block" id="dipolar_fitting_parameter">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.dipolar_fitting_parameter">[docs]</a>
+<span class="k">def</span> <span class="nf">dipolar_fitting_parameter</span><span class="p">(</span><span class="n">object_of_class</span><span class="p">,</span><span class="n">simmetry</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1">#x= p*np.sin(theta)*np.cos(phi)</span>
+    <span class="c1">#y=p*np.sin(theta)* np.sin(phi)</span>
+    <span class="c1">#z=p*cos(tetha)</span>
+    <span class="c1">#p=sqrt(x^2+y^2+z^2)</span>
+
+    <span class="c1">#object_of_class.fit_params_to_generate_simulation = distance</span>
+
+    <span class="c1">#how many of the dipolar variables are being fitted against</span>
+    <span class="k">pass</span> </div>
+
+
+<div class="viewcode-block" id="extract_initial_variables">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.extract_initial_variables">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_initial_variables</span><span class="p">(</span><span class="n">object_of_class</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Extracts and processes the initial variables for fitting and assigns the processed variables</span>
+<span class="sd">    to the `fit_params_to_generate_simulation` attribute of the simulation object.&#39;&#39;&#39;</span>
+
+    <span class="c1"># Define the variable name to extract</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="s1">&#39;field&#39;</span>
+    
+    <span class="c1"># Evaluate and retrieve the parameters from the simulation object</span>
+    <span class="n">i_params</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+    <span class="n">fit_var</span> <span class="o">=</span> <span class="n">i_params</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Adjust the fitting variable based on its length</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fit_var</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">fit_var</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">fit_var</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">fit_var</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">fit_var</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">fit_var</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">fit_var</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">0</span><span class="p">]</span>
+    
+    <span class="c1"># Process the fitting variable into a string format</span>
+    <span class="n">fit_var</span> <span class="o">=</span> <span class="n">data_processing</span><span class="p">(</span><span class="n">fit_var</span><span class="p">)</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_var</span><span class="o">=</span><span class="n">fit_var</span>
+    <span class="c1"># Assign the processed variable to the simulation object for use in generating the simulation</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span> <span class="o">=</span> <span class="n">fit_var</span></div>
+
+
+<div class="viewcode-block" id="clean_whitespace_and_brackets">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.clean_whitespace_and_brackets">[docs]</a>
+<span class="k">def</span> <span class="nf">clean_whitespace_and_brackets</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">    Cleans a string by removing brackets and reducing multiple spaces to a single space</span>
+<span class="sd">    by removing &#39;[&#39;,&#39;]&#39; and spaces in a string</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">result_string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+        <span class="s1">&#39;]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+        <span class="s1">&#39;    &#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;   &#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;  &#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result_string</span></div>
+
+
+<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#                                                     Fitting</span>
+<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="fitting_options_window">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.fitting_options_window">[docs]</a>
+<span class="k">def</span> <span class="nf">fitting_options_window</span><span class="p">(</span><span class="n">parent_object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="c1"># Create a new top-level window associated with the parent object</span>
+    <span class="n">fitting_top_window</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkToplevel</span><span class="p">(</span><span class="n">parent_object</span><span class="p">)</span>
+    
+    <span class="c1"># Set the window icon</span>
+    <span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="nb">dir</span><span class="o">+</span><span class="s1">&#39;\logo_mm.ico&#39;</span>
+    <span class="n">fitting_top_window</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">fitting_top_window</span><span class="o">.</span><span class="n">iconbitmap</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+    
+    <span class="c1"># Set the window title</span>
+    <span class="n">fitting_top_window</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Fitting parameters&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">frame_fit_selection</span><span class="p">(</span><span class="n">parent</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        The atomistic parameters to be used as fitting parameters are selected here</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">fit_selection_frame</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="n">fitting_top_window</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Fit Selection&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">900</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">fit_selection_frame</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        
+        <span class="n">parent</span><span class="o">.</span><span class="n">max_selection</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">selected_items</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">parent</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="s1">&#39;dipolar&#39;</span><span class="p">,</span> <span class="s1">&#39;zeeman&#39;</span><span class="p">,</span> <span class="s1">&#39;intrinsic_field&#39;</span><span class="p">,</span> <span class="s1">&#39;quadrupolar&#39;</span><span class="p">]</span>
+
+        <span class="n">parent</span><span class="o">.</span><span class="n">dropdown</span> <span class="o">=</span> <span class="n">Combobox</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">fit_selection_frame</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">parent</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">dropdown</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">columnspan</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">dropdown</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;ComboboxSelected&gt;&gt;&quot;</span><span class="p">,</span><span class="n">parent</span><span class="o">.</span><span class="n">handle_dropdown_selection</span><span class="p">)</span>
+        
+        <span class="n">parent</span><span class="o">.</span><span class="n">label_of</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">fit_selection_frame</span><span class="p">,</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">label_of</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">columnspan</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="n">parent</span><span class="o">.</span><span class="n">show_button</span> <span class="o">=</span><span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">fit_selection_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Show&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span><span class="n">show_selected_options</span><span class="p">(</span><span class="n">parent</span><span class="p">),</span><span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="c1">#parent.show_button.pack(pady=10)</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">show_button</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="n">parent</span><span class="o">.</span><span class="n">clear_button</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">fit_selection_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Clear&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span><span class="n">clear_selected_options</span><span class="p">(</span><span class="n">parent</span><span class="p">),</span><span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="c1">#parent.show_button.pack(pady=10)</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">clear_button</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="n">frame_fit_selection</span><span class="p">(</span><span class="n">parent_object</span><span class="p">)</span>
+    
+    <span class="n">frame_coupling_fit_window</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">fitting_top_window</span><span class="p">,</span><span class="n">bg</span><span class="o">=</span><span class="s2">&quot;lightblue&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="n">frame_coupling_fit_window</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">left_label</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">frame_coupling_fit_window</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Left Area&quot;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;lightblue&quot;</span><span class="p">)</span>
+    <span class="n">left_label</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+
+    <span class="n">frame_noncoupling_fit_window</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">fitting_top_window</span><span class="p">,</span><span class="n">bg</span><span class="o">=</span><span class="s2">&quot;lightgreen&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="n">frame_noncoupling_fit_window</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">right_label</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">frame_noncoupling_fit_window</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Right Area&quot;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;lightgreen&quot;</span><span class="p">)</span>
+    <span class="n">right_label</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    
+    <span class="n">fitting_parameters_choise</span><span class="p">(</span><span class="n">parent_object</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#                                                     Debug</span>
+<span class="c1"># --------------------------------------------------------------------------------------------------------------------    </span>
+<span class="k">def</span> <span class="nf">create_input_file</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
+    <span class="n">instance</span><span class="o">.</span><span class="n">parameters</span>
+    
+    <span class="c1"># Separet the Couplings and the non couplings</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;output.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">():</span>
+        <span class="c1"># Write key followed by a newline and space</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="fitting_parameters_choise">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.fitting_parameters_choise">[docs]</a>
+<span class="k">def</span> <span class="nf">fitting_parameters_choise</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Considering the 22 atomistic parameters in muspinsim the 4 couplings (zeeman, dipolar, quadrupolar and hyperfine) </span>
+<span class="sd">    can be used to fit as well as field and instrisic_fielf, and more (polarization, orientation, temperature, average axis)</span>
+
+<span class="sd">    Celio and dissipation can also be considered for fitting</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">couplings</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()[</span><span class="s1">&#39;couplings&#39;</span><span class="p">]</span>
+    <span class="n">dic_param</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dic_param</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">fittable_atomistic_parameters</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="n">instance</span><span class="o">.</span><span class="n">couplings</span><span class="p">:</span>
+            <span class="n">dic_couplings</span><span class="o">=</span><span class="n">dic_param</span><span class="p">[</span><span class="s1">&#39;couplings&#39;</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">dic_couplings</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">dic_couplings</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">dic_couplings</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+                <span class="c1">#print(ii)</span>
+            <span class="c1">#for ii in instance.couplings:</span>
+            <span class="c1">#    print(&#39;dictionary couplings&#39; ,dic_couplings[ii])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;dictionary&#39;</span><span class="p">,</span><span class="n">dic_param</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div>
+
+        
+
+
+<span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#                                           File Reading</span>
+<span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="load_input_file">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.load_input_file">[docs]</a>
+<span class="k">def</span> <span class="nf">load_input_file</span><span class="p">(</span><span class="n">simulation_object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Opens the txt input file, then variables are intepreted using the MuSpinInput class</span>
+<span class="sd">    The characteristic called paramteres is used to store the parameters</span>
+<span class="sd">    The variables are then displayed in the UI</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">simulation_object</span><span class="o">.</span><span class="n">input_txt_file</span> <span class="o">=</span> <span class="n">filedialog</span><span class="o">.</span><span class="n">askopenfilename</span><span class="p">()</span>
+    <span class="c1"># Debug print</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The file </span><span class="si">{</span><span class="n">simulation_object</span><span class="o">.</span><span class="n">input_txt_file</span><span class="si">}</span><span class="s1"> was selected as the input file&#39;</span><span class="p">)</span>
+
+    <span class="c1"># store parameters</span>
+    <span class="n">simulation_object</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">MuSpinInput</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">simulation_object</span><span class="o">.</span><span class="n">input_txt_file</span><span class="p">))</span>
+
+    <span class="c1">#displays variables in UI</span>
+    <span class="n">populate_gui_with_parameters</span><span class="p">(</span><span class="n">simulation_object</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="run_simulation">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.run_simulation">[docs]</a>
+<span class="k">def</span> <span class="nf">run_simulation</span><span class="p">(</span><span class="n">simulation_object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The Simulation runs and the results value is determined</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1">#Assert the parameters as the input of the simulation</span>
+    <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentRunner</span><span class="p">(</span><span class="n">simulation_object</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="n">simulation_object</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="get_path">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.get_path">[docs]</a>
+<span class="k">def</span> <span class="nf">get_path</span><span class="p">(</span><span class="n">object_of_class</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns the path where the txt file will be saved</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Ensure the name entry field is configured correctly</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">name_entry</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+
+    <span class="c1"># Construct the file path using the username and name entry input</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">username</span> <span class="o">+</span> <span class="s1">&#39;\Documents&#39;</span> <span class="o">+</span> \
+        <span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">name_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;.txt&#39;</span>
+    
+    <span class="k">return</span> <span class="n">path</span></div>
+
+
+
+<div class="viewcode-block" id="create_input_file">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.create_input_file">[docs]</a>
+<span class="k">def</span> <span class="nf">create_input_file</span><span class="p">(</span><span class="n">object_of_class</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;&#39;</span>
+<span class="sd">    Creates a new input file with the parameters specified in the simulation object&#39;s UI fields.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="c1"># Access the `inn` object from the simulation object</span>
+    <span class="n">inn</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">inn</span>
+    
+    <span class="c1"># Set the name and spins from the respective entry fields</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">name_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">spins</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">spins_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="c1"># Set the time range if all time entries are provided</span>
+    <span class="k">if</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">time_entry1</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">time_entry2</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">time_entry3</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">inn</span><span class="o">.</span><span class="n">times</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;range(</span><span class="si">{</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">time_entry1</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">time_entry2</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">time_entry3</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">}</span><span class="s1">)&#39;</span>
+    
+    <span class="n">inn</span><span class="o">.</span><span class="n">cif</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">zeeman</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">zeeman_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;end-1c&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">inn</span><span class="o">.</span><span class="n">zeeman</span><span class="p">)</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">dipolar</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">dipolar_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;end-1c&quot;</span><span class="p">)</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">hyperfine</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">hyperfine_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;end-1c&quot;</span><span class="p">)</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">quadripolar</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">quadrupolar_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;end-1c&quot;</span><span class="p">)</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">field</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">field_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;end-1c&quot;</span><span class="p">)</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">intrisic_field</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">intrisic_field_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;end-1c&quot;</span><span class="p">)</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">celio</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">celio_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;end-1c&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Set fitting parameters</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">fitting_tolerance</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">fitting_tolerance_value</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">fitting_variables</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">fitting_variables_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;end-1c&quot;</span><span class="p">)</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">fitting_method</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">fitting_method</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    
+    <span class="c1"># Set additional simulation configuration</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">orientation_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;end-1c&quot;</span><span class="p">)</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">polarization</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">polarization_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;end-1c&quot;</span><span class="p">)</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">experiment</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Set the x and y axes for the simulation</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">x_axis</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">x_axis_value</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="n">inn</span><span class="o">.</span><span class="n">y_axis</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">y_axis_value</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="c1"># Finalize the creation of the input file</span>
+    <span class="n">inn</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="save_as_directory">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.save_as_directory">[docs]</a>
+<span class="k">def</span> <span class="nf">save_as_directory</span><span class="p">(</span><span class="n">object_of_class</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function prompts the user to select a directory where files will be saved. The selected path is then</span>
+<span class="sd">    stored in the simulation object&#39;s `save_path` attribute for future use.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Open a directory selection dialog and get the chosen path</span>
+    <span class="n">selected_directory</span> <span class="o">=</span> <span class="n">filedialog</span><span class="o">.</span><span class="n">askdirectory</span><span class="p">()</span>
+
+    <span class="c1"># Update the simulation object&#39;s save path with the selected directory</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">save_path</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">selected_directory</span><span class="p">)</span>
+
+    <span class="c1"># Debug print to confirm the selected path</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">selected_directory</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">save_path</span><span class="o">.</span><span class="n">get</span><span class="p">())</span></div>
+
+    
+<div class="viewcode-block" id="graph_update_and_retrieve_time">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.graph_update_and_retrieve_time">[docs]</a>
+<span class="k">def</span> <span class="nf">graph_update_and_retrieve_time</span><span class="p">(</span><span class="n">object_of_class</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Updates the graph with the latest simulation results and retrieves the x-axis (time) values.</span>
+<span class="sd">    </span>
+<span class="sd">     Actions:</span>
+<span class="sd">    1. Clears the current graph.</span>
+<span class="sd">    2. Plots the results of the simulation against time.</span>
+<span class="sd">    3. Draws the updated graph on the canvas.</span>
+<span class="sd">    4. Stores the x-axis (time) values for future use.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1">#the graph is cleared</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="c1">#get the x_axis value(time) directly from the parameters plot results depending on time</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()[</span>
+                           <span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+    
+    <span class="c1"># display the updated graph on the canvas</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+    <span class="c1">#store x_axis value (time) in x_axis_simulation_values</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">x_axis_simulated_values</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span></div>
+
+
+<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#                                                     CIF FILE</span>
+<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="selecting__nn_indices">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.selecting__nn_indices">[docs]</a>
+<span class="k">def</span> <span class="nf">selecting__nn_indices</span><span class="p">(</span><span class="n">object_of_class</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Recognizes the elements (atoms) selected in the ASE viewer and handles the </span>
+<span class="sd">    initialization and visualization of the updated images with a muon added.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># Initialize an empty list to store the indices of selected atoms</span>
+    <span class="n">selected_atoms</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="c1"># Loop through the selected atoms in the ASE viewer and store their indices</span>
+    <span class="k">for</span> <span class="n">i_images_selected_atom</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">selected</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">selected</span><span class="p">[</span><span class="n">i_images_selected_atom</span><span class="p">]:</span>
+            <span class="n">selected_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i_images_selected_atom</span><span class="p">)</span>
+
+    <span class="c1"># Exit the initial GUI view</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="c1"># Create a new Images object with a muon added to the selected atoms</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">images_with_muon</span> <span class="o">=</span> <span class="n">Images</span><span class="p">()</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">images_with_muon</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">add_muon_to_aseatoms</span><span class="p">(</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">cif_read</span><span class="p">,</span> <span class="n">nn_indices</span><span class="o">=</span><span class="n">selected_atoms</span><span class="p">)])</span>
+    
+    <span class="c1"># Initialize a new GUI to display the updated images with the muon</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">gui_with_muon</span> <span class="o">=</span> <span class="n">GUI</span><span class="p">(</span><span class="n">object_of_class</span><span class="o">.</span><span class="n">images_with_muon</span><span class="p">)</span>
+
+    <span class="c1"># Run the new GUI</span>
+    <span class="n">object_of_class</span><span class="o">.</span><span class="n">gui_with_muon</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="add_muon_to_aseatoms">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.add_muon_to_aseatoms">[docs]</a>
+<span class="k">def</span> <span class="nf">add_muon_to_aseatoms</span><span class="p">(</span><span class="n">atoms_structure</span><span class="p">:</span><span class="n">atoms</span><span class="p">,</span> <span class="n">theta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">180</span><span class="p">,</span> <span class="n">phi</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">muon_position</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">plane_atom_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">plane_atom_position</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">midpoint</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">atoms</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    adds a muon to ase_atoms</span>
+<span class="sd">    :param ase_atoms: ASE atoms of the crystal the muon is going to be placed into</span>
+<span class="sd">    :param theta: F--mu--F angle in degrees. Must also define nn_indices if this is not 180deg.</span>
+<span class="sd">    :param phi: angle of the F--mu--F plane. Must also define theta and nn_indices to use this.</span>
+<span class="sd">    :param nn_indices: ASE index of the nearest-neighbour atoms to place the muon in between. Do not define this AND</span>
+<span class="sd">                       muon_position</span>
+<span class="sd">    :param muon_position: position of the muon, in angstroms. Use EITHER this or nn_indices. Do not define this and</span>
+<span class="sd">                          theta and phi</span>
+<span class="sd">    :param plane_atom_index: index of atom which the muon moves away from to create the angle theta. Do not define this</span>
+<span class="sd">                             and plane_atom_position.</span>
+<span class="sd">    :param plane_atom_position: np array of position of the plane_atom (doesn&#39;t actually need to be a position of an</span>
+<span class="sd">                                atom per se, but useful if it is. Do not define this and the index.</span>
+<span class="sd">    :param midpoint: weighting of the midpoint to the two nnindices. 0 puts the muon on nn_indices[0], 1 puts it on</span>
+<span class="sd">                     nn_indices[2]. 0.5 puts it in between the two.</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    :return: ase_atoms with the muon</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Ensure that either muon_position or nn_indices is defined, but not both</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">muon_position</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">nn_indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># Make a deep copy of the ASE atoms structure to avoid modifying the original object</span>
+    <span class="n">ase_atoms</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">atoms_structure</span><span class="p">)</span>
+    <span class="c1"># three possibilities:</span>
+    <span class="c1"># 1) &gt;2 nn_indices -&gt; just find average, ignore angles</span>
+    <span class="c1"># 2) 2 nn_indices or muon_position, theta not given (or 180) -&gt; just find midpoint</span>
+    <span class="c1"># 3) 2 nn_indices, theta and phi -- find muon_position using theta and phi</span>
+
+    <span class="c1"># If nn_indices is provided, calculate the muon position</span>
+    <span class="k">if</span> <span class="n">nn_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">muon_position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,))</span> <span class="c1"># Initialize muon position</span>
+        
+        <span class="c1"># Case 1: More than 2 nn_indices - take the average position of the neighbors</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nn_indices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># if nn_indices are given, work out the average of them to get the muon position (there can be more than 2!)</span>
+            <span class="k">for</span> <span class="n">nn_index</span> <span class="ow">in</span> <span class="n">nn_indices</span><span class="p">:</span>
+                <span class="n">muon_position</span> <span class="o">+=</span> <span class="n">ase_atoms</span><span class="p">[</span><span class="n">nn_index</span><span class="p">]</span><span class="o">.</span><span class="n">position</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">nn_indices</span><span class="p">)</span>
+        
+        <span class="c1"># Case 2: Two nn_indices and theta is 180 (or undefined) - place the muon at the midpoint</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nn_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="p">(</span><span class="n">theta</span> <span class="o">==</span> <span class="mi">180</span> <span class="ow">or</span> <span class="n">theta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="n">muon_position</span> <span class="o">=</span> <span class="n">ase_atoms</span><span class="p">[</span><span class="n">nn_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="n">midpoint</span> \
+                <span class="o">+</span> <span class="n">ase_atoms</span><span class="p">[</span><span class="n">nn_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">position</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">midpoint</span><span class="p">)</span>
+        
+        <span class="c1"># Case 3: Two nn_indices with defined theta and phi - calculate muon position based on angles</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">nn_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># we need to calculate the muon position with theta and phi...</span>
+
+            <span class="c1"># convert everything into TCoord3D objects (...easier to work with)</span>
+            <span class="n">nn_position_1</span> <span class="o">=</span> <span class="n">ase_atoms</span><span class="p">[</span><span class="n">nn_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">position</span>
+            <span class="c1"># nn_position_1 = coord(nn_position_1[0], nn_position_1[1], nn_position_1[2])</span>
+            <span class="n">nn_position_2</span> <span class="o">=</span> <span class="n">ase_atoms</span><span class="p">[</span><span class="n">nn_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">position</span>
+            <span class="c1"># nn_position_2 = coord(nn_position_2[0], nn_position_2[1], nn_position_2[2])</span>
+
+            <span class="c1"># Ensure plane_atom_position or plane_atom_index is provided, but not both</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">plane_atom_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">plane_atom_position</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="c1"># Get the plane atom position from its index if not directly provided</span>
+            <span class="k">if</span> <span class="n">plane_atom_position</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">plane_atom_position</span> <span class="o">=</span> <span class="n">ase_atoms</span><span class="p">[</span><span class="n">plane_atom_index</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+            <span class="c1"># plane_atom_position_c = coord(plane_atom_position[0], plane_atom_position[1], plane_atom_position[2])</span>
+            <span class="c1"># muon_position = get_bent_muon_position(nn_position_1=nn_position_1, nn_position_2=nn_position_2,plane_position=plane_atom_position_c, theta=theta, phi=phi,midpoint=midpoint)</span>
+
+            <span class="n">muon_position</span> <span class="o">=</span> <span class="n">muon_position</span><span class="o">.</span><span class="n">tonumpyarray</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error with the muon position parameters.&#39;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="kc">False</span>
+
+    <span class="c1"># Create a new atom for the muon at the calculated or provided position</span>
+    <span class="n">muon</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="n">muon_position</span><span class="p">)</span>
+
+    <span class="c1"># Append the muon to the ASE atoms structure</span>
+    <span class="n">ase_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">muon</span><span class="p">)</span>
+
+    <span class="c1"># Update the simulation object with the modified atoms</span>
+    <span class="n">atoms_structure</span> <span class="o">=</span> <span class="n">ase_atoms</span>
+
+    <span class="k">return</span> <span class="n">ase_atoms</span></div>
+
+
+<div class="viewcode-block" id="make_supercell">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.make_supercell">[docs]</a>
+<span class="k">def</span> <span class="nf">make_supercell</span><span class="p">(</span><span class="n">simulation_object</span><span class="p">,</span> <span class="n">unperturbed_atoms</span><span class="p">:</span> <span class="n">atoms</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">unperturbed_supercell</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                   <span class="n">small_output</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    make a supercell with atoms_mu in the centre, and surrounded by unperturbed_supercell unperturbed_atoms</span>
+<span class="sd">    :param atoms_mu: (object of the windows class-muspinism object) ASE atoms, maybe with distortions, including muon</span>
+<span class="sd">    :param unperturbed_atoms: ASE atoms of unperturbed structure</span>
+<span class="sd">    :param unperturbed_supercell: number of instances of unperturbed_atoms to bolt on to the end of atoms_mu</span>
+<span class="sd">    :return: supercell of atoms_mu+unperturbed_supercell*unperturbed_atoms. If small_output==False, return ASE atoms,</span>
+<span class="sd">             otherwise returns a list of [atom type, position]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Retrieve the current atomic structure with the muon</span>
+    <span class="n">atoms_mu</span> <span class="o">=</span> <span class="n">simulation_object</span><span class="o">.</span><span class="n">cif_read</span>
+
+    <span class="c1"># If no unperturbed_atoms are provided, use atoms_mu excluding the last atom (assumed to be the muon)</span>
+    <span class="k">if</span> <span class="n">unperturbed_atoms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># we need to confirm that atom[-1] is the muon by convetion it is but...</span>
+        <span class="n">unperturbed_atoms</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">atoms_mu</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">unperturbed_atoms</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">unperturbed_atoms</span><span class="p">)</span>
+
+    <span class="c1"># Adjust unperturbed_atoms to match the supercell dimensions of atoms_mu, if atoms_mu is already a supercell</span>
+    <span class="n">unperturbed_atoms</span> <span class="o">=</span> <span class="n">build</span><span class="o">.</span><span class="n">make_supercell</span><span class="p">(</span><span class="n">unperturbed_atoms</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span>
+                                             <span class="n">atoms_mu</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">lengths</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span>
+                                             <span class="n">unperturbed_atoms</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">lengths</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Store the muon atom for later re-insertion after constructing the supercell</span>
+    <span class="n">muon</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">atoms_mu</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="c1"># Initialize output list if small_output mode is enabled</span>
+    <span class="n">output_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">small_output</span><span class="p">:</span>
+        <span class="n">output_list</span> <span class="o">=</span> <span class="p">[[</span><span class="n">this_atom</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">this_atom</span><span class="o">.</span><span class="n">position</span><span class="p">]</span>
+                       <span class="k">for</span> <span class="n">this_atom</span> <span class="ow">in</span> <span class="n">atoms_mu</span><span class="p">]</span>
+    
+    <span class="c1"># Remove the muon from the original structure temporaril</span>
+    <span class="k">del</span> <span class="n">atoms_mu</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Construct the supercell by translating and replicating unperturbed_atoms around the central cell</span>
+    <span class="k">for</span> <span class="n">x_sign</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">unperturbed_supercell</span><span class="p">,</span> <span class="n">unperturbed_supercell</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">y_sign</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">unperturbed_supercell</span><span class="p">,</span> <span class="n">unperturbed_supercell</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">z_sign</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">unperturbed_supercell</span><span class="p">,</span> <span class="n">unperturbed_supercell</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">x_sign</span> <span class="o">==</span> <span class="n">y_sign</span> <span class="o">==</span> <span class="n">z_sign</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># Skip the central cell containing the muon</span>
+                    <span class="k">continue</span>
+                 <span class="c1"># Calculate translation vectors for the unperturbed_atoms</span>
+                <span class="n">translation_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">x_sign</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">x_sign</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">unperturbed_atoms</span><span class="o">.</span><span class="n">cell</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">x_sign</span><span class="p">)</span> <span class="o">*</span> <span class="n">atoms_mu</span><span class="o">.</span><span class="n">cell</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">translation_vector</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">y_sign</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">y_sign</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">unperturbed_atoms</span><span class="o">.</span><span class="n">cell</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">y_sign</span><span class="p">)</span> <span class="o">*</span> <span class="n">atoms_mu</span><span class="o">.</span><span class="n">cell</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">translation_vector</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">z_sign</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">z_sign</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">unperturbed_atoms</span><span class="o">.</span><span class="n">cell</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">z_sign</span><span class="p">)</span> <span class="o">*</span> <span class="n">atoms_mu</span><span class="o">.</span><span class="n">cell</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                
+                <span class="c1"># Translate and append the unperturbed atoms to form the supercell</span>
+                <span class="n">unperturbed_atoms</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">translation_vector</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">this_atom</span> <span class="ow">in</span> <span class="n">unperturbed_atoms</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">small_output</span><span class="p">:</span>
+                        <span class="n">output_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="p">[</span><span class="n">this_atom</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">this_atom</span><span class="o">.</span><span class="n">position</span><span class="p">)])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">atoms_mu</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_atom</span><span class="p">)</span>
+                <span class="n">unperturbed_atoms</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">translation_vector</span><span class="p">)</span>
+    <span class="c1"># Re-insert the muon at the center of the supercell</span>
+    <span class="n">atoms_mu</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">muon</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">small_output</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">output_list</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Adjust the cell dimensions and positions to accommodate the supercell</span>
+        <span class="n">old_cell</span> <span class="o">=</span> <span class="n">atoms_mu</span><span class="o">.</span><span class="n">get_cell</span><span class="p">()</span>
+        <span class="n">atoms_mu</span><span class="o">.</span><span class="n">set_cell</span><span class="p">(</span>
+            <span class="n">old_cell</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">unperturbed_supercell</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">scale_atoms</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">atoms_mu</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">unperturbed_supercell</span> <span class="o">*</span> <span class="n">old_cell</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">atoms_mu</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">unperturbed_supercell</span> <span class="o">*</span> <span class="n">old_cell</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">atoms_mu</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">unperturbed_supercell</span> <span class="o">*</span> <span class="n">old_cell</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="c1"># Exit the old GUI and update with the new supercell structure</span>
+        <span class="n">simulation_object</span><span class="o">.</span><span class="n">gui_with_muon</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        <span class="n">simulation_object</span><span class="o">.</span><span class="n">cif_read</span> <span class="o">=</span> <span class="n">atoms_mu</span>
+        <span class="n">simulation_object</span><span class="o">.</span><span class="n">cif_read</span> <span class="o">=</span> <span class="n">apply_mask_to_structure</span><span class="p">(</span>
+            <span class="n">atoms_mu</span><span class="p">,</span> <span class="n">simulation_object</span><span class="o">.</span><span class="n">radius_entry</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+        <span class="n">generate_cell_components_window</span><span class="p">(</span><span class="n">simulation_object</span><span class="p">)</span>
+
+        <span class="c1"># Initialize a new GUI with the supercell</span>
+        <span class="n">simulation_object</span><span class="o">.</span><span class="n">images_supercell</span> <span class="o">=</span> <span class="n">Images</span><span class="p">()</span>
+        <span class="n">simulation_object</span><span class="o">.</span><span class="n">images_supercell</span><span class="o">.</span><span class="n">initialize</span><span class="p">([</span><span class="n">atoms_mu</span><span class="p">])</span>
+        <span class="n">simulation_object</span><span class="o">.</span><span class="n">gui_supercell</span> <span class="o">=</span> <span class="n">GUI</span><span class="p">(</span><span class="n">simulation_object</span><span class="o">.</span><span class="n">images_supercell</span><span class="p">)</span>
+        <span class="n">simulation_object</span><span class="o">.</span><span class="n">gui_supercell</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="apply_mask_to_structure">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.apply_mask_to_structure">[docs]</a>
+<span class="k">def</span> <span class="nf">apply_mask_to_structure</span><span class="p">(</span><span class="n">atoms_mu</span><span class="p">:</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">atoms</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Applies a spherical mask to the atoms object, selecting atoms within a specified radius from the muon.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    atoms_with_muon: ASE atoms object containing the structure, including the muon.</span>
+<span class="sd">    cutoff_radius: Radius within which atoms are selected relative to the muon&#39;s position.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    ASE atoms object containing only the atoms within the specified radius from the muon</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Get the position of the muon (assumed to be the last atom in the structure)</span>
+    <span class="n">center</span> <span class="o">=</span> <span class="n">atoms_mu</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+
+    <span class="c1"># Calculate the distances of all atoms from the muon&#39;s position and create a mask for atoms within the radius</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">atoms_mu</span><span class="o">.</span><span class="n">positions</span> <span class="o">-</span> <span class="n">center</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span>
+    
+    <span class="c1"># Apply the mask to select the atoms within the specified radius</span>
+    <span class="n">selected_atoms</span> <span class="o">=</span> <span class="n">atoms_mu</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+    <span class="c1"># Print the selected atoms and display them in the viewer</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">selected_atoms</span><span class="p">)</span>
+    <span class="n">view</span><span class="p">(</span><span class="n">selected_atoms</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">selected_atoms</span></div>
+
+
+<div class="viewcode-block" id="update_structure_data">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.update_structure_data">[docs]</a>
+<span class="k">def</span> <span class="nf">update_structure_data</span><span class="p">(</span><span class="n">simulation_object</span><span class="p">,</span> <span class="n">iso</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Updates the structure data by calculating the relative positions, magnetic moments, </span>
+<span class="sd">    and field strengths of atoms relative to the muon in the structure.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    simulation_object: Object containing the atomic structure and simulation parameters.</span>
+<span class="sd">    isotope: The isotope to use for calculating gyromagnetic ratio and spin. If None, defaults to standard values.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Initialize the structure data list to store information about each atom in the structure</span>
+    <span class="n">simulation_object</span><span class="o">.</span><span class="n">structure_data</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="c1"># Retrieve the position of the muon, assumed to be the last atom in the structure</span>
+    <span class="n">mu_position</span> <span class="o">=</span> <span class="n">simulation_object</span><span class="o">.</span><span class="n">cif_read</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;muon positon&#39;</span><span class="p">,</span> <span class="n">mu_position</span><span class="p">)</span>
+    
+    <span class="c1"># Iterate over each atom in the structure to calculate its relative position, magnetic moment, and field strength</span>
+    <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">simulation_object</span><span class="o">.</span><span class="n">cif_read</span><span class="p">:</span>
+        <span class="c1"># Get the element symbol of the atom</span>
+        <span class="n">element_symbol</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">symbol</span>
+
+        <span class="c1"># Calculate the relative position of the atom with respect to the muon&#39;s position</span>
+        <span class="n">relative_postision</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">position</span><span class="o">-</span><span class="n">mu_position</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">relative_postision</span><span class="p">,</span> <span class="s1">&#39;@&#39;</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+        
+        <span class="c1"># If the atom is the muon (assumed to be labeled &#39;X&#39;), rename the element symbol to &#39;mu&#39;</span>
+        <span class="k">if</span> <span class="n">element_symbol</span> <span class="o">==</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span>
+            <span class="n">element_symbol</span> <span class="o">=</span> <span class="s1">&#39;mu&#39;</span>
+        <span class="c1"># Calculate the magnetic moment of the atom based on its element and isotope</span>
+        <span class="n">magnetic_moment</span> <span class="o">=</span> <span class="n">gyromagnetic_ratio</span><span class="p">(</span>
+            <span class="n">element_symbol</span><span class="p">,</span> <span class="n">iso</span><span class="p">)</span><span class="o">*</span><span class="n">spin</span><span class="p">(</span><span class="n">element_symbol</span><span class="p">,</span> <span class="n">iso</span><span class="p">)</span>
+
+        <span class="c1"># Calculate the distance from the muon to the atom</span>
+        <span class="n">distance_to_muon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">relative_postision</span><span class="p">)</span>
+
+        <span class="c1"># Calculate the magnetic field strength; if the atom is the muon itself, set the strength to 0</span>
+        <span class="k">if</span> <span class="n">distance_to_muon</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">strength</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>    
+            <span class="n">strength</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">magnetic_moment</span><span class="o">/</span><span class="n">distance_to_muon</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="c1"># Gather information about the atom: element symbol, field strength, relative position, spin, and distance</span>
+        <span class="n">atom_info</span> <span class="o">=</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">strength</span><span class="p">,</span> <span class="n">relative_postision</span><span class="p">,</span>
+                <span class="n">spin</span><span class="p">(</span><span class="n">element_symbol</span><span class="p">,</span> <span class="n">iso</span><span class="p">),</span> <span class="n">distance_to_muon</span><span class="p">)</span>
+        
+        <span class="c1"># Update the structure information </span>
+        <span class="n">simulation_object</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom_info</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="generate_cell_components_window">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.generate_cell_components_window">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_cell_components_window</span><span class="p">(</span><span class="n">class_instance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">    Creates a window to display and interact with the structure data of a class instance.</span>
+<span class="sd">    </span>
+<span class="sd">    This function inserts the structure data of the provided class instance into a </span>
+<span class="sd">    Treeview table and allows for sorting and selection of the data, which then triggers </span>
+<span class="sd">    updates to the dipolar interaction frame.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        class_instance: An instance of a class that contains structure_data and </span>
+<span class="sd">                        methods for updating interactions.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="c1"># Update the structure data for the class instance (with no specific isotope selected)</span>
+    <span class="n">update_structure_data</span><span class="p">(</span><span class="n">class_instance</span><span class="p">,</span> <span class="n">iso</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># create a top-level to contain the table</span>
+    <span class="n">top</span> <span class="o">=</span> <span class="n">customtkinter</span><span class="o">.</span><span class="n">CTkToplevel</span><span class="p">(</span><span class="n">class_instance</span><span class="p">)</span>
+
+    <span class="c1"># Set the window icon (after a slight delay to avoid potential timing issues)</span>
+    <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">directory</span><span class="o">+</span><span class="s1">&#39;\logo_mm.ico&#39;</span>
+    <span class="n">top</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">top</span><span class="o">.</span><span class="n">iconbitmap</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+    <span class="n">top</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Characterization of muon stopping site&quot;</span><span class="p">)</span>
+
+    <span class="c1"># define elements of the table</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;#1&quot;</span><span class="p">,</span> <span class="s2">&quot;#2&quot;</span><span class="p">,</span> <span class="s2">&quot;#3&quot;</span><span class="p">,</span> <span class="s2">&quot;#4&quot;</span><span class="p">,</span> <span class="s1">&#39;#5&#39;</span><span class="p">)</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Treeview</span><span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="s1">&#39;headings&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">sort_columns</span><span class="p">(</span><span class="n">column</span><span class="p">,</span><span class="n">descending</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sorts the Treeview data based on the selected column.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[(</span><span class="n">tree</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">item</span><span class="p">)[</span><span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">get_children</span><span class="p">()]</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">tree</span><span class="p">[</span><span class="s2">&quot;columns&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">column</span><span class="p">)],</span> <span class="n">reverse</span><span class="o">=</span><span class="n">descending</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">tree</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+
+        <span class="c1"># Update the heading to allow toggling between ascending and descending sort</span>
+        <span class="n">tree</span><span class="o">.</span><span class="n">heading</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">sort_columns</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="ow">not</span> <span class="n">descending</span><span class="p">))</span>
+
+
+    <span class="c1"># Define the column headings with sorting functionality</span>
+    <span class="n">tree</span><span class="o">.</span><span class="n">heading</span><span class="p">(</span><span class="s2">&quot;#1&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Symmbols&quot;</span><span class="p">,</span><span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span><span class="n">sort_columns</span><span class="p">(</span><span class="s1">&#39;#1&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">))</span>
+    <span class="n">tree</span><span class="o">.</span><span class="n">heading</span><span class="p">(</span><span class="s2">&quot;#2&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Strentgh&quot;</span><span class="p">,</span><span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span><span class="n">sort_columns</span><span class="p">(</span><span class="s1">&#39;#2&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">))</span>
+    <span class="n">tree</span><span class="o">.</span><span class="n">heading</span><span class="p">(</span><span class="s2">&quot;#3&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Position&quot;</span><span class="p">,</span><span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span><span class="n">sort_columns</span><span class="p">(</span><span class="s1">&#39;#3&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">))</span>
+    <span class="n">tree</span><span class="o">.</span><span class="n">heading</span><span class="p">(</span><span class="s2">&quot;#4&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Spin&quot;</span><span class="p">,</span><span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span><span class="n">sort_columns</span><span class="p">(</span><span class="s1">&#39;#4&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">))</span>
+    <span class="n">tree</span><span class="o">.</span><span class="n">heading</span><span class="p">(</span><span class="s2">&quot;#5&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Distance&quot;</span><span class="p">,</span><span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span><span class="n">sort_columns</span><span class="p">(</span><span class="s1">&#39;#5&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">))</span>
+
+    <span class="c1"># Insert elements from the structure_data into the Treeview table</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">class_instance</span><span class="o">.</span><span class="n">structure_data</span><span class="p">:</span>
+        <span class="n">tree</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="c1"># Initialize variables for interaction tracking</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">count_dinteractions</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">selected_component_indices</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">handle_item_selection</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">        Handles the selection of an item in the Treeview.</span>
+
+<span class="sd">        When an item in the &#39;Characterization of Muon Stopping Site&#39; table is selected,</span>
+<span class="sd">        this function updates the dipolar interactions frame with the selected data.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># obtain the details of selected item</span>
+        <span class="n">item_details</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">selection</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">item_values</span> <span class="o">=</span> <span class="n">item_details</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Clean the position data for comparison</span>
+        <span class="n">dipolar_interaction_string</span> <span class="o">=</span> <span class="n">clean_whitespace_and_brackets</span><span class="p">(</span>
+            <span class="n">item_values</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="c1"># Find and store the index of the selected components in structure_data</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">class_instance</span><span class="o">.</span><span class="n">structure_data</span><span class="p">)):</span>
+            <span class="n">maria</span> <span class="o">=</span> <span class="n">clean_whitespace_and_brackets</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">class_instance</span><span class="o">.</span><span class="n">structure_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">dipolar_interaction_string</span> <span class="o">==</span> <span class="n">maria</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">selected_component_indices</span><span class="p">:</span>
+                    <span class="n">selected_component_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+                    <span class="c1"># Update the dipolar interaction frame with the selected item</span>
+                    <span class="n">update_spin_dipolar_interaction</span><span class="p">(</span><span class="n">class_instance</span><span class="p">,</span>
+                                                    <span class="n">dipolar_interaction_string</span><span class="p">,</span> <span class="n">class_instance</span><span class="o">.</span><span class="n">count_dinteractions</span><span class="p">,</span>
+                                                    <span class="n">selected_component_indices</span><span class="p">)</span>
+
+        <span class="c1"># Update the count of dipolar interactions</span>
+        <span class="n">class_instance</span><span class="o">.</span><span class="n">count_dinteractions</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">selected_component_indices</span><span class="p">)</span>
+
+    <span class="c1"># Bind the Treeview selection event to the item selection handler</span>
+    <span class="n">tree</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;&lt;&lt;TreeviewSelect&gt;&gt;&#39;</span><span class="p">,</span> <span class="n">handle_item_selection</span><span class="p">)</span>
+
+    <span class="c1"># Pack the Treeview widget</span>
+    <span class="n">tree</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="update_spin_dipolar_interaction">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.update_spin_dipolar_interaction">[docs]</a>
+<span class="k">def</span> <span class="nf">update_spin_dipolar_interaction</span><span class="p">(</span><span class="n">class_instance</span><span class="p">,</span> <span class="n">dipolar_value_str</span><span class="p">,</span> <span class="n">interaction_index</span><span class="p">,</span> <span class="n">selected_component_indice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">    Updates the dipolar interaction with spin and dipolar interactions and updates the relevant dictionary in the class instance.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        class_instance: An instance of a class containing the GUI elements and structure data.</span>
+<span class="sd">        dipolar_value_str: A string representing the dipolar interaction value to be added.</span>
+<span class="sd">        interaction_index: The index of the interaction being added.</span>
+<span class="sd">        selected_component_indice: A list of indices representing the selected components </span>
+<span class="sd">                                    in the structure data.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># clean spin entry and assert the first element to be muon</span>
+    <span class="k">if</span> <span class="n">interaction_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">class_instance</span><span class="o">.</span><span class="n">spins_entry</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
+        <span class="n">class_instance</span><span class="o">.</span><span class="n">spins_entry</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;mu &#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Attempt to close the GUI supercell if it exists</span>
+            <span class="n">class_instance</span><span class="o">.</span><span class="n">gui_supercell</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">pass</span>
+    
+    <span class="c1"># retrieve symbol of selected element</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">selected_component_indice</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">element_symbol</span> <span class="o">=</span> <span class="n">class_instance</span><span class="o">.</span><span class="n">structure_data</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">spins_entry</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="n">element_symbol</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+    <span class="c1"># Create a label for the dipolar interaction</span>
+    <span class="n">spin_entry_position</span> <span class="o">=</span> <span class="mi">2</span><span class="o">+</span><span class="n">interaction_index</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;dipolar_1_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">spin_entry_position</span><span class="p">)</span>
+
+    <span class="c1"># Add the label to the frame</span>
+    <span class="n">str_1</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">StringVar</span><span class="p">()</span>
+    <span class="n">str_1</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">dipolar_value_str</span><span class="p">)</span>
+    <span class="n">add_label</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">class_instance</span><span class="o">.</span><span class="n">framess</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">add_label</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+
+    <span class="c1"># Add dipolar interaction as an entry</span>
+    <span class="n">add_entry</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Entry</span><span class="p">(</span><span class="n">class_instance</span><span class="o">.</span><span class="n">framess</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="n">str_1</span><span class="p">)</span>
+    <span class="n">add_entry</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="c1"># Store the dipolar interaction value in the class instance&#39;s dictionary    </span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">dipolar_dic</span><span class="p">[</span><span class="n">spin_entry_position</span><span class="p">]</span> <span class="o">=</span> <span class="n">dipolar_value_str</span>
+    <span class="c1">#Debug print</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">class_instance</span><span class="o">.</span><span class="n">dipolar_dic</span><span class="p">,</span><span class="s2">&quot;Dipolar distionary &quot;</span><span class="p">)</span></div>
+
+
+<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#                                                     Update data</span>
+<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="update_parameters">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.update_parameters">[docs]</a>
+<span class="k">def</span> <span class="nf">update_parameters</span><span class="p">(</span><span class="n">class_instance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Updates the parameter of the class instance based on the UI input value.</span>
+<span class="sd">    Retrieves the value from the field input in the GUI, and if the value is not empty, it updates the &#39;field&#39; parameter</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        class_instance: An instance of a class that contains GUI elements and a parameters object.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Retrieve the value from the field input (assumed to be a text widget) and store it</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">first_param</span> <span class="o">=</span> <span class="n">class_instance</span><span class="o">.</span><span class="n">field_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;end-1c&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># If the field value is not empty, update the &#39;field&#39; parameter in the parameters object</span>
+    <span class="k">if</span> <span class="n">class_instance</span><span class="o">.</span><span class="n">first_param</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">class_instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">_keywords</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">KWField</span><span class="p">(</span>
+            <span class="n">class_instance</span><span class="o">.</span><span class="n">first_param</span><span class="p">)</span></div>
+
+
+<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#                                                     DRAFT</span>
+<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="populate_gui_with_parameters">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.populate_gui_with_parameters">[docs]</a>
+<span class="k">def</span> <span class="nf">populate_gui_with_parameters</span><span class="p">(</span><span class="n">class_instance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Populates the GUI elements with parameter values from the class instance&#39;s parameters.</span>
+
+<span class="sd">    This function reads various parameters from the class instance&#39;s parameters object and </span>
+<span class="sd">    updates the corresponding GUI input fields, such as name, spins, time, and field.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        class_instance: An instance of a class that contains GUI elements and a parameters object.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="c1"># Evaluate and retrieve the parameters for easier readability</span>
+    <span class="n">i_params</span> <span class="o">=</span> <span class="n">class_instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+
+    <span class="c1"># -----------------------------------</span>
+    <span class="c1">#               Name               #</span>
+    <span class="c1"># Clear the current name entry and insert the name parameter value</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">name_entry</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">name_entry</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i_params</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="c1"># -----------------------------------</span>
+    <span class="c1">#               Spin               #</span>
+    <span class="c1"># Clear the spins entry and construct a string from the spins parameter values</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">spins_entry</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
+    <span class="n">spins_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">i_params</span><span class="p">[</span><span class="s1">&#39;spins&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">spins_str</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">spins_str</span> <span class="o">=</span> <span class="n">spins_str</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">i</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="c1"># Insert the constructed spins string into the spins entry field</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">spins_entry</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">spins_str</span><span class="p">)</span>
+
+    <span class="c1"># -----------------------------------</span>
+    <span class="c1">#               Time               #</span>
+    <span class="c1"># Clear the time entries and populate them with time parameter values</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">time_entry1</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">time_entry2</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">time_entry3</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
+
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">time_entry1</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+        <span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i_params</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">time_entry2</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+        <span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i_params</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">time_entry3</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+        <span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">i_params</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)))</span>
+
+    <span class="c1"># -----------------------------------</span>
+    <span class="c1">#               Field              #</span>
+    <span class="c1"># Clear the field value entry and construct a string from the field parameter values</span>
+    <span class="c1">#class_instance.field_value.delete(0, &#39;end&#39;)</span>
+    <span class="n">field_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">i_params</span><span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="c1"># print(i)</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">field_str</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">field_str</span> <span class="o">=</span> <span class="n">field_str</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">i</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="c1"># Insert the constructed field string into the field entry field</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">field_value</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="n">field_str</span><span class="p">)</span></div>
+
+
+    <span class="c1"># -----------------------------------</span>
+    <span class="c1">#            Polarization          #</span>
+
+    <span class="c1"># Placeholder for potential future code to handle polarization and couplings</span>
+    <span class="c1"># Currently, these sections are not implemented but can be added later as needed</span>
+
+    <span class="c1"># -----------------------------------</span>
+    <span class="c1">#               Couplings              </span>
+
+    <span class="c1"># -----------------------------------</span>
+    <span class="c1">#                   Dipolar          #</span>
+    <span class="c1"># Placeholder for handling dipolar couplings</span>
+    <span class="c1"># Implementation can be added later as required</span>
+
+<div class="viewcode-block" id="update_param_spec">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.update_param_spec">[docs]</a>
+<span class="k">def</span> <span class="nf">update_param_spec</span><span class="p">(</span><span class="n">class_instance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Updates the parameters used for generating simulations.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        class_instance: An instance of a class that contains parameters and fitting data</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Update the &#39;field&#39; parameter with the fitting parameters used for simulation</span>
+    <span class="n">class_instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">_keywords</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">KWField</span><span class="p">(</span>
+        <span class="n">class_instance</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span><span class="p">)</span>
+    
+    <span class="c1"># Evaluate the parameters to update the internal state</span>
+    <span class="n">i_params</span> <span class="o">=</span> <span class="n">class_instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+
+    <span class="c1"># Print statements to debug and confirm the fitting variables and updated field parameter</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;//////fitting variables&#39;</span><span class="p">,</span> <span class="n">class_instance</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;***the&#39;</span><span class="p">,</span> <span class="n">i_params</span><span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+    
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#                                       Auxiliary Functions</span>
+<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="safely_destroy_progress_bar">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.safely_destroy_progress_bar">[docs]</a>
+<span class="k">def</span> <span class="nf">safely_destroy_progress_bar</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+    <span class="c1">#safely_destroy_progress_bar</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Safely attempts to destroy the progress bar widget. </span>
+<span class="sd">    If the destruction fails, an error message is printed.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">processBar</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed to destroy process bar&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="handle_active_thhread">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.handle_active_thhread">[docs]</a>
+<span class="k">def</span> <span class="nf">handle_active_thhread</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">    Prints information about all currently active threads, including their names </span>
+<span class="sd">    and statuses. Also identifies the thread from which the message originated.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Get a list of all active threads</span>
+    <span class="n">active_treads</span><span class="o">=</span><span class="n">threading</span><span class="o">.</span><span class="n">enumerate</span><span class="p">()</span>
+    <span class="c1"># Print the number of active threads</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Currently there are </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">active_treads</span><span class="p">)</span><span class="si">}</span><span class="s1"> threads active&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Iterate over each thread and print its name and status</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">active_treads</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Thread name: </span><span class="si">{</span><span class="n">i</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">, alive: </span><span class="si">{</span><span class="n">i</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Print the thread from which this log was generated</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;This message was originated from the following thread </span><span class="si">{</span><span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="show_selected_options">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.show_selected_options">[docs]</a>
+<span class="k">def</span> <span class="nf">show_selected_options</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">handler</span><span class="o">.</span><span class="n">selected_items</span><span class="p">:</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">selected_items</span><span class="p">)</span>
+
+        <span class="n">tk</span><span class="o">.</span><span class="n">messagebox</span><span class="o">.</span><span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Selected Options&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Selected Options:</span><span class="se">\n</span><span class="si">{</span><span class="n">options</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tk</span><span class="o">.</span><span class="n">messagebox</span><span class="o">.</span><span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Selected Options&quot;</span><span class="p">,</span> <span class="s2">&quot;No options selected.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="clear_selected_options">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.clear_selected_options">[docs]</a>
+<span class="k">def</span> <span class="nf">clear_selected_options</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Clears the list of selected items and updates the corresponding label in the UI.</span>
+<span class="sd">    Args:(object): An instance of a class that contains the list of selected items and the label to update.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Clear the list of selected items</span>
+    <span class="n">handler</span><span class="o">.</span><span class="n">selected_items</span><span class="o">=</span><span class="p">[]</span>
+
+    <span class="c1"># Update the label to reflect the cleared selection</span>
+    <span class="n">handler</span><span class="o">.</span><span class="n">label_of</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">handler</span><span class="o">.</span><span class="n">selected_items</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="run_simulation_thread">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.run_simulation_thread">[docs]</a>
+<span class="k">def</span> <span class="nf">run_simulation_thread</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads an input file if none is loaded, updates parameters if necessary, </span>
+<span class="sd">    and starts a new thread that runs the simulation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Immediately create a progress bar to signal the ongoing background process</span>
+    <span class="n">create_processBar</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+    
+    <span class="c1"># DEBUG: Print the current state before running the simulation</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;################################ INSIDE RUN SIMULATION PROGRESS BAR HAS BEEN CREATED&#39;</span><span class="p">,</span><span class="n">handler</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span><span class="p">,</span> <span class="n">handler</span><span class="o">.</span><span class="n">fit_state</span><span class="p">,</span><span class="n">handler</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">())</span>
+
+    <span class="c1"># Load an input file if none is present</span>
+    <span class="k">if</span> <span class="n">handler</span><span class="o">.</span><span class="n">input_txt_file</span> <span class="o">==</span> <span class="s1">&#39; &#39;</span><span class="p">:</span>
+        <span class="n">load_input_file</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+    <span class="c1"># Update parameters if not in a fitting state</span>
+    <span class="k">if</span> <span class="n">handler</span><span class="o">.</span><span class="n">fit_state</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">update_parameters</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+    <span class="c1"># Create and start a new thread to run the simulation</span>
+    <span class="c1"># DEBUG: Print the current state before entering the simulation thread</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;################################ ABOUT TO ENTER THE THREA TO SIMULATE AND POST&#39;</span><span class="p">,</span><span class="n">handler</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span><span class="p">,</span> <span class="n">handler</span><span class="o">.</span><span class="n">fit_state</span><span class="p">,</span><span class="n">handler</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">())</span>
+    <span class="n">run_simulation_thread_0</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">execute_simulation_and_trigger_event</span><span class="p">,</span>
+                         <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">handler</span><span class="p">,),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">run_simulation_thread_0</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="load_and_run">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.load_and_run">[docs]</a>
+<span class="k">def</span> <span class="nf">load_and_run</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads input file and starts new thread to run simulation</span>
+<span class="sd">    only depending on the input file (offers limited interaction)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Immediately create a progress bar to signal the ongoing background process</span>
+    <span class="n">create_processBar</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+    
+    <span class="c1"># Load the input file</span>
+    <span class="n">load_input_file</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+    <span class="c1"># Create and start a new thread to run the simulation</span>
+    <span class="n">run_simulation_thread_1</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">execute_simulation_and_trigger_event</span><span class="p">,</span>
+                         <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">handler</span><span class="p">,),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">run_simulation_thread_1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="read_UI_entries_and_run">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.read_UI_entries_and_run">[docs]</a>
+<span class="k">def</span> <span class="nf">read_UI_entries_and_run</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads the entries from the GUI (kEntries) and starts a new thread to run the simulation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Immediately create a progress bar to signal the ongoing background process</span>
+    <span class="n">create_processBar</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+    <span class="c1"># DEBUG: Print the current fit state before processing entries</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#################################################################################################&#39;</span><span class="p">,</span><span class="n">handler</span><span class="o">.</span><span class="n">fit_state</span><span class="p">)</span>
+    
+    
+    <span class="k">if</span> <span class="n">handler</span><span class="o">.</span><span class="n">fit_state</span><span class="o">==</span><span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;bananana&#39;</span><span class="p">)</span>
+        <span class="c1">#r_e.initialize_simulation_parameters(handler)</span>
+        <span class="k">pass</span>
+           
+
+    <span class="c1"># Create and start a new thread to run the simulation    </span>
+    <span class="n">run_simulation_thread_2</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">execute_simulation_and_trigger_event</span><span class="p">,</span>
+                         <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">handler</span><span class="p">,),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">run_simulation_thread_2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="execute_simulation_and_trigger_event">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.execute_simulation_and_trigger_event">[docs]</a>
+<span class="k">def</span> <span class="nf">execute_simulation_and_trigger_event</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Executes the simulation and triggers an event to send results or display them on a graph upon completion.</span>
+
+<span class="sd">    Args:handler (object): An instance of a class that manages the simulation parameters and event handling.</span>
+<span class="sd">        _ (any): Placeholder for additional arguments that might be passed when the function is invoked as an event handler.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Runs the simulation</span>
+    <span class="n">run_simulation</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+        
+    <span class="c1"># DEBUG: Print the current state after the simulation has run</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;################################ ENTERED THE THREAD AND THE SIMULATION HAS RUN&#39;</span><span class="p">,</span><span class="n">handler</span><span class="o">.</span><span class="n">fit_params_to_generate_simulation</span><span class="p">,</span> <span class="n">handler</span><span class="o">.</span><span class="n">fit_state</span><span class="p">,</span><span class="n">handler</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(),</span><span class="s1">&#39;results&#39;</span><span class="p">,</span><span class="n">handler</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+
+    <span class="c1"># Trigger an event indicating that the simulation thread has finished</span>
+    <span class="n">handler</span><span class="o">.</span><span class="n">event_generate</span><span class="p">(</span><span class="s1">&#39;&lt;&lt;ThreadFinished&gt;&gt;&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_processBar">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.create_processBar">[docs]</a>
+<span class="k">def</span> <span class="nf">create_processBar</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Creates a progress bar and displays it in the main root window.</span>
+
+<span class="sd">    Args: handler (object): An instance of a class that manages the UI elements, including where the progress bar will be displayed.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Initialize the progress bar with horizontal orientation and indeterminate mode</span>
+    <span class="n">handler</span><span class="o">.</span><span class="n">processBar</span> <span class="o">=</span> <span class="n">Progressbar</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span>
+                               <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;indeterminate&#39;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+    
+    <span class="c1"># Position the progress bar within the main window</span>
+    <span class="n">handler</span><span class="o">.</span><span class="n">processBar</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">280</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">185</span><span class="p">)</span> 
+
+    <span class="c1"># Start the progress bar animation</span>
+    <span class="n">handler</span><span class="o">.</span><span class="n">processBar</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="store_tkentries">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.store_tkentries">[docs]</a>
+<span class="k">def</span> <span class="nf">store_tkentries</span><span class="p">(</span><span class="n">handle</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Stores various Tkinter entry widgets and other values into the &#39;kEntries&#39; list.</span>
+<span class="sd">    Organizes the entries by index, corresponding to the first 22 atomistic parameters in MuSpinSim.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">name_entry</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">spins_entry</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">handle</span><span class="o">.</span><span class="n">time_entry1</span><span class="p">,</span>
+                            <span class="n">handle</span><span class="o">.</span><span class="n">time_entry2</span><span class="p">,</span> <span class="n">handle</span><span class="o">.</span><span class="n">time_entry3</span><span class="p">]</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">field_value</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">intrisic_field_value</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">polarization_value</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">buffer_entry</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">orientation_value</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">buffer_entry</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">zeeman_value</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">buffer_entry</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">quadrupolar_value</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">hyperfine_value</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">x_axis_value</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">14</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">y_axis_value</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">celio_value</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">buffer_entry</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">17</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">fitting_variables_values</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">18</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">buffer_entry</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">19</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">fitting_method</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">fitting_tolerance_value</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">kEntries</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">experiments</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;spins&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Paula Mpembe Franco.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

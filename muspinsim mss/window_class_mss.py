@@ -81,7 +81,9 @@ class MuSS_window(tk.Tk):
         self.labelstring = ['name', 'spins', 'time', 'field', 'intrinsic_field', 'polarization', 'average_axis', 'orientation', 'temperature',
                             'zeeman', 'dipolar', 'quadrupolar', 'hyperfine', 'x_axis', 'y_axis', 'celio', 'dissipation', 'fitting_variales',
                             'fitting_data', 'fitting_method', 'fitting_tolerance', 'experiments']
-        
+        self.couplings=['zeeman', 'dipolar', 'quadrupolar', 'hyperfine']
+        self.fittable_atomistic_parameters=['field', 'intrinsic_field', 'polarization', 'average_axes','orientation',self.couplings, 'temperature','celio', ]
+
         self.dipolar_dic = {} #stored the dipolar interaction distances with the key as the number of interaction
         #(why not combine fitting history with result_dic)
 
@@ -119,7 +121,7 @@ class MuSS_window(tk.Tk):
         self.frame_socketa()
         self.frame_field()
         self.frame_plot()
-        self.frame_fit_selection()
+        #self.frame_fit_selection()
 
         #retrives the path and gives the name of the file
         path = bck.get_path(self)
@@ -460,8 +462,11 @@ class MuSS_window(tk.Tk):
         self.mainmenu.add_cascade(label="Options", menu=self.options_menu)
 
         self.options_menu.add_command(
-            label="Fitting Parameters", command=lambda: self.frame_data())
+            label="Fitting Parameters", command=lambda: bck.fitting_options_window(self))
 
+        self.options_menu.add_command(
+            label="Create input file", command=lambda: bck.fitting_options_window(self))
+        
         # Help is a way to undestand and be helped using the MuSS
         self.help_menu = tk.Menu(self.mainmenu, tearoff=0)
         self.mainmenu.add_cascade(label="Help", menu=self.help_menu)#
