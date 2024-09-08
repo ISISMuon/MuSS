@@ -224,17 +224,22 @@ def fitting_options_window(parent_object):
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     Debug
 # --------------------------------------------------------------------------------------------------------------------    
-def create_input_file(instance):
-    instance.parameters
-    
-    # Separet the Couplings and the non couplings
+def create_input_files_param(muspinsim_instance):
 
+    keys=list(muspinsim_instance.parameters.evaluate().keys())
+    valuess=list(muspinsim_instance.parameters.evaluate().values())
+    print(keys,valuess,muspinsim_instance.parameters.evaluate())
+    # Separet the Couplings and the non couplings
+    name_file=muspinsim_instance.name_entry.get()
+    muspinsim_instance.labelstring
     with open("output.txt", "w") as file:
-        for key, value in instance.parameters.evaluate():
+        for key, value in muspinsim_instance.parameters.evaluate():
         # Write key followed by a newline and space
             file.write(f"{key}\n")
             file.write(f" {value}\n\n")
-    
+    print(keys,muspinsim_instance.parameters.evaluate())
+
+
 def fitting_parameters_choise(instance):
     '''
     Considering the 22 atomistic parameters in muspinsim the 4 couplings (zeeman, dipolar, quadrupolar and hyperfine) 
@@ -654,14 +659,14 @@ def update_structure_data(simulation_object, iso=None):
 
         # Calculate the magnetic field strength; if the atom is the muon itself, set the strength to 0
         if distance_to_muon == 0:
-            strength = 0
+            strength = 0.0
         else:    
             strength = abs(magnetic_moment/distance_to_muon**3)
 
         # Gather information about the atom: element symbol, field strength, relative position, spin, and distance
         atom_info = (atom.symbol, strength, relative_postision,
                 spin(element_symbol, iso), distance_to_muon)
-        
+
         # Update the structure information 
         simulation_object.structure_data.append(atom_info)
 
@@ -934,6 +939,13 @@ def update_param_spec(class_instance):
 # ---------------------------------------------------------------------------------------------------------------------
 #                                       Auxiliary Functions
 # --------------------------------------------------------------------------------------------------------------------
+
+def create_input_file(muspinsim_instance):
+    params=muspinsim_instance.parameters.evaluate()
+
+    pass
+
+
 def safely_destroy_progress_bar(handler):
     #safely_destroy_progress_bar
     '''

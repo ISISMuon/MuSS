@@ -465,7 +465,7 @@ class MuSS_window(tk.Tk):
             label="Fitting Parameters", command=lambda: bck.fitting_options_window(self))
 
         self.options_menu.add_command(
-            label="Create input file", command=lambda: bck.fitting_options_window(self))
+            label="Create input file", command=lambda: bck.create_input_files_param(self))
         
         # Help is a way to undestand and be helped using the MuSS
         self.help_menu = tk.Menu(self.mainmenu, tearoff=0)
