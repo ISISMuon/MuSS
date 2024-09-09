@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>muspinsim mss &mdash; MuSS 0.1.0-dev documentation</title>
+  <title>Guide for developers &mdash; MuSS 0.1.0-dev documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -20,7 +20,9 @@
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="MuSS Backend" href="backend_mss.html" />
+    <link rel="prev" title="MuSS documentation" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,12 +45,22 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Guide for developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="backend_mss.html">MuSS Backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="read_entries.html">Read entries module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="read_files.html">Read Files Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="run_wimda_mss.html">Run MuSS Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="socket_comunication_mss.html">Socket communication Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="window_class_mss.html">MuSS GUI Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Welcome to MuSS’ documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="detailed_functionality.html">Detailed Functionality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="technical_details.html">Technical Details</a></li>
 <li class="toctree-l1"><a class="reference internal" href="version_history_and_future_plans.html">Version History and Future Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support_and_q%26as.html">Find Support</a></li>
 </ul>
 
         </div>
@@ -65,7 +77,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">muspinsim mss</li>
+      <li class="breadcrumb-item active">Guide for developers</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -75,16 +87,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="muspinsim-mss">
-<h1>muspinsim mss<a class="headerlink" href="#muspinsim-mss" title="Link to this heading"></a></h1>
+  <section id="guide-for-developers">
+<h1>Guide for developers<a class="headerlink" href="#guide-for-developers" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="backend_mss.html">backend_mss module</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="backend_mss.html">MuSS Backend</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="backend_mss.html#backend_mss.add_muon_to_aseatoms"><code class="docutils literal notranslate"><span class="pre">add_muon_to_aseatoms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="backend_mss.html#backend_mss.apply_mask_to_structure"><code class="docutils literal notranslate"><span class="pre">apply_mask_to_structure()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="backend_mss.html#backend_mss.clean_whitespace_and_brackets"><code class="docutils literal notranslate"><span class="pre">clean_whitespace_and_brackets()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="backend_mss.html#backend_mss.clear_selected_options"><code class="docutils literal notranslate"><span class="pre">clear_selected_options()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="backend_mss.html#backend_mss.create_input_file"><code class="docutils literal notranslate"><span class="pre">create_input_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="backend_mss.html#backend_mss.create_input_files_param"><code class="docutils literal notranslate"><span class="pre">create_input_files_param()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="backend_mss.html#backend_mss.create_processBar"><code class="docutils literal notranslate"><span class="pre">create_processBar()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="backend_mss.html#backend_mss.data_processing"><code class="docutils literal notranslate"><span class="pre">data_processing()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="backend_mss.html#backend_mss.dipolar_fitting_parameter"><code class="docutils literal notranslate"><span class="pre">dipolar_fitting_parameter()</span></code></a></li>
@@ -116,22 +129,13 @@
 <li class="toctree-l2"><a class="reference internal" href="backend_mss.html#backend_mss.update_structure_data"><code class="docutils literal notranslate"><span class="pre">update_structure_data()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="input_class.html">input_class module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="input_class.html#input_class.Create_Input"><code class="docutils literal notranslate"><span class="pre">Create_Input</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="input_class.html#input_class.Create_Input.cif_filee"><code class="docutils literal notranslate"><span class="pre">Create_Input.cif_filee()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="input_class.html#input_class.Create_Input.cif_files"><code class="docutils literal notranslate"><span class="pre">Create_Input.cif_files()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="input_class.html#input_class.Create_Input.write"><code class="docutils literal notranslate"><span class="pre">Create_Input.write()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="read_entries.html">read_entries module</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="read_entries.html">Read entries module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="read_entries.html#read_entries.create_object_KW"><code class="docutils literal notranslate"><span class="pre">create_object_KW()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="read_entries.html#read_entries.extract_lines_from_text_widget"><code class="docutils literal notranslate"><span class="pre">extract_lines_from_text_widget()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="read_entries.html#read_entries.initialize_simulation_parameters"><code class="docutils literal notranslate"><span class="pre">initialize_simulation_parameters()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="read_files.html">read_files module</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="read_files.html">Read Files Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="read_files.html#read_files.read_couplings"><code class="docutils literal notranslate"><span class="pre">read_couplings()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="read_files.html#read_files.read_essential_frame"><code class="docutils literal notranslate"><span class="pre">read_essential_frame()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="read_files.html#read_files.read_fields_more"><code class="docutils literal notranslate"><span class="pre">read_fields_more()</span></code></a></li>
@@ -140,8 +144,8 @@
 <li class="toctree-l2"><a class="reference internal" href="read_files.html#read_files.translation"><code class="docutils literal notranslate"><span class="pre">translation()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="run_wimda_mss.html">run_wimda_mss module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="socket_comunication_mss.html">socket_comunication_mss module</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="run_wimda_mss.html">Run MuSS Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="socket_comunication_mss.html">Socket communication Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="socket_comunication_mss.html#socket_comunication_mss.close_socket_connection"><code class="docutils literal notranslate"><span class="pre">close_socket_connection()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="socket_comunication_mss.html#socket_comunication_mss.handle_connection_receive_thread"><code class="docutils literal notranslate"><span class="pre">handle_connection_receive_thread()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="socket_comunication_mss.html#socket_comunication_mss.initialize_and_start_socket_server"><code class="docutils literal notranslate"><span class="pre">initialize_and_start_socket_server()</span></code></a></li>
@@ -150,43 +154,26 @@
 <li class="toctree-l2"><a class="reference internal" href="socket_comunication_mss.html#socket_comunication_mss.start_server_connection_thread"><code class="docutils literal notranslate"><span class="pre">start_server_connection_thread()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="window_class_mss.html">window_class_mss module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window"><code class="docutils literal notranslate"><span class="pre">MuSS_window</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_Axis"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_Axis()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_Others"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_Others()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_data"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_data01"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_data01()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_essential"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_essential()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_field"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_field()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_fit_selection"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_fit_selection()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_plot"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_plot()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_socketa"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_socketa()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_structure"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_structure()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.handle_dropdown_selection"><code class="docutils literal notranslate"><span class="pre">MuSS_window.handle_dropdown_selection()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.handle_simulation_thread_completion"><code class="docutils literal notranslate"><span class="pre">MuSS_window.handle_simulation_thread_completion()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.menus"><code class="docutils literal notranslate"><span class="pre">MuSS_window.menus()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.rre"><code class="docutils literal notranslate"><span class="pre">MuSS_window.rre()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.send_stored_simulation_result"><code class="docutils literal notranslate"><span class="pre">MuSS_window.send_stored_simulation_result()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="window_class_mss.html">MuSS GUI Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="window_class_mss.html#module-window_class_mss">Methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window"><code class="docutils literal notranslate"><span class="pre">MuSS_window</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_Axis"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_Axis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_Others"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_Others()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_data"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_data01"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_data01()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_essential"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_essential()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_field"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_field()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_fit_selection"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_fit_selection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_plot"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_socketa"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_socketa()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.frame_structure"><code class="docutils literal notranslate"><span class="pre">MuSS_window.frame_structure()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.handle_dropdown_selection"><code class="docutils literal notranslate"><span class="pre">MuSS_window.handle_dropdown_selection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.handle_simulation_thread_completion"><code class="docutils literal notranslate"><span class="pre">MuSS_window.handle_simulation_thread_completion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.menus"><code class="docutils literal notranslate"><span class="pre">MuSS_window.menus()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.rre"><code class="docutils literal notranslate"><span class="pre">MuSS_window.rre()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="window_class_mss.html#window_class_mss.MuSS_window.send_stored_simulation_result"><code class="docutils literal notranslate"><span class="pre">MuSS_window.send_stored_simulation_result()</span></code></a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="z_windows_draft.html">z_windows_draft module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.create_scrollable_frame"><code class="docutils literal notranslate"><span class="pre">create_scrollable_frame()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows"><code class="docutils literal notranslate"><span class="pre">windows</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows.create_scrollable_frame"><code class="docutils literal notranslate"><span class="pre">windows.create_scrollable_frame()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows.frame_essential"><code class="docutils literal notranslate"><span class="pre">windows.frame_essential()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows.frame_field"><code class="docutils literal notranslate"><span class="pre">windows.frame_field()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows.frame_plot"><code class="docutils literal notranslate"><span class="pre">windows.frame_plot()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows.frame_socketa"><code class="docutils literal notranslate"><span class="pre">windows.frame_socketa()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows.load_run"><code class="docutils literal notranslate"><span class="pre">windows.load_run()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows.loading_bar"><code class="docutils literal notranslate"><span class="pre">windows.loading_bar()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows.menus"><code class="docutils literal notranslate"><span class="pre">windows.menus()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows.read_run"><code class="docutils literal notranslate"><span class="pre">windows.read_run()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows.run_btn"><code class="docutils literal notranslate"><span class="pre">windows.run_btn()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows.run_thread_btn"><code class="docutils literal notranslate"><span class="pre">windows.run_thread_btn()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows.send_result_tored"><code class="docutils literal notranslate"><span class="pre">windows.send_result_tored()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="z_windows_draft.html#z_windows_draft.windows.thread_stopped"><code class="docutils literal notranslate"><span class="pre">windows.thread_stopped()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -198,7 +185,10 @@
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="MuSS documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="backend_mss.html" class="btn btn-neutral float-right" title="MuSS Backend" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

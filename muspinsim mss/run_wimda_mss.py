@@ -1,9 +1,4 @@
 """
-Project: Simulations for muSR data Analysis Industrial Placement
-Author: Paula Franco
-Date: May 2024
-
-Summary:
 This script is specifically to be used with wimda as the server is being initiated
 before the windows being called (thats the only difference).
 """

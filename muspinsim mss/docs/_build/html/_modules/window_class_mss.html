@@ -43,7 +43,13 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../modules.html">muspinsim mss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Guide for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Welcome to MuSS’ documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../detailed_functionality.html">Detailed Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../technical_details.html">Technical Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version_history_and_future_plans.html">Version History and Future Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support_and_q%26as.html">Find Support</a></li>
 </ul>
 
         </div>
@@ -71,30 +77,33 @@
            <div itemprop="articleBody">
              
   <h1>Source code for window_class_mss</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Project: Simulations for muSR data Analysis Industrial Placement</span>
-<span class="sd">Author: Paula Franco</span>
-<span class="sd">Date: December 2023</span>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">This script is a front-end GUI designed to assist MuSpinSim users by eliminating the need to write MuSpinSim scripts to run simulations.  </span>
+<span class="sd">The main idea is to provide an interface where all MuSpinSim variables can be entered and used with the full functionality of MuSpinSim.  </span>
+<span class="sd">For more information on MuSpinSim, visit the following link:</span>
 
-<span class="sd">Summary:</span>
-<span class="sd">This script is (a front-end GUI) an aid for MuSpinSim users, eliminating the necessity to write MuSpiSim script to run the program (for example run simulations).</span>
-<span class="sd">The concept applied here is to have as entry all MuSpinSpim variables and be able to use all functionalities of MuSpiSim.</span>
-<span class="sd">https://muon-spectroscopy-computational-project.github.io/muspinsim/ --&gt; For information on MSS</span>
+<span class="sd">MuSpinSim Documentation &lt;https://muon-spectroscopy-computational-project.github.io/muspinsim/&gt;_</span>
 
-<span class="sd">code structure:</span>
-<span class="sd">    *The GUI is defined as the Windows class that inherit from tkinter.</span>
-<span class="sd">    *In the init function the tkinter window geometry is described and the functions that defined the essential frames are called.</span>
+<span class="sd">**Code Structure**</span>
 
-<span class="sd">    Additional Scripts:</span>
-<span class="sd">        + muspinsim:</span>
-<span class="sd">            as this GUI is made for MSS it is all based in MSS code and its only a chanel to make the usage easier</span>
-<span class="sd">        + tkinter_muspinsim01backend as bck:</span>
-<span class="sd">            which is where other functions are defined describing the calculations, data processing, file reading, interpretation of data</span>
-<span class="sd">        + sockets_tk as sck :</span>
-<span class="sd">           sockets are created and listens until the program is closes, here ports are descibed. The sockets recieve and send informtaion here.</span>
-<span class="sd">    Run</span>
-<span class="sd">        To run this script run_guy_2 is used as to tailor this to faster wimda comunication. Therefore, the .py file that runs in wimda is &#39;run_guy_2&#39;</span>
+<span class="sd">- **GUI**: The GUI is defined as the Windows class, which inherits from tkinter.</span>
+<span class="sd">- **Initialization**: In the __init__ function, the tkinter window geometry is set, and functions that define the essential frames are called.</span>
+
+<span class="sd">**Additional Scripts**</span>
+
+<span class="sd">- **muspinsim**:</span>
+<span class="sd">  This GUI is built for MSS (MuSpinSim), and is based entirely on MSS code. It serves as a channel to simplify its use.</span>
+
+<span class="sd">- **tkinter_muspinsim01backend as bck**:</span>
+<span class="sd">  This module defines other functions that handle calculations, data processing, file reading, and data interpretation.</span>
+
+<span class="sd">- **sockets_tk as sck**:</span>
+<span class="sd">  Sockets are created to listen for incoming data until the program closes. Here, the ports are described, and information is sent and received via sockets.</span>
+
+<span class="sd">**Run**</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">To run this script, run_wimda_mss.py is used, which is tailored for faster WiMDA communication.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 
 <span class="kn">import</span> <span class="nn">tkinter</span> <span class="k">as</span> <span class="nn">tk</span>
 
@@ -123,14 +132,15 @@
 <div class="viewcode-block" id="MuSS_window">
 <a class="viewcode-back" href="../window_class_mss.html#window_class_mss.MuSS_window">[docs]</a>
 <span class="k">class</span> <span class="nc">MuSS_window</span><span class="p">(</span><span class="n">tk</span><span class="o">.</span><span class="n">Tk</span><span class="p">):</span>
+<span class="w">  </span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39; </span>
-<span class="sd">     MuSS_window is the &#39;chassis&#39; for the MuSS progarm</span>
-<span class="sd">     The object of this class has tkinter methods and also the atomistic parameters</span>
-<span class="sd">     All major frames are defined (in the Defining Frames section ) here and the entries are stored accoring to the muspinsim indexing of parameters</span>
-<span class="sd">     The main functionalities are defined in the Auxiliary functions but the are built on top (or referencing) of other functions defined in the backend</span>
-<span class="sd">        Note:</span>
-<span class="sd">        Creation of thread to peform calculation so the GUI does not freeze </span>
+<span class="sd">    MuSS_window is the &#39;chassis&#39; for the MuSS progarm</span>
+<span class="sd">    The object of this class has tkinter methods and also the atomistic parameters</span>
+<span class="sd">    All major frames are defined (in the Defining Frames section ) here and the entries are stored accoring to the muspinsim indexing of parameters</span>
+<span class="sd">    The main functionalities are defined in the Auxiliary functions but the are built on top (or referencing) of other functions defined in the backend</span>
+<span class="sd">    Note: Creation of thread to peform calculation so the GUI does not freeze </span>
 <span class="sd">        The Tkinter version used here is a single thread GUI so eveything depening on the UI must run on the main thread (but the object can be referenced in other threads)</span>
+<span class="sd">    </span>
 <span class="sd">    Run this script: create a MuSS_window object and run tkinter mainloop </span>
 <span class="sd">    :) </span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -557,7 +567,7 @@
             <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Fitting Parameters&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bck</span><span class="o">.</span><span class="n">fitting_options_window</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">options_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
-            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Create input file&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bck</span><span class="o">.</span><span class="n">fitting_options_window</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Create input file&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bck</span><span class="o">.</span><span class="n">create_input_files_param</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         
         <span class="c1"># Help is a way to undestand and be helped using the MuSS</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mainmenu</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>

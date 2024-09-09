@@ -1,5 +1,6 @@
-read\_entries module
-====================
+Read entries module
+===================
+
 
 .. automodule:: read_entries
    :members:

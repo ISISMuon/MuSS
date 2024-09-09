@@ -1,5 +1,5 @@
-read\_files module
-==================
+Read Files Module
+=================
 
 .. automodule:: read_files
    :members:

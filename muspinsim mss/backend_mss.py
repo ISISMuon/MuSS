@@ -1,9 +1,5 @@
 """
-Project: Simulations for muSR data Analysis Industrial Placement
-Author: Paula Franco
-Date: February 2024
-
-Summary:
+**Summary**  
 This module provides a set of functions for managing and interacting with simulation parameters, 
 including GUI integration, data processing, and simulation management for a scientific or engineering application
 
@@ -25,17 +21,17 @@ from tkinter.ttk import Label, LabelFrame, Progressbar, Combobox
 from tkinter import ttk
 import ase
 from ase import atom, atoms, visualize, build
+import webbrowser
+
 
 import copy
-import ase
 import ase.data
 from ase.visualize import view
 import os
-import read_entries as r_e
-
 # --------------------------------------
 #       Homemade scripts
 # -------------------------------------
+import read_entries as r_e
 
 # -------------------------------------------------------------------------------------------------------
 #                                           DATA PROCESSING
@@ -113,18 +109,7 @@ def data_processing(data):
 
     return formatted_data_string
 
-def dipolar_fitting_parameter(object_of_class,simmetry):
-    '''
-    '''
-    #x= p*np.sin(theta)*np.cos(phi)
-    #y=p*np.sin(theta)* np.sin(phi)
-    #z=p*cos(tetha)
-    #p=sqrt(x^2+y^2+z^2)
 
-    #object_of_class.fit_params_to_generate_simulation = distance
-
-    #how many of the dipolar variables are being fitted against
-    pass 
 
 def extract_initial_variables(object_of_class):
     '''
@@ -163,6 +148,18 @@ def clean_whitespace_and_brackets(string: str) -> str:
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     Fitting
 # --------------------------------------------------------------------------------------------------------------------
+
+def dipolar_fitting_parameter(coordinates):
+    '''
+    '''
+    theta=0
+    phi=0
+    x= p*np.sin(theta)*np.cos(phi)
+    y=p*np.sin(theta)* np.sin(phi)
+    z=p*np.cos(theta)
+    p=(x^2+y^2+z^2)**0.5
+    return np.array(x,y,z)
+
 
 def fitting_options_window(parent_object):
     '''
@@ -220,26 +217,134 @@ def fitting_options_window(parent_object):
     frame_noncoupling_fit_window.pack(side="left", fill="both", expand=True)
     right_label = tk.Label(frame_noncoupling_fit_window, text="Right Area", bg="lightgreen")
     right_label.pack(pady=20)
+
+def check_dipolar_symmetry(instance):
+    #lets create a dipolar library
+    #name to be identified by, followed by values, followed by p, theta and phi
+    coupling = [i for i in instance.parameters.evaluate()['couplings']]
+    instance.dipolar_info={}
+    keys=list(instance.parameters.evaluate()['couplings'].keys())
+    for i in keys:
+        if instance.parameters.evaluate()['couplings'][i].name =='dipolar':
+            coordinates=instance.parameters.evaluate()['couplings'][i].value[0]
+            p=np.linalg.norm(coordinates)
+            x=coordinates[0]
+            y=coordinates[1]
+            z=coordinates[2]
+            print(x,y,z,p)
+            theta=np.arctan(y/x) #radians
+            phi=np.arccos(z/p)  #radians
+            print(theta,phi)
+            instance.dipolar_info[i]=[coordinates,p,theta,phi]
+    print(instance.dipolar_info)
+            #instance.dipolar_info[i]=#[#coordinates,p,theta, phi]
+
+
+def cartesian_to_spherical(coords):
+    """
+    Convert 3D Cartesian coordinates (x, y, z) to spherical coordinates (r, theta, phi).
     
+    Parameters:
+    coords (numpy array): A numpy array containing 3 Cartesian coordinates [x, y, z].
+
+    Returns:
+    tuple: A tuple containing (theta, phi), where:
+           - theta is the polar angle (0 to pi)
+           - phi is the azimuthal angle (0 to 2pi)
+    """
+    x, y, z = coords
+
+    # Compute the radial distance r
+    r = np.sqrt(x**2 + y**2 + z**2)
+
+    if r == 0:
+        theta = 0
+        phi = 0
+    else:
+        # Compute theta (polar angle), handle the case where z = 0 to avoid division by zero
+        theta = np.arccos(z / r) if r != 0 else 0
+
+        # Compute phi (azimuthal angle)
+        phi = np.arctan2(y, x)  # arctan2 handles all quadrants, no need to worry about x = 0, y = 0 cases
+
+    return theta, phi
+
+
+def spherical_to_cartesian(r, theta, phi):
+    """
+    Convert spherical coordinates (r, theta, phi) to Cartesian coordinates (x, y, z).
+    
+    Parameters:
+    r (float): Radial distance.
+    theta (float): Polar angle (angle from the z-axis) in radians.
+    phi (float): Azimuthal angle (angle from the x-axis) in radians.
+
+    Returns:
+    numpy array: A numpy array containing the Cartesian coordinates [x, y, z].
+    """
+    # Compute Cartesian coordinates
+    x = r * np.sin(theta) * np.cos(phi)
+    y = r * np.sin(theta) * np.sin(phi)
+    z = r * np.cos(theta)
+
+    return np.array([x, y, z])
 # --------------------------------------------------------------------------------------------------------------------
 #                                                     Debug
 # --------------------------------------------------------------------------------------------------------------------    
 def create_input_files_param(muspinsim_instance):
 
-    keys=list(muspinsim_instance.parameters.evaluate().keys())
-    valuess=list(muspinsim_instance.parameters.evaluate().values())
-    print(keys,valuess,muspinsim_instance.parameters.evaluate())
-    # Separet the Couplings and the non couplings
-    name_file=muspinsim_instance.name_entry.get()
-    muspinsim_instance.labelstring
-    with open("output.txt", "w") as file:
-        for key, value in muspinsim_instance.parameters.evaluate():
-        # Write key followed by a newline and space
-            file.write(f"{key}\n")
-            file.write(f" {value}\n\n")
-    print(keys,muspinsim_instance.parameters.evaluate())
+    keys= {key:key for key  in muspinsim_instance.parameters.evaluate().keys()}
+
+    filtered_data = {key: value for key, value in muspinsim_instance.parameters.evaluate().items() if key in muspinsim_instance.labelstring[0:5]} 
+
+    couplings_names = {'zeeman':'zeeman', 'dipolar':'dipolar', 'quadrupolar':'quadrupolar', 'hyperfine':'hyperfine'}
+    couplings_run = False
+    output_file_name="output.txt"
+    with open(output_file_name, "w") as file:
+            for i in range(len(muspinsim_instance.labelstring)): #len(muspinsim_instance.labelstrin)
+        #for key, value in filtered_data:#filtered_data
+        # Write key followed by a newline and space 
+                key = muspinsim_instance.labelstring[i]
+                
+                if key in keys:
+                    file.write(f"{key}\n")
+                    if key == 'time':
+                        start = muspinsim_instance.parameters.evaluate()[key].value[0][0]
+                        end = muspinsim_instance.parameters.evaluate()[key].value[-1][0]
+                        total = len(muspinsim_instance.parameters.evaluate()[key].value)
+                        out_values = 'range(' + str(start) + ',' + str(end) + ',' + str(total) + ')'
+                        file.write(f" {out_values}\n\n")
+                    else:
+                        out_values = [ str(element) for element in muspinsim_instance.parameters.evaluate()[key].value[0]]
+                        # out_values = [str(element) for element in out_array]
+                        file.write(f" {' '.join(out_values)}\n\n")
+                else:
+                    if (key in couplings_names) and ( couplings_run == False):
+                        couplings_run = True
+                        couplings_data = muspinsim_instance.parameters.evaluate()['couplings']
+                        keys_list = list(couplings_data.keys())
+   
+                        for j in range(len(couplings_data)):
+                            key = keys_list[j]
+                            file.write(f"{key.replace('_', ' ')}\n")
+                            out_values = [ str(element) for element in couplings_data[key].value[0]]
+                            # out_values = [str(element) for element in out_array]
+                            file.write(f" {' '.join(out_values)}\n\n")
+                    continue
 
 
+    # Read from the file and print its content
+    with open(output_file_name, 'r', encoding='utf-8') as file:
+        content = file.read()
+        print(content)
+    check_dipolar_symmetry(muspinsim_instance)
+
+def go_to_documentation():
+    html_file = 'docs/_build/html/index.html'
+
+    # Open the file in the default web browser
+    webbrowser.open(f'file://{os.path.realpath(html_file)}')
+    
 def fitting_parameters_choise(instance):
     '''
     Considering the 22 atomistic parameters in muspinsim the 4 couplings (zeeman, dipolar, quadrupolar and hyperfine) 
@@ -374,12 +479,24 @@ def graph_update_and_retrieve_time(object_of_class):
     '''
     Updates the graph with the latest simulation results and retrieves the x-axis (time) values.
     
-     Actions:
+
+    This function performs the following actions:
     1. Clears the current graph.
     2. Plots the results of the simulation against time.
     3. Draws the updated graph on the canvas.
-    4. Stores the x-axis (time) values for future use.
+    4. Stores and returns the x-axis (time) values for future use.
+
+    Parameters
+    ----------
+    object_of_class : object
+        The object containing the simulation results and graphing canvas.
+
+    Returns
+    -------
+    time_values : list or np.ndarray
+        The x-axis (time) values retrieved from the simulation results.
     '''
+
     #the graph is cleared
     object_of_class.a.clear()
 
@@ -430,23 +547,37 @@ def add_muon_to_aseatoms(atoms_structure:atoms, theta: float = 180, phi: float =
                          muon_position: np.ndarray = None, plane_atom_index: int = None,
                          plane_atom_position: np.ndarray = None, midpoint=0.5) -> atoms:
     """
-    adds a muon to ase_atoms
-    :param ase_atoms: ASE atoms of the crystal the muon is going to be placed into
-    :param theta: F--mu--F angle in degrees. Must also define nn_indices if this is not 180deg.
-    :param phi: angle of the F--mu--F plane. Must also define theta and nn_indices to use this.
-    :param nn_indices: ASE index of the nearest-neighbour atoms to place the muon in between. Do not define this AND
-                       muon_position
-    :param muon_position: position of the muon, in angstroms. Use EITHER this or nn_indices. Do not define this and
-                          theta and phi
-    :param plane_atom_index: index of atom which the muon moves away from to create the angle theta. Do not define this
-                             and plane_atom_position.
-    :param plane_atom_position: np array of position of the plane_atom (doesn't actually need to be a position of an
-                                atom per se, but useful if it is. Do not define this and the index.
-    :param midpoint: weighting of the midpoint to the two nnindices. 0 puts the muon on nn_indices[0], 1 puts it on
-                     nn_indices[2]. 0.5 puts it in between the two.
-    
-    
-    :return: ase_atoms with the muon
+    Adds a muon to ASE atoms.
+
+    Parameters
+    ----------
+    se_atoms : ASE Atoms object
+        The crystal structure the muon will be placed into.
+    theta : float, optional
+        F--mu--F angle in degrees. Must also define nn_indices if this is not 180 degrees.
+    phi : float, optional
+        Angle of the F--mu--F plane. Must also define theta and nn_indices to use this.
+    nn_indices : list of int, optional
+        ASE indices of the nearest-neighbor atoms to place the muon in between. 
+        Do not define this and muon_position at the same time.
+    muon_position : np.ndarray, optional
+        Position of the muon in angstroms. Use EITHER this or nn_indices. 
+        Do not define this and theta and phi at the same time.
+    plane_atom_index : int, optional
+        Index of the atom which the muon moves away from to create the angle theta. 
+        Do not define this and plane_atom_position at the same time.
+    plane_atom_position : np.ndarray, optional
+        Position of the plane atom as a NumPy array. This doesn't need to be an actual atom position, 
+        but it is useful if it is. Do not define this and the index at the same time.
+    midpoint : float, optional
+        Weighting of the midpoint between the two nn_indices. 
+        A value of 0 places the muon at nn_indices[0], 1 at nn_indices[1], 
+        and 0.5 in the middle.
+
+    Returns
+    -------
+    atoms : ASE Atoms object
+        The atomic structure with the muon added.
     """
 
     # Ensure that either muon_position or nn_indices is defined, but not both
@@ -513,12 +644,26 @@ def add_muon_to_aseatoms(atoms_structure:atoms, theta: float = 180, phi: float =
 def make_supercell(simulation_object, unperturbed_atoms: atoms = None, unperturbed_supercell=1,
                    small_output=False):
     """
-    make a supercell with atoms_mu in the centre, and surrounded by unperturbed_supercell unperturbed_atoms
-    :param atoms_mu: (object of the windows class-muspinism object) ASE atoms, maybe with distortions, including muon
-    :param unperturbed_atoms: ASE atoms of unperturbed structure
-    :param unperturbed_supercell: number of instances of unperturbed_atoms to bolt on to the end of atoms_mu
-    :return: supercell of atoms_mu+unperturbed_supercell*unperturbed_atoms. If small_output==False, return ASE atoms,
-             otherwise returns a list of [atom type, position]
+    Creates a supercell with atoms_mu in the center, surrounded by unperturbed_supercell instances of unperturbed_atoms.
+
+    Parameters
+    ----------
+    simulation_object : object
+        An instance of the simulation class containing the atoms_mu structure, including the muon.
+    unperturbed_atoms : ASE Atoms object, optional
+        ASE Atoms object representing the unperturbed structure. Default is None.
+    unperturbed_supercell : int, optional
+        Number of instances of unperturbed_atoms to attach to the atoms_mu structure. Default is 1.
+    small_output : bool, optional
+        If False, returns an ASE Atoms object. If True, returns a list of [atom type, position].
+        Default is False.
+
+    Returns
+    -------
+    supercell : ASE Atoms object or list
+        Returns the supercell, which consists of atoms_mu plus unperturbed_supercell instances of unperturbed_atoms.
+        If small_output is False, the return value is an ASE Atoms object.
+        If small_output is True, the return value is a list of [atom type, position].
     """
     # Retrieve the current atomic structure with the muon
     atoms_mu = simulation_object.cif_read

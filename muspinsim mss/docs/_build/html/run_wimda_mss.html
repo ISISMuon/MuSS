@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>run_wimda_mss module &mdash; MuSS 0.1.0-dev documentation</title>
+  <title>Run MuSS Module &mdash; MuSS 0.1.0-dev documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -21,8 +21,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="socket_comunication_mss module" href="socket_comunication_mss.html" />
-    <link rel="prev" title="read_files module" href="read_files.html" /> 
+    <link rel="next" title="Socket communication Module" href="socket_comunication_mss.html" />
+    <link rel="prev" title="Read Files Module" href="read_files.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,17 +46,21 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">muspinsim mss</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="backend_mss.html">backend_mss module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="input_class.html">input_class module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="read_entries.html">read_entries module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="read_files.html">read_files module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">run_wimda_mss module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="socket_comunication_mss.html">socket_comunication_mss module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="window_class_mss.html">window_class_mss module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="z_windows_draft.html">z_windows_draft module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Guide for developers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="backend_mss.html">MuSS Backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="read_entries.html">Read entries module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="read_files.html">Read Files Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Run MuSS Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="socket_comunication_mss.html">Socket communication Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="window_class_mss.html">MuSS GUI Module</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Welcome to MuSS’ documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="detailed_functionality.html">Detailed Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="technical_details.html">Technical Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version_history_and_future_plans.html">Version History and Future Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support_and_q%26as.html">Find Support</a></li>
 </ul>
 
         </div>
@@ -73,8 +77,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">muspinsim mss</a></li>
-      <li class="breadcrumb-item active">run_wimda_mss module</li>
+          <li class="breadcrumb-item"><a href="modules.html">Guide for developers</a></li>
+      <li class="breadcrumb-item active">Run MuSS Module</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/run_wimda_mss.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -85,12 +89,8 @@
            <div itemprop="articleBody">
              
   <section id="module-run_wimda_mss">
-<span id="run-wimda-mss-module"></span><h1>run_wimda_mss module<a class="headerlink" href="#module-run_wimda_mss" title="Link to this heading"></a></h1>
-<p>Project: Simulations for muSR data Analysis Industrial Placement
-Author: Paula Franco
-Date: May 2024</p>
-<p>Summary:
-This script is specifically to be used with wimda as the server is being initiated
+<span id="run-muss-module"></span><h1>Run MuSS Module<a class="headerlink" href="#module-run_wimda_mss" title="Link to this heading"></a></h1>
+<p>This script is specifically to be used with wimda as the server is being initiated
 before the windows being called (thats the only difference).</p>
 </section>
 
@@ -98,8 +98,8 @@ before the windows being called (thats the only difference).</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="read_files.html" class="btn btn-neutral float-left" title="read_files module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="socket_comunication_mss.html" class="btn btn-neutral float-right" title="socket_comunication_mss module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="read_files.html" class="btn btn-neutral float-left" title="Read Files Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="socket_comunication_mss.html" class="btn btn-neutral float-right" title="Socket communication Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

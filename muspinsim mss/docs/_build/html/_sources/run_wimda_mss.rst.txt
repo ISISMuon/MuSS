@@ -1,5 +1,5 @@
-run\_wimda\_mss module
-======================
+Run MuSS Module
+===============
 
 .. automodule:: run_wimda_mss
    :members:

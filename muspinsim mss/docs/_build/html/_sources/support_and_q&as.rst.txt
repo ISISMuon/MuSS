@@ -1,5 +1,5 @@
-Support and Q&As
-================
+Find Support
+============
 
 This section provides support options and answers to frequently asked questions regarding the use of MuSS.
 

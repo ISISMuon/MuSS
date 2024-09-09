@@ -1,11 +1,6 @@
 """
-Project: Simulations for muSR data Analysis Industrial Placement
-Author: Paula Franco
-Date: February 2024
-
-Summary:
-    Sockets are created and listens until the program is closes, here ports are descibed.
-    The sockets recieve and send informtaion here.
+Sockets are created and listens until the program is closes, here ports are descibed.
+The sockets recieve and send informtaion here.
 """
 import threading
 import socket
@@ -102,7 +97,7 @@ def close_socket_connection():
     comunication_socket.close()
 
 # -------------------------------------------------------------------------------------------------------
-#                                           Recieve
+#                                           Receive
 # -------------------------------------------------------------------------------------------------------
 
 def receive_and_process_socket_message(object_of_class):  

@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Detailed Functionality" href="detailed_functionality.html" />
-    <link rel="prev" title="Overview" href="overview.html" /> 
+    <link rel="prev" title="Welcome to MuSS’ documentation" href="overview.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,15 +46,19 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">muspinsim mss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Welcome to MuSS’ documentation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation-requirements">Installation Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#initial-setup">Initial Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#set-up-muss-in-wimda">Set up MuSS in WiMDA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#my-first-time-using-muss-as-a-fitting-function-in-wimda">My First Time Using MuSS as a Fitting Function in WiMDA</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="detailed_functionality.html">Detailed Functionality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="technical_details.html">Technical Details</a></li>
 <li class="toctree-l1"><a class="reference internal" href="version_history_and_future_plans.html">Version History and Future Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support_and_q%26as.html">Support and Q&amp;As</a></li>
 </ul>
 
         </div>
@@ -88,21 +92,43 @@
 <h2>Installation Requirements<a class="headerlink" href="#installation-requirements" title="Link to this heading"></a></h2>
 <ol class="arabic">
 <li><p>Ensure Python is installed on your system.</p></li>
-<li><p>Download and install MuSS from the official repository.</p></li>
-<li><p>Install dependencies:
-.. code-block:: bash</p>
-<blockquote>
-<div><p>pip install muspinsim wimda</p>
-</div></blockquote>
+<li><p>Download and install MuSpinSim from the official repository.</p></li>
+<li><p>Install dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>muspinsim<span class="w"> </span>wimda
+</pre></div>
+</div>
 </li>
+<li><p>Ensure WiMDA version that supports MuSS is installed on your system.</p></li>
 </ol>
 </section>
 <section id="initial-setup">
 <h2>Initial Setup<a class="headerlink" href="#initial-setup" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Open MuSS and configure the initial settings according to your experimental setup.</p></li>
-<li><p>Verify the connection settings to ensure proper integration with WimDA.</p></li>
+<li><p>Verify the connection settings to ensure proper integration with WiMDA.</p></li>
 </ul>
+</section>
+<section id="set-up-muss-in-wimda">
+<h2>Set up MuSS in WiMDA<a class="headerlink" href="#set-up-muss-in-wimda" title="Link to this heading"></a></h2>
+<p>To use MuSS, you will need to have a WiMDA version that supports MuSS, available on the WiMDA GitHub.</p>
+<p>Once you have the correct version of WiMDA, go to the MuSS GitHub and download the latest version.
+Remember the path where you saved the MuSS script. Run WiMDA as usual, and in the menu bar, click on “File” and then on “Setup” to open the “Setup” window.</p>
+<p>In this window, most directories are defined, and you can set the directory for MuSS. In the “MuSpinSim directory” field, click the “…” button to browse to the directory where you downloaded MuSS from GitHub.</p>
+<p>In this window, you will also see fields for “Port” and “Host”. Enter the appropriate values for your communication setup:
+- <strong>Host</strong>: Refers to the device or machine on a network, identified by an IP address or domain name. The default is <cite>localhost</cite>, which refers to the local machine.
+- <strong>Port</strong>: Specifies a communication endpoint on a particular host. Ensure that you use a unique port number for this communication. The default is 9092.</p>
+<p>Once you have set the “Host” and “Port” values, click “Done”.</p>
+<p>Now, you have MuSS set up in WiMDA. Note that, like the directory where your muon data is located, you might need to adjust the Port, Host, or MuSpinSim directory later.</p>
+</section>
+<section id="my-first-time-using-muss-as-a-fitting-function-in-wimda">
+<h2>My First Time Using MuSS as a Fitting Function in WiMDA<a class="headerlink" href="#my-first-time-using-muss-as-a-fitting-function-in-wimda" title="Link to this heading"></a></h2>
+<p>Only proceed with these instructions after successfully setting up MuSS in WiMDA.</p>
+<p>Create your input file with the atomistic parameters of your system. To do this successfully, refer to the MuSpinSim documentation and the examples of input files on their GitHub page.</p>
+<p>In WiMDA, load your data as usual, then click “Analyse” in the menu bar to open the Analyse window. In the “Component 1” section, under “Oscillation”, choose “MuSpinSim”, which comes with a “Launch” button.</p>
+<p>Once the “Launch” button is clicked, MuSS will run in the Windows PowerShell. The terminal and GUI will open. Now you’re ready to use MuSS integrated with WiMDA!</p>
+<p>In MuSS, go to “File” &gt; “Load” in the top menu bar and select the text input file you created earlier with your atomistic parameters, based on the MuSpinSim documentation. Once the file is loaded, you will see your parameters displayed in the GUI. Click the blue “Run” button to start your simulation.</p>
+<p>Once the simulation is complete, the graph will display the updated values. To send these initial values to WiMDA, click the “Send” button in the “Socket” frame. (This will also print the values sent in your terminal, with a message containing the word “Hello” at the end.)</p>
+<p>Now, in WiMDA, you can plot your simulation. Once other parameters are set, click “Fit”. While in the fitting loop, you should see the graph in MuSS updating, and messages being exchanged between the two programs. When the process is complete, a confirmation message will appear in your MuSS terminal.</p>
 </section>
 </section>
 
@@ -110,7 +136,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="overview.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="overview.html" class="btn btn-neutral float-left" title="Welcome to MuSS’ documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="detailed_functionality.html" class="btn btn-neutral float-right" title="Detailed Functionality" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

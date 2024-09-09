@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>read_files module &mdash; MuSS 0.1.0-dev documentation</title>
+  <title>Read Files Module &mdash; MuSS 0.1.0-dev documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -21,8 +21,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="run_wimda_mss module" href="run_wimda_mss.html" />
-    <link rel="prev" title="read_entries module" href="read_entries.html" /> 
+    <link rel="next" title="Run MuSS Module" href="run_wimda_mss.html" />
+    <link rel="prev" title="Read entries module" href="read_entries.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,11 +46,10 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">muspinsim mss</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="backend_mss.html">backend_mss module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="input_class.html">input_class module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="read_entries.html">read_entries module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">read_files module</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Guide for developers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="backend_mss.html">MuSS Backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="read_entries.html">Read entries module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Read Files Module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#read_files.read_couplings"><code class="docutils literal notranslate"><span class="pre">read_couplings()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#read_files.read_essential_frame"><code class="docutils literal notranslate"><span class="pre">read_essential_frame()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#read_files.read_fields_more"><code class="docutils literal notranslate"><span class="pre">read_fields_more()</span></code></a></li>
@@ -59,12 +58,17 @@
 <li class="toctree-l3"><a class="reference internal" href="#read_files.translation"><code class="docutils literal notranslate"><span class="pre">translation()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="run_wimda_mss.html">run_wimda_mss module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="socket_comunication_mss.html">socket_comunication_mss module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="window_class_mss.html">window_class_mss module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="z_windows_draft.html">z_windows_draft module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="run_wimda_mss.html">Run MuSS Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="socket_comunication_mss.html">Socket communication Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="window_class_mss.html">MuSS GUI Module</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Welcome to MuSS’ documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="detailed_functionality.html">Detailed Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="technical_details.html">Technical Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version_history_and_future_plans.html">Version History and Future Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support_and_q%26as.html">Find Support</a></li>
 </ul>
 
         </div>
@@ -81,8 +85,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">muspinsim mss</a></li>
-      <li class="breadcrumb-item active">read_files module</li>
+          <li class="breadcrumb-item"><a href="modules.html">Guide for developers</a></li>
+      <li class="breadcrumb-item active">Read Files Module</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/read_files.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -93,11 +97,8 @@
            <div itemprop="articleBody">
              
   <section id="module-read_files">
-<span id="read-files-module"></span><h1>read_files module<a class="headerlink" href="#module-read_files" title="Link to this heading"></a></h1>
-<p>Project: Simulations for muSR data Analysis Industrial Placement
-Author: Paula Franco
-Date: July 2024</p>
-<p>Summary:</p>
+<span id="read-files-module"></span><h1>Read Files Module<a class="headerlink" href="#module-read_files" title="Link to this heading"></a></h1>
+<p>This script is designed to manage the input parameters for MuSpinSim.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="read_files.read_couplings">
 <span class="sig-prename descclassname"><span class="pre">read_files.</span></span><span class="sig-name descname"><span class="pre">read_couplings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/read_files.html#read_couplings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#read_files.read_couplings" title="Link to this definition"></a></dt>
@@ -136,8 +137,8 @@ To facilitate redability i_params is used instead</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="read_entries.html" class="btn btn-neutral float-left" title="read_entries module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="run_wimda_mss.html" class="btn btn-neutral float-right" title="run_wimda_mss module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="read_entries.html" class="btn btn-neutral float-left" title="Read entries module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="run_wimda_mss.html" class="btn btn-neutral float-right" title="Run MuSS Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

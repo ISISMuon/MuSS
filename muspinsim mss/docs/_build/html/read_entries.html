@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>read_entries module &mdash; MuSS 0.1.0-dev documentation</title>
+  <title>Read entries module &mdash; MuSS 0.1.0-dev documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -21,8 +21,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="read_files module" href="read_files.html" />
-    <link rel="prev" title="input_class module" href="input_class.html" /> 
+    <link rel="next" title="Read Files Module" href="read_files.html" />
+    <link rel="prev" title="MuSS Backend" href="backend_mss.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,22 +46,26 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">muspinsim mss</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="backend_mss.html">backend_mss module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="input_class.html">input_class module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">read_entries module</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Guide for developers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="backend_mss.html">MuSS Backend</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Read entries module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#read_entries.create_object_KW"><code class="docutils literal notranslate"><span class="pre">create_object_KW()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#read_entries.extract_lines_from_text_widget"><code class="docutils literal notranslate"><span class="pre">extract_lines_from_text_widget()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#read_entries.initialize_simulation_parameters"><code class="docutils literal notranslate"><span class="pre">initialize_simulation_parameters()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="read_files.html">read_files module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="run_wimda_mss.html">run_wimda_mss module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="socket_comunication_mss.html">socket_comunication_mss module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="window_class_mss.html">window_class_mss module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="z_windows_draft.html">z_windows_draft module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="read_files.html">Read Files Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="run_wimda_mss.html">Run MuSS Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="socket_comunication_mss.html">Socket communication Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="window_class_mss.html">MuSS GUI Module</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Welcome to MuSS’ documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="detailed_functionality.html">Detailed Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="technical_details.html">Technical Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version_history_and_future_plans.html">Version History and Future Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support_and_q%26as.html">Find Support</a></li>
 </ul>
 
         </div>
@@ -78,8 +82,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">muspinsim mss</a></li>
-      <li class="breadcrumb-item active">read_entries module</li>
+          <li class="breadcrumb-item"><a href="modules.html">Guide for developers</a></li>
+      <li class="breadcrumb-item active">Read entries module</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/read_entries.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -90,11 +94,7 @@
            <div itemprop="articleBody">
              
   <section id="module-read_entries">
-<span id="read-entries-module"></span><h1>read_entries module<a class="headerlink" href="#module-read_entries" title="Link to this heading"></a></h1>
-<p>Project: Simulations for muSR data Analysis Industrial Placement
-Author: Paula Franco
-Date: August 2024</p>
-<p>Summary:</p>
+<span id="read-entries-module"></span><h1>Read entries module<a class="headerlink" href="#module-read_entries" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="read_entries.create_object_KW">
 <span class="sig-prename descclassname"><span class="pre">read_entries.</span></span><span class="sig-name descname"><span class="pre">create_object_KW</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">par</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyword_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/read_entries.html#create_object_KW"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#read_entries.create_object_KW" title="Link to this definition"></a></dt>
@@ -102,8 +102,8 @@ Date: August 2024</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>par</strong> (<em>str</em>) – The parameter value to be used for creating the keyword object.</p></li>
-<li><p><strong>keyword_type</strong> (<em>int</em>) – An integer identifier that specifies the type of keyword object to create.</p></li>
+<li><p><strong>par</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The parameter value to be used for creating the keyword object.</p></li>
+<li><p><strong>keyword_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – An integer identifier that specifies the type of keyword object to create.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -117,10 +117,15 @@ Date: August 2024</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="read_entries.extract_lines_from_text_widget">
-<span class="sig-prename descclassname"><span class="pre">read_entries.</span></span><span class="sig-name descname"><span class="pre">extract_lines_from_text_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/read_entries.html#extract_lines_from_text_widget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#read_entries.extract_lines_from_text_widget" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">read_entries.</span></span><span class="sig-name descname"><span class="pre">extract_lines_from_text_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/read_entries.html#extract_lines_from_text_widget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#read_entries.extract_lines_from_text_widget" title="Link to this definition"></a></dt>
 <dd><p>Extracts all lines of text from a Text widget and returns them as a list.</p>
 <p>Args: text_widget (tk.Text): The Text widget from which to extract lines.
 Returns: list A list containing each line of text as a separate string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -137,8 +142,8 @@ and setting up various parameters such as name, spins, and time based on user in
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="input_class.html" class="btn btn-neutral float-left" title="input_class module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="read_files.html" class="btn btn-neutral float-right" title="read_files module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="backend_mss.html" class="btn btn-neutral float-left" title="MuSS Backend" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="read_files.html" class="btn btn-neutral float-right" title="Read Files Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

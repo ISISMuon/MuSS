@@ -1,6 +1,8 @@
-window\_class\_mss module
-=========================
+MuSS GUI Module
+===============
 
+Methods
+"""""""
 .. automodule:: window_class_mss
    :members:
    :undoc-members:

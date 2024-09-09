@@ -13,7 +13,7 @@ sys.path.insert(0,os.path.abspath(".."))
 
 project = 'MuSS'
 copyright = '2024, Paula Mpembe Franco'
-author = 'Paula Mpembe Franco'
+author = 'Muon Department, ISIS, STFC'
 release = '0.1.0-dev'
 
 # -- General configuration ---------------------------------------------------
@@ -24,8 +24,9 @@ extensions = ['sphinx.ext.autodoc','sphinx.ext.viewcode','sphinx.ext.todo','sphi
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-
-
+autodoc_typehints = "description"
+autodoc_typehints_format = "short"
+napoleon_preprocess_types = True
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 

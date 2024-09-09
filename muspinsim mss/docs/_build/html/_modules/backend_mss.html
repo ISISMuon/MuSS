@@ -41,15 +41,8 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../detailed_functionality.html">Detailed Functionality</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../technical_details.html">Technical Details</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../version_history_and_future_plans.html">Version History and Future Plans</a></li>
-</ul>
-
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
         </div>
       </div>
     </nav>
@@ -76,11 +69,7 @@
              
   <h1>Source code for backend_mss</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Project: Simulations for muSR data Analysis Industrial Placement</span>
-<span class="sd">Author: Paula Franco</span>
-<span class="sd">Date: February 2024</span>
-
-<span class="sd">Summary:</span>
+<span class="sd">**Summary**  </span>
 <span class="sd">This module provides a set of functions for managing and interacting with simulation parameters, </span>
 <span class="sd">including GUI integration, data processing, and simulation management for a scientific or engineering application</span>
 
@@ -275,6 +264,7 @@
     
     <span class="c1"># Set the window title</span>
     <span class="n">fitting_top_window</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Fitting parameters&quot;</span><span class="p">)</span>
+    <span class="n">fitting_parameters_choise</span><span class="p">(</span><span class="n">parent_object</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">frame_fit_selection</span><span class="p">(</span><span class="n">parent</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
@@ -289,7 +279,7 @@
 
         <span class="n">parent</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="s1">&#39;dipolar&#39;</span><span class="p">,</span> <span class="s1">&#39;zeeman&#39;</span><span class="p">,</span> <span class="s1">&#39;intrinsic_field&#39;</span><span class="p">,</span> <span class="s1">&#39;quadrupolar&#39;</span><span class="p">]</span>
 
-        <span class="n">parent</span><span class="o">.</span><span class="n">dropdown</span> <span class="o">=</span> <span class="n">Combobox</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">fit_selection_frame</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">parent</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">dropdown</span> <span class="o">=</span> <span class="n">Combobox</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">fit_selection_frame</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">parent_object</span><span class="o">.</span><span class="n">verified_param</span><span class="p">)</span>
         <span class="n">parent</span><span class="o">.</span><span class="n">dropdown</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">columnspan</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
         <span class="n">parent</span><span class="o">.</span><span class="n">dropdown</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;ComboboxSelected&gt;&gt;&quot;</span><span class="p">,</span><span class="n">parent</span><span class="o">.</span><span class="n">handle_dropdown_selection</span><span class="p">)</span>
         
@@ -315,26 +305,68 @@
     <span class="n">frame_noncoupling_fit_window</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">fitting_top_window</span><span class="p">,</span><span class="n">bg</span><span class="o">=</span><span class="s2">&quot;lightgreen&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
     <span class="n">frame_noncoupling_fit_window</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">right_label</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">frame_noncoupling_fit_window</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Right Area&quot;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;lightgreen&quot;</span><span class="p">)</span>
-    <span class="n">right_label</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">right_label</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span></div>
+
     
-    <span class="n">fitting_parameters_choise</span><span class="p">(</span><span class="n">parent_object</span><span class="p">)</span></div>
-
-
-
 <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#                                                     Debug</span>
 <span class="c1"># --------------------------------------------------------------------------------------------------------------------    </span>
-<span class="k">def</span> <span class="nf">create_input_file</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
-    <span class="n">instance</span><span class="o">.</span><span class="n">parameters</span>
-    
-    <span class="c1"># Separet the Couplings and the non couplings</span>
+<div class="viewcode-block" id="create_input_files_param">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.create_input_files_param">[docs]</a>
+<span class="k">def</span> <span class="nf">create_input_files_param</span><span class="p">(</span><span class="n">muspinsim_instance</span><span class="p">):</span>
 
+    <span class="n">keys</span><span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span>  <span class="ow">in</span> <span class="n">muspinsim_instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+    <span class="c1"># valuess=list(muspinsim_instance.parameters.evaluate().values())</span>
+    <span class="c1"># print(keys)#,valuess,muspinsim_instance.parameters.evaluate()</span>
+    <span class="c1"># Separet the Couplings and the non couplings</span>
+    <span class="n">name_file</span><span class="o">=</span><span class="n">muspinsim_instance</span><span class="o">.</span><span class="n">name_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="c1">#if keys vavlues != default values: # ---&gt; define dictionary default values #get values or list</span>
+    <span class="c1">#</span>
+    <span class="n">filtered_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">muspinsim_instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">muspinsim_instance</span><span class="o">.</span><span class="n">labelstring</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]}</span> 
+
+    <span class="c1"># sorted_data = {key: muspinsim_instance.parameters.evaluate()[key] for key in muspinsim_instance.labelstring if key in muspinsim_instance.parameters.evaluate()}</span>
+
+    <span class="c1"># filtered_data = {key: value for key, value in sorted_data.items() if key not in muspinsim_instance.default_value} #default_value probably by creating a dic or list from frame_essentials</span>
+    <span class="c1"># muspinsim_instance.labelstring</span>
+    <span class="n">couplings_names</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;zeeman&#39;</span><span class="p">:</span><span class="s1">&#39;zeeman&#39;</span><span class="p">,</span> <span class="s1">&#39;dipolar&#39;</span><span class="p">:</span><span class="s1">&#39;dipolar&#39;</span><span class="p">,</span> <span class="s1">&#39;quadrupolar&#39;</span><span class="p">:</span><span class="s1">&#39;quadrupolar&#39;</span><span class="p">,</span> <span class="s1">&#39;hyperfine&#39;</span><span class="p">:</span><span class="s1">&#39;hyperfine&#39;</span><span class="p">}</span>
+    <span class="n">couplings_run</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;output.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">():</span>
-        <span class="c1"># Write key followed by a newline and space</span>
-            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">muspinsim_instance</span><span class="o">.</span><span class="n">labelstring</span><span class="p">)):</span> <span class="c1">#len(muspinsim_instance.labelstrin)</span>
+        <span class="c1">#for key, value in filtered_data:#filtered_data</span>
+        <span class="c1"># Write key followed by a newline and space </span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">muspinsim_instance</span><span class="o">.</span><span class="n">labelstring</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span>
+                        <span class="n">start</span> <span class="o">=</span> <span class="n">muspinsim_instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">end</span> <span class="o">=</span> <span class="n">muspinsim_instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">muspinsim_instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                        <span class="n">out_values</span> <span class="o">=</span> <span class="s1">&#39;range(&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">total</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+                        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">out_values</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">out_values</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">str</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">muspinsim_instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                        <span class="c1"># out_values = [str(element) for element in out_array]</span>
+                        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_values</span><span class="p">)</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="n">couplings_names</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span> <span class="n">couplings_run</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+                        <span class="n">couplings_run</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">couplings_data</span> <span class="o">=</span> <span class="n">muspinsim_instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()[</span><span class="s1">&#39;couplings&#39;</span><span class="p">]</span>
+                        <span class="n">keys_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">couplings_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+   
+                        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">couplings_data</span><span class="p">)):</span>
+                            <span class="n">key</span> <span class="o">=</span> <span class="n">keys_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39; &#39;</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                            <span class="n">out_values</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">str</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">couplings_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                            <span class="c1"># out_values = [str(element) for element in out_array]</span>
+                            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_values</span><span class="p">)</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span></div>
+
+
+    <span class="c1"># print(filtered_data)</span>
+
+
 <div class="viewcode-block" id="fitting_parameters_choise">
 <a class="viewcode-back" href="../backend_mss.html#backend_mss.fitting_parameters_choise">[docs]</a>
 <span class="k">def</span> <span class="nf">fitting_parameters_choise</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
@@ -344,6 +376,7 @@
 
 <span class="sd">    Celio and dissipation can also be considered for fitting</span>
 <span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">instance</span><span class="o">.</span><span class="n">verified_param</span><span class="o">=</span><span class="p">[]</span>
     <span class="n">couplings</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()[</span><span class="s1">&#39;couplings&#39;</span><span class="p">]</span>
     <span class="n">dic_param</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">dic_param</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -353,13 +386,11 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">dic_couplings</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">dic_couplings</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">dic_couplings</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
-                <span class="c1">#print(ii)</span>
-            <span class="c1">#for ii in instance.couplings:</span>
-            <span class="c1">#    print(&#39;dictionary couplings&#39; ,dic_couplings[ii])</span>
+                <span class="n">instance</span><span class="o">.</span><span class="n">verified_param</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dic_couplings</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;dictionary&#39;</span><span class="p">,</span><span class="n">dic_param</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;dictionary&#39;</span><span class="p">,</span><span class="n">dic_param</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">instance</span><span class="o">.</span><span class="n">verified_param</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dic_param</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div>
 
-        
 
 
 <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
@@ -417,8 +448,6 @@
 
 
 
-<div class="viewcode-block" id="create_input_file">
-<a class="viewcode-back" href="../backend_mss.html#backend_mss.create_input_file">[docs]</a>
 <span class="k">def</span> <span class="nf">create_input_file</span><span class="p">(</span><span class="n">object_of_class</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;&#39;</span>
 <span class="sd">    Creates a new input file with the parameters specified in the simulation object&#39;s UI fields.</span>
@@ -462,8 +491,7 @@
     <span class="n">inn</span><span class="o">.</span><span class="n">y_axis</span> <span class="o">=</span> <span class="n">object_of_class</span><span class="o">.</span><span class="n">y_axis_value</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
     <span class="c1"># Finalize the creation of the input file</span>
-    <span class="n">inn</span><span class="p">()</span></div>
-
+    <span class="n">inn</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="save_as_directory">
@@ -490,12 +518,24 @@
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Updates the graph with the latest simulation results and retrieves the x-axis (time) values.</span>
 <span class="sd">    </span>
-<span class="sd">     Actions:</span>
+
+<span class="sd">    This function performs the following actions:</span>
 <span class="sd">    1. Clears the current graph.</span>
 <span class="sd">    2. Plots the results of the simulation against time.</span>
 <span class="sd">    3. Draws the updated graph on the canvas.</span>
-<span class="sd">    4. Stores the x-axis (time) values for future use.</span>
+<span class="sd">    4. Stores and returns the x-axis (time) values for future use.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    object_of_class : object</span>
+<span class="sd">        The object containing the simulation results and graphing canvas.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    time_values : list or np.ndarray</span>
+<span class="sd">        The x-axis (time) values retrieved from the simulation results.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
+
     <span class="c1">#the graph is cleared</span>
     <span class="n">object_of_class</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
@@ -552,23 +592,37 @@
                          <span class="n">muon_position</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">plane_atom_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                          <span class="n">plane_atom_position</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">midpoint</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">atoms</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    adds a muon to ase_atoms</span>
-<span class="sd">    :param ase_atoms: ASE atoms of the crystal the muon is going to be placed into</span>
-<span class="sd">    :param theta: F--mu--F angle in degrees. Must also define nn_indices if this is not 180deg.</span>
-<span class="sd">    :param phi: angle of the F--mu--F plane. Must also define theta and nn_indices to use this.</span>
-<span class="sd">    :param nn_indices: ASE index of the nearest-neighbour atoms to place the muon in between. Do not define this AND</span>
-<span class="sd">                       muon_position</span>
-<span class="sd">    :param muon_position: position of the muon, in angstroms. Use EITHER this or nn_indices. Do not define this and</span>
-<span class="sd">                          theta and phi</span>
-<span class="sd">    :param plane_atom_index: index of atom which the muon moves away from to create the angle theta. Do not define this</span>
-<span class="sd">                             and plane_atom_position.</span>
-<span class="sd">    :param plane_atom_position: np array of position of the plane_atom (doesn&#39;t actually need to be a position of an</span>
-<span class="sd">                                atom per se, but useful if it is. Do not define this and the index.</span>
-<span class="sd">    :param midpoint: weighting of the midpoint to the two nnindices. 0 puts the muon on nn_indices[0], 1 puts it on</span>
-<span class="sd">                     nn_indices[2]. 0.5 puts it in between the two.</span>
-<span class="sd">    </span>
-<span class="sd">    </span>
-<span class="sd">    :return: ase_atoms with the muon</span>
+<span class="sd">    Adds a muon to ASE atoms.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    se_atoms : ASE Atoms object</span>
+<span class="sd">        The crystal structure the muon will be placed into.</span>
+<span class="sd">    theta : float, optional</span>
+<span class="sd">        F--mu--F angle in degrees. Must also define nn_indices if this is not 180 degrees.</span>
+<span class="sd">    phi : float, optional</span>
+<span class="sd">        Angle of the F--mu--F plane. Must also define theta and nn_indices to use this.</span>
+<span class="sd">    nn_indices : list of int, optional</span>
+<span class="sd">        ASE indices of the nearest-neighbor atoms to place the muon in between. </span>
+<span class="sd">        Do not define this and muon_position at the same time.</span>
+<span class="sd">    muon_position : np.ndarray, optional</span>
+<span class="sd">        Position of the muon in angstroms. Use EITHER this or nn_indices. </span>
+<span class="sd">        Do not define this and theta and phi at the same time.</span>
+<span class="sd">    plane_atom_index : int, optional</span>
+<span class="sd">        Index of the atom which the muon moves away from to create the angle theta. </span>
+<span class="sd">        Do not define this and plane_atom_position at the same time.</span>
+<span class="sd">    plane_atom_position : np.ndarray, optional</span>
+<span class="sd">        Position of the plane atom as a NumPy array. This doesn&#39;t need to be an actual atom position, </span>
+<span class="sd">        but it is useful if it is. Do not define this and the index at the same time.</span>
+<span class="sd">    midpoint : float, optional</span>
+<span class="sd">        Weighting of the midpoint between the two nn_indices. </span>
+<span class="sd">        A value of 0 places the muon at nn_indices[0], 1 at nn_indices[1], </span>
+<span class="sd">        and 0.5 in the middle.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    atoms : ASE Atoms object</span>
+<span class="sd">        The atomic structure with the muon added.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Ensure that either muon_position or nn_indices is defined, but not both</span>
@@ -638,12 +692,26 @@
 <span class="k">def</span> <span class="nf">make_supercell</span><span class="p">(</span><span class="n">simulation_object</span><span class="p">,</span> <span class="n">unperturbed_atoms</span><span class="p">:</span> <span class="n">atoms</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">unperturbed_supercell</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                    <span class="n">small_output</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    make a supercell with atoms_mu in the centre, and surrounded by unperturbed_supercell unperturbed_atoms</span>
-<span class="sd">    :param atoms_mu: (object of the windows class-muspinism object) ASE atoms, maybe with distortions, including muon</span>
-<span class="sd">    :param unperturbed_atoms: ASE atoms of unperturbed structure</span>
-<span class="sd">    :param unperturbed_supercell: number of instances of unperturbed_atoms to bolt on to the end of atoms_mu</span>
-<span class="sd">    :return: supercell of atoms_mu+unperturbed_supercell*unperturbed_atoms. If small_output==False, return ASE atoms,</span>
-<span class="sd">             otherwise returns a list of [atom type, position]</span>
+<span class="sd">    Creates a supercell with atoms_mu in the center, surrounded by unperturbed_supercell instances of unperturbed_atoms.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    simulation_object : object</span>
+<span class="sd">        An instance of the simulation class containing the atoms_mu structure, including the muon.</span>
+<span class="sd">    unperturbed_atoms : ASE Atoms object, optional</span>
+<span class="sd">        ASE Atoms object representing the unperturbed structure. Default is None.</span>
+<span class="sd">    unperturbed_supercell : int, optional</span>
+<span class="sd">        Number of instances of unperturbed_atoms to attach to the atoms_mu structure. Default is 1.</span>
+<span class="sd">    small_output : bool, optional</span>
+<span class="sd">        If False, returns an ASE Atoms object. If True, returns a list of [atom type, position].</span>
+<span class="sd">        Default is False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    supercell : ASE Atoms object or list</span>
+<span class="sd">        Returns the supercell, which consists of atoms_mu plus unperturbed_supercell instances of unperturbed_atoms.</span>
+<span class="sd">        If small_output is False, the return value is an ASE Atoms object.</span>
+<span class="sd">        If small_output is True, the return value is a list of [atom type, position].</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Retrieve the current atomic structure with the muon</span>
     <span class="n">atoms_mu</span> <span class="o">=</span> <span class="n">simulation_object</span><span class="o">.</span><span class="n">cif_read</span>
@@ -790,14 +858,14 @@
 
         <span class="c1"># Calculate the magnetic field strength; if the atom is the muon itself, set the strength to 0</span>
         <span class="k">if</span> <span class="n">distance_to_muon</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">strength</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">strength</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">else</span><span class="p">:</span>    
             <span class="n">strength</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">magnetic_moment</span><span class="o">/</span><span class="n">distance_to_muon</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
 
         <span class="c1"># Gather information about the atom: element symbol, field strength, relative position, spin, and distance</span>
         <span class="n">atom_info</span> <span class="o">=</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">strength</span><span class="p">,</span> <span class="n">relative_postision</span><span class="p">,</span>
                 <span class="n">spin</span><span class="p">(</span><span class="n">element_symbol</span><span class="p">,</span> <span class="n">iso</span><span class="p">),</span> <span class="n">distance_to_muon</span><span class="p">)</span>
-        
+
         <span class="c1"># Update the structure information </span>
         <span class="n">simulation_object</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom_info</span><span class="p">)</span></div>
 
@@ -1086,6 +1154,16 @@
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#                                       Auxiliary Functions</span>
 <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="create_input_file">
+<a class="viewcode-back" href="../backend_mss.html#backend_mss.create_input_file">[docs]</a>
+<span class="k">def</span> <span class="nf">create_input_file</span><span class="p">(</span><span class="n">muspinsim_instance</span><span class="p">):</span>
+    <span class="n">params</span><span class="o">=</span><span class="n">muspinsim_instance</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+
+    <span class="k">pass</span></div>
+
+
+
 <div class="viewcode-block" id="safely_destroy_progress_bar">
 <a class="viewcode-back" href="../backend_mss.html#backend_mss.safely_destroy_progress_bar">[docs]</a>
 <span class="k">def</span> <span class="nf">safely_destroy_progress_bar</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
@@ -1127,7 +1205,8 @@
 <span class="k">def</span> <span class="nf">show_selected_options</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">handler</span><span class="o">.</span><span class="n">selected_items</span><span class="p">:</span>
         <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">selected_items</span><span class="p">)</span>
-
+        <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">options</span><span class="p">),</span><span class="n">handler</span><span class="o">.</span><span class="n">selected_items</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">selected_items</span><span class="p">),</span><span class="n">handler</span><span class="o">.</span><span class="n">selected_items</span><span class="p">,</span><span class="n">handler</span><span class="o">.</span><span class="n">selected_items</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">tk</span><span class="o">.</span><span class="n">messagebox</span><span class="o">.</span><span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Selected Options&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Selected Options:</span><span class="se">\n</span><span class="si">{</span><span class="n">options</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">tk</span><span class="o">.</span><span class="n">messagebox</span><span class="o">.</span><span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Selected Options&quot;</span><span class="p">,</span> <span class="s2">&quot;No options selected.&quot;</span><span class="p">)</span></div>

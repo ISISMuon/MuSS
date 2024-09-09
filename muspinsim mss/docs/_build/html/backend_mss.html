@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>backend_mss module &mdash; MuSS 0.1.0-dev documentation</title>
+  <title>MuSS Backend &mdash; MuSS 0.1.0-dev documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -42,15 +42,48 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="detailed_functionality.html">Detailed Functionality</a></li>
-<li class="toctree-l1"><a class="reference internal" href="technical_details.html">Technical Details</a></li>
-<li class="toctree-l1"><a class="reference internal" href="version_history_and_future_plans.html">Version History and Future Plans</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">MuSS Backend</a><ul>
+<li><a class="reference internal" href="#backend_mss.add_muon_to_aseatoms"><code class="docutils literal notranslate"><span class="pre">add_muon_to_aseatoms()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.apply_mask_to_structure"><code class="docutils literal notranslate"><span class="pre">apply_mask_to_structure()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.clean_whitespace_and_brackets"><code class="docutils literal notranslate"><span class="pre">clean_whitespace_and_brackets()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.clear_selected_options"><code class="docutils literal notranslate"><span class="pre">clear_selected_options()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.create_input_file"><code class="docutils literal notranslate"><span class="pre">create_input_file()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.create_input_files_param"><code class="docutils literal notranslate"><span class="pre">create_input_files_param()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.create_processBar"><code class="docutils literal notranslate"><span class="pre">create_processBar()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.data_processing"><code class="docutils literal notranslate"><span class="pre">data_processing()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.dipolar_fitting_parameter"><code class="docutils literal notranslate"><span class="pre">dipolar_fitting_parameter()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.execute_simulation_and_trigger_event"><code class="docutils literal notranslate"><span class="pre">execute_simulation_and_trigger_event()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.extract_initial_variables"><code class="docutils literal notranslate"><span class="pre">extract_initial_variables()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.fitting_options_window"><code class="docutils literal notranslate"><span class="pre">fitting_options_window()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.fitting_parameters_choise"><code class="docutils literal notranslate"><span class="pre">fitting_parameters_choise()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.format_simulation_data"><code class="docutils literal notranslate"><span class="pre">format_simulation_data()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.generate_cell_components_window"><code class="docutils literal notranslate"><span class="pre">generate_cell_components_window()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.get_path"><code class="docutils literal notranslate"><span class="pre">get_path()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.graph_update_and_retrieve_time"><code class="docutils literal notranslate"><span class="pre">graph_update_and_retrieve_time()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.handle_active_thhread"><code class="docutils literal notranslate"><span class="pre">handle_active_thhread()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.load_and_run"><code class="docutils literal notranslate"><span class="pre">load_and_run()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.load_input_file"><code class="docutils literal notranslate"><span class="pre">load_input_file()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.make_supercell"><code class="docutils literal notranslate"><span class="pre">make_supercell()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.populate_gui_with_parameters"><code class="docutils literal notranslate"><span class="pre">populate_gui_with_parameters()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.read_UI_entries_and_run"><code class="docutils literal notranslate"><span class="pre">read_UI_entries_and_run()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.retrieve_stored_simulation_data"><code class="docutils literal notranslate"><span class="pre">retrieve_stored_simulation_data()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.run_simulation"><code class="docutils literal notranslate"><span class="pre">run_simulation()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.run_simulation_thread"><code class="docutils literal notranslate"><span class="pre">run_simulation_thread()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.safely_destroy_progress_bar"><code class="docutils literal notranslate"><span class="pre">safely_destroy_progress_bar()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.save_as_directory"><code class="docutils literal notranslate"><span class="pre">save_as_directory()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.selecting__nn_indices"><code class="docutils literal notranslate"><span class="pre">selecting__nn_indices()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.show_selected_options"><code class="docutils literal notranslate"><span class="pre">show_selected_options()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.store_tkentries"><code class="docutils literal notranslate"><span class="pre">store_tkentries()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.update_param_spec"><code class="docutils literal notranslate"><span class="pre">update_param_spec()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.update_parameters"><code class="docutils literal notranslate"><span class="pre">update_parameters()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.update_spin_dipolar_interaction"><code class="docutils literal notranslate"><span class="pre">update_spin_dipolar_interaction()</span></code></a></li>
+<li><a class="reference internal" href="#backend_mss.update_structure_data"><code class="docutils literal notranslate"><span class="pre">update_structure_data()</span></code></a></li>
 </ul>
-
+</li>
+</ul>
+</div>
         </div>
       </div>
     </nav>
@@ -65,7 +98,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">backend_mss module</li>
+      <li class="breadcrumb-item active">MuSS Backend</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/backend_mss.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -76,59 +109,78 @@
            <div itemprop="articleBody">
              
   <section id="module-backend_mss">
-<span id="backend-mss-module"></span><h1>backend_mss module<a class="headerlink" href="#module-backend_mss" title="Link to this heading"></a></h1>
-<p>Project: Simulations for muSR data Analysis Industrial Placement
-Author: Paula Franco
-Date: February 2024</p>
-<p>Summary:
+<span id="muss-backend"></span><h1>MuSS Backend<a class="headerlink" href="#module-backend_mss" title="Link to this heading"></a></h1>
+<p><strong>Summary</strong>
 This module provides a set of functions for managing and interacting with simulation parameters,
 including GUI integration, data processing, and simulation management for a scientific or engineering application</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="backend_mss.add_muon_to_aseatoms">
-<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">add_muon_to_aseatoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms_structure:</span> <span class="pre">&lt;module</span> <span class="pre">'ase.atoms'</span> <span class="pre">from</span> <span class="pre">'C:\\Users\\BNW71814\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\ase\\atoms.py'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nn_indices:</span> <span class="pre">list</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">muon_position:</span> <span class="pre">~numpy.ndarray</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane_atom_index:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane_atom_position:</span> <span class="pre">~numpy.ndarray</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midpoint=0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">&lt;module</span> <span class="pre">'ase.atoms'</span> <span class="pre">from</span> <span class="pre">'C:\\Users\\BNW71814\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\ase\\atoms.py'&gt;</span></span></span><a class="reference internal" href="_modules/backend_mss.html#add_muon_to_aseatoms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.add_muon_to_aseatoms" title="Link to this definition"></a></dt>
-<dd><p>adds a muon to ase_atoms
-:param ase_atoms: ASE atoms of the crystal the muon is going to be placed into
-:param theta: F–mu–F angle in degrees. Must also define nn_indices if this is not 180deg.
-:param phi: angle of the F–mu–F plane. Must also define theta and nn_indices to use this.
-:param nn_indices: ASE index of the nearest-neighbour atoms to place the muon in between. Do not define this AND</p>
-<blockquote>
-<div><p>muon_position</p>
-</div></blockquote>
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">add_muon_to_aseatoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms_structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nn_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">muon_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane_atom_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane_atom_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#add_muon_to_aseatoms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.add_muon_to_aseatoms" title="Link to this definition"></a></dt>
+<dd><p>Adds a muon to ASE atoms.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>muon_position</strong> – position of the muon, in angstroms. Use EITHER this or nn_indices. Do not define this and
-theta and phi</p></li>
-<li><p><strong>plane_atom_index</strong> – index of atom which the muon moves away from to create the angle theta. Do not define this
-and plane_atom_position.</p></li>
-<li><p><strong>plane_atom_position</strong> – np array of position of the plane_atom (doesn’t actually need to be a position of an
-atom per se, but useful if it is. Do not define this and the index.</p></li>
-<li><p><strong>midpoint</strong> – weighting of the midpoint to the two nnindices. 0 puts the muon on nn_indices[0], 1 puts it on
-nn_indices[2]. 0.5 puts it in between the two.</p></li>
+<li><p><strong>se_atoms</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ASE</span> <span class="pre">Atoms</span> <span class="pre">object</span></code>) – The crystal structure the muon will be placed into.</p></li>
+<li><p><strong>theta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <em>optional</em>) – F–mu–F angle in degrees. Must also define nn_indices if this is not 180 degrees.</p></li>
+<li><p><strong>phi</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <em>optional</em>) – Angle of the F–mu–F plane. Must also define theta and nn_indices to use this.</p></li>
+<li><p><strong>nn_indices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <em>optional</em>) – ASE indices of the nearest-neighbor atoms to place the muon in between.
+Do not define this and muon_position at the same time.</p></li>
+<li><p><strong>muon_position</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>, <em>optional</em>) – Position of the muon in angstroms. Use EITHER this or nn_indices.
+Do not define this and theta and phi at the same time.</p></li>
+<li><p><strong>plane_atom_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <em>optional</em>) – Index of the atom which the muon moves away from to create the angle theta.
+Do not define this and plane_atom_position at the same time.</p></li>
+<li><p><strong>plane_atom_position</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code>, <em>optional</em>) – Position of the plane atom as a NumPy array. This doesn’t need to be an actual atom position,
+but it is useful if it is. Do not define this and the index at the same time.</p></li>
+<li><p><strong>midpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <em>optional</em>) – Weighting of the midpoint between the two nn_indices.
+A value of 0 places the muon at nn_indices[0], 1 at nn_indices[1],
+and 0.5 in the middle.</p></li>
+<li><p><strong>atoms_structure</strong> (<em>&lt;module 'ase.atoms' from 'C:\\Users\\BNW71814\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\ase\\atoms.py'&gt;</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>ase_atoms with the muon</p>
+<dd class="field-even"><p><strong>atoms</strong> – The atomic structure with the muon added.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ASE</span> <span class="pre">Atoms</span> <span class="pre">object</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="backend_mss.apply_mask_to_structure">
-<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">apply_mask_to_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms_mu:</span> <span class="pre">&lt;module</span> <span class="pre">'ase.atoms'</span> <span class="pre">from</span> <span class="pre">'C:\\Users\\BNW71814\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\ase\\atoms.py'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius:</span> <span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">&lt;module</span> <span class="pre">'ase.atoms'</span> <span class="pre">from</span> <span class="pre">'C:\\Users\\BNW71814\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\ase\\atoms.py'&gt;</span></span></span><a class="reference internal" href="_modules/backend_mss.html#apply_mask_to_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.apply_mask_to_structure" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">apply_mask_to_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms_mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#apply_mask_to_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.apply_mask_to_structure" title="Link to this definition"></a></dt>
 <dd><p>Applies a spherical mask to the atoms object, selecting atoms within a specified radius from the muon.</p>
 <p>Parameters:
 atoms_with_muon: ASE atoms object containing the structure, including the muon.
 cutoff_radius: Radius within which atoms are selected relative to the muon’s position.</p>
 <p>Returns:
 ASE atoms object containing only the atoms within the specified radius from the muon</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms_mu</strong> (<em>&lt;module 'ase.atoms' from 'C:\\Users\\BNW71814\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\ase\\atoms.py'&gt;</em>)</p></li>
+<li><p><strong>radius</strong> (<em>float</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>&lt;module ‘ase.atoms’ from ‘C:\Users\BNW71814\AppData\Local\Programs\Python\Python310\lib\site-packages\ase\atoms.py’&gt;</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="backend_mss.clean_whitespace_and_brackets">
-<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">clean_whitespace_and_brackets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/backend_mss.html#clean_whitespace_and_brackets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.clean_whitespace_and_brackets" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">clean_whitespace_and_brackets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#clean_whitespace_and_brackets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.clean_whitespace_and_brackets" title="Link to this definition"></a></dt>
 <dd><p>Cleans a string by removing brackets and reducing multiple spaces to a single space
 by removing ‘[‘,’]’ and spaces in a string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -140,10 +192,13 @@ Args:(object): An instance of a class that contains the list of selected items a
 
 <dl class="py function">
 <dt class="sig sig-object py" id="backend_mss.create_input_file">
-<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">create_input_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#create_input_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.create_input_file" title="Link to this definition"></a></dt>
-<dd><p>‘
-Creates a new input file with the parameters specified in the simulation object’s UI fields.</p>
-</dd></dl>
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">create_input_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">muspinsim_instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#create_input_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.create_input_file" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend_mss.create_input_files_param">
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">create_input_files_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">muspinsim_instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#create_input_files_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.create_input_files_param" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="backend_mss.create_processBar">
@@ -220,23 +275,35 @@ methods for updating interactions.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="backend_mss.get_path">
-<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">get_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/backend_mss.html#get_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.get_path" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">get_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#get_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.get_path" title="Link to this definition"></a></dt>
 <dd><p>Returns the path where the txt file will be saved</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="backend_mss.graph_update_and_retrieve_time">
 <span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">graph_update_and_retrieve_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_of_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#graph_update_and_retrieve_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.graph_update_and_retrieve_time" title="Link to this definition"></a></dt>
 <dd><p>Updates the graph with the latest simulation results and retrieves the x-axis (time) values.</p>
-<blockquote>
-<div><p>Actions:</p>
-</div></blockquote>
-<ol class="arabic simple">
-<li><p>Clears the current graph.</p></li>
-<li><p>Plots the results of the simulation against time.</p></li>
-<li><p>Draws the updated graph on the canvas.</p></li>
-<li><p>Stores the x-axis (time) values for future use.</p></li>
-</ol>
+<p>This function performs the following actions:
+1. Clears the current graph.
+2. Plots the results of the simulation against time.
+3. Draws the updated graph on the canvas.
+4. Stores and returns the x-axis (time) values for future use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>object_of_class</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>) – The object containing the simulation results and graphing canvas.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>time_values</strong> – The x-axis (time) values retrieved from the simulation results.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -263,15 +330,27 @@ The variables are then displayed in the UI</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="backend_mss.make_supercell">
-<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">make_supercell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unperturbed_atoms:</span> <span class="pre">&lt;module</span> <span class="pre">'ase.atoms'</span> <span class="pre">from</span> <span class="pre">'C:\\Users\\BNW71814\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\ase\\atoms.py'&gt;</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unperturbed_supercell=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">small_output=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#make_supercell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.make_supercell" title="Link to this definition"></a></dt>
-<dd><p>make a supercell with atoms_mu in the centre, and surrounded by unperturbed_supercell unperturbed_atoms
-:param atoms_mu: (object of the windows class-muspinism object) ASE atoms, maybe with distortions, including muon
-:param unperturbed_atoms: ASE atoms of unperturbed structure
-:param unperturbed_supercell: number of instances of unperturbed_atoms to bolt on to the end of atoms_mu
-:return: supercell of atoms_mu+unperturbed_supercell*unperturbed_atoms. If small_output==False, return ASE atoms,</p>
-<blockquote>
-<div><p>otherwise returns a list of [atom type, position]</p>
-</div></blockquote>
+<span class="sig-prename descclassname"><span class="pre">backend_mss.</span></span><span class="sig-name descname"><span class="pre">make_supercell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unperturbed_atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unperturbed_supercell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">small_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend_mss.html#make_supercell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend_mss.make_supercell" title="Link to this definition"></a></dt>
+<dd><p>Creates a supercell with atoms_mu in the center, surrounded by unperturbed_supercell instances of unperturbed_atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simulation_object</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>) – An instance of the simulation class containing the atoms_mu structure, including the muon.</p></li>
+<li><p><strong>unperturbed_atoms</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ASE</span> <span class="pre">Atoms</span> <span class="pre">object</span></code>, <em>optional</em>) – ASE Atoms object representing the unperturbed structure. Default is None.</p></li>
+<li><p><strong>unperturbed_supercell</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <em>optional</em>) – Number of instances of unperturbed_atoms to attach to the atoms_mu structure. Default is 1.</p></li>
+<li><p><strong>small_output</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <em>optional</em>) – If False, returns an ASE Atoms object. If True, returns a list of [atom type, position].
+Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>supercell</strong> – Returns the supercell, which consists of atoms_mu plus unperturbed_supercell instances of unperturbed_atoms.
+If small_output is False, the return value is an ASE Atoms object.
+If small_output is True, the return value is a list of [atom type, position].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ASE</span> <span class="pre">Atoms</span> <span class="pre">object</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">

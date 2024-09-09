@@ -1,9 +1,6 @@
 """
-Project: Simulations for muSR data Analysis Industrial Placement
-Author: Paula Franco
-Date: July 2024
+This script is designed to manage the input parameters for MuSpinSim.
 
-Summary:
 
 """
 import numpy as np

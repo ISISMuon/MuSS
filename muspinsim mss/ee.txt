@@ -1,3 +1,0 @@
-Fitting Workflow on Fitting (recieving and interpreting messages):
-
--> sck.sck_receive_and_interpre

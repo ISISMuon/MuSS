@@ -1,5 +1,5 @@
-socket\_comunication\_mss module
-================================
+Socket communication Module
+===========================
 
 .. automodule:: socket_comunication_mss
    :members:

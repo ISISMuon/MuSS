@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview &mdash; MuSS 0.1.0-dev documentation</title>
+  <title>Welcome to MuSS’ documentation &mdash; MuSS 0.1.0-dev documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Getting Started" href="getting_started.html" />
-    <link rel="prev" title="MuSS documentation" href="index.html" /> 
+    <link rel="prev" title="z_windows_draft module" href="z_windows_draft.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,14 +46,18 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">muspinsim mss</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome to MuSS’ documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#muss-capabilities">MuSS capabilities:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#work-in-progress">Work in progress</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="detailed_functionality.html">Detailed Functionality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="technical_details.html">Technical Details</a></li>
 <li class="toctree-l1"><a class="reference internal" href="version_history_and_future_plans.html">Version History and Future Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support_and_q%26as.html">Find Support</a></li>
 </ul>
 
         </div>
@@ -70,7 +74,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Overview</li>
+      <li class="breadcrumb-item active">Welcome to MuSS’ documentation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/overview.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -80,9 +84,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="overview">
-<h1>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
-<p>MuSS (Muon Simulation Study) is a powerful interface designed to facilitate muon simulations and analyses by combining the capabilities of muspinsim and WimDA. This integrated system is engineered to streamline workflows in experimental and simulation studies in physics.</p>
+  <section id="welcome-to-muss-documentation">
+<h1>Welcome to MuSS’ documentation<a class="headerlink" href="#welcome-to-muss-documentation" title="Link to this heading"></a></h1>
+<p>Muon Simulation Study MuSS is an interface that combines the capabilities of MuSpinSim and WiMDA. The idea is to use simulation to inform musr data analysis.
+MuSS can be viewed as an outer layer of of MuSpinSim with additional capabilities for comunication with WiMDA. The communication is socket-based allowing flow of data in both directions.</p>
+<section id="muss-capabilities">
+<h2>MuSS capabilities:<a class="headerlink" href="#muss-capabilities" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>MuSS as a fitting function on WiMDA.</p></li>
+</ul>
+<p>The most fundamental goal of MuSS is to use Muspinsim as one of the fiiting functions of WiMDA allowing the fiiting parameters to be atomistic varaiables,
+meaning that their value reflect a physical quantity. Those atomistic variables are contained within the input of MuSpinSim.</p>
+<ul class="simple">
+<li><p>MuSS as an interface for MuSpinSim.</p></li>
+</ul>
+<p>The goal with MuSS has been to perverse the capabilities of MuSpinSim adding communication with WiMDA.
+Note that MuSpinSim has more suitable interface built within Muon Galaxy when intended to be used without socket-based communication.</p>
+<ul class="simple">
+<li><p>MuSS as a socket server.</p></li>
+</ul>
+<p>One of the first operation the program executes is start a server and listen to incomingg clients to be connected with.
+It has the capacity of listening to multiple clients and it will print in the terminal the messages received.
+However, the messages that WiMDA will send have keywords in the script that recognize the message and according to the keyword an operation succedes.</p>
+</section>
 <section id="key-features">
 <h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
 <ul class="simple">
@@ -91,13 +115,18 @@
 <li><p>Real-time data exchange via socket-based communication.</p></li>
 </ul>
 </section>
+<section id="work-in-progress">
+<h2>Work in progress<a class="headerlink" href="#work-in-progress" title="Link to this heading"></a></h2>
+<p>MuSS is a work in progress and we encourage collaboration and support!
+You are welcome to contribuite in our Github.</p>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="MuSS documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="z_windows_draft.html" class="btn btn-neutral float-left" title="z_windows_draft module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

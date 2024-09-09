@@ -1,27 +1,30 @@
+'''
+This script is a front-end GUI designed to assist MuSpinSim users by eliminating the need to write MuSpinSim scripts to run simulations.  
+The main idea is to provide an interface where all MuSpinSim variables can be entered and used with the full functionality of MuSpinSim.  
+For more information on MuSpinSim, visit the following link:
+
+MuSpinSim Documentation <https://muon-spectroscopy-computational-project.github.io/muspinsim/>_
+
+**Code Structure**
+
+- **GUI**: The GUI is defined as the Windows class, which inherits from tkinter.
+- **Initialization**: In the __init__ function, the tkinter window geometry is set, and functions that define the essential frames are called.
+
+**Additional Scripts**
+
+- **muspinsim**:
+  This GUI is built for MSS (MuSpinSim), and is based entirely on MSS code. It serves as a channel to simplify its use.
+
+- **tkinter_muspinsim01backend as bck**:
+  This module defines other functions that handle calculations, data processing, file reading, and data interpretation.
+
+- **sockets_tk as sck**:
+  Sockets are created to listen for incoming data until the program closes. Here, the ports are described, and information is sent and received via sockets.
+
+**Run**
 """
-Project: Simulations for muSR data Analysis Industrial Placement
-Author: Paula Franco
-Date: December 2023
-
-Summary:
-This script is (a front-end GUI) an aid for MuSpinSim users, eliminating the necessity to write MuSpiSim script to run the program (for example run simulations).
-The concept applied here is to have as entry all MuSpinSpim variables and be able to use all functionalities of MuSpiSim.
-https://muon-spectroscopy-computational-project.github.io/muspinsim/ --> For information on MSS
-
-code structure:
-    *The GUI is defined as the Windows class that inherit from tkinter.
-    *In the init function the tkinter window geometry is described and the functions that defined the essential frames are called.
-
-    Additional Scripts:
-        + muspinsim:
-            as this GUI is made for MSS it is all based in MSS code and its only a chanel to make the usage easier
-        + tkinter_muspinsim01backend as bck:
-            which is where other functions are defined describing the calculations, data processing, file reading, interpretation of data
-        + sockets_tk as sck :
-           sockets are created and listens until the program is closes, here ports are descibed. The sockets recieve and send informtaion here.
-    Run
-        To run this script run_guy_2 is used as to tailor this to faster wimda comunication. Therefore, the .py file that runs in wimda is 'run_guy_2'
-"""
+To run this script, run_wimda_mss.py is used, which is tailored for faster WiMDA communication.
+'''
 
 import tkinter as tk
 
@@ -48,14 +51,15 @@ import socket_comunication_mss as sck
 
 
 class MuSS_window(tk.Tk):
+  
     ''' 
-     MuSS_window is the 'chassis' for the MuSS progarm
-     The object of this class has tkinter methods and also the atomistic parameters
-     All major frames are defined (in the Defining Frames section ) here and the entries are stored accoring to the muspinsim indexing of parameters
-     The main functionalities are defined in the Auxiliary functions but the are built on top (or referencing) of other functions defined in the backend
-        Note:
-        Creation of thread to peform calculation so the GUI does not freeze 
+    MuSS_window is the 'chassis' for the MuSS progarm
+    The object of this class has tkinter methods and also the atomistic parameters
+    All major frames are defined (in the Defining Frames section ) here and the entries are stored accoring to the muspinsim indexing of parameters
+    The main functionalities are defined in the Auxiliary functions but the are built on top (or referencing) of other functions defined in the backend
+    Note: Creation of thread to peform calculation so the GUI does not freeze 
         The Tkinter version used here is a single thread GUI so eveything depening on the UI must run on the main thread (but the object can be referenced in other threads)
+    
     Run this script: create a MuSS_window object and run tkinter mainloop 
     :) 
     '''
@@ -473,7 +477,7 @@ class MuSS_window(tk.Tk):
 
         # to be an hiperlink to the documentations
         self.help_menu.add_command(
-            label="Documentation", command=lambda: self.frame_data())
+            label="Documentation", command=lambda: bck.go_to_documentation())
         #Retuns information on active threads
         self.help_menu.add_command(
             label="Active Treads", command=bck.handle_active_thhread )

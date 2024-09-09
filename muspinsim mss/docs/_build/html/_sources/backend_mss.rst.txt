@@ -1,5 +1,6 @@
-backend\_mss module
+MuSS Backend
 ===================
+
 
 .. automodule:: backend_mss
    :members:

@@ -1,9 +1,4 @@
 """
-Project: Simulations for muSR data Analysis Industrial Placement
-Author: Paula Franco
-Date: August 2024
-
-Summary:
 
 """
 import numpy as np
